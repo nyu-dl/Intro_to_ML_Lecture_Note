@@ -1,0 +1,346 @@
+\documentclass{report}
+\usepackage{authblk}
+\usepackage{mathptmx}
+\usepackage{url,latexsym,amsmath,amsthm,xspace,rotating,multirow,multicol,xspace,amssymb,paralist}
+\usepackage{euscript}
+\usepackage{fancybox,xcolor}
+\usepackage{longtable}
+\usepackage{paralist}
+\usepackage[normalem]{ulem}
+\usepackage[pdftex]{hyperref}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{cancel}
+
+\usepackage{url}
+\usepackage{latexsym}
+
+\usepackage{times}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{xspace}
+\usepackage{tabularx}
+\usepackage{multicol}
+\usepackage{multirow}
+%\usepackage{hyperref}
+\usepackage{url}
+%\usepackage{natbib}
+\usepackage{wrapfig}
+\usepackage{comment}
+\usepackage{listings}
+\usepackage{color}
+\usepackage[utf8]{inputenc}
+\usepackage{fancyvrb}
+\usepackage{booktabs}
+\usepackage{color}
+\usepackage[normalem]{ulem}
+
+\newcommand{\obs}{\text{obs}}
+\newcommand{\mis}{\text{mis}}
+
+\newcommand{\qt}[1]{\left<#1\right>}
+\newcommand{\ql}[1]{\left[#1\right]}
+\newcommand{\hess}{\mathbf{H}}
+\newcommand{\jacob}{\mathbf{J}}
+\newcommand{\hl}{HL}
+\newcommand{\cost}{\mathcal{L}}
+\newcommand{\lout}{\mathbf{r}}
+\newcommand{\louti}{r}
+\newcommand{\outi}{y}
+\newcommand{\out}{\mathbf{y}}
+\newcommand{\gauss}{\mathbf{G_N}}
+\newcommand{\eye}{\mathbf{I}}
+\newcommand{\softmax}{\text{softmax}}
+\newcommand{\targ}{\mathbf{t}}
+\newcommand{\metric}{\mathbf{G}}
+\newcommand{\sample}{\mathbf{z}}
+\newcommand{\f}{\text{f}}
+%\newcommand{\log}{\text{log}}
+
+\newcommand{\bmx}[0]{\begin{bmatrix}}
+\newcommand{\emx}[0]{\end{bmatrix}}
+\newcommand{\qexp}[1]{\left<#1\right>}
+\newcommand{\vect}[1]{\mathbf{#1}}
+\newcommand{\vects}[1]{\boldsymbol{#1}}
+\newcommand{\matr}[1]{\mathbf{#1}}
+\newcommand{\var}[0]{\operatorname{Var}}
+\newcommand{\std}[0]{\operatorname{std}}
+\newcommand{\cov}[0]{\operatorname{Cov}}
+\newcommand{\diag}[0]{\operatorname{diag}}
+\newcommand{\matrs}[1]{\boldsymbol{#1}}
+\newcommand{\va}[0]{\vect{a}}
+\newcommand{\vb}[0]{\vect{b}}
+\newcommand{\vc}[0]{\vect{c}}
+\newcommand{\ve}[0]{\vect{e}}
+
+\newcommand{\vh}[0]{\vect{h}}
+\newcommand{\vv}[0]{\vect{v}}
+\newcommand{\vx}[0]{\vect{x}}
+\newcommand{\vp}[0]{\vect{p}}
+\newcommand{\vz}[0]{\vect{z}}
+\newcommand{\vw}[0]{\vect{w}}
+\newcommand{\vs}[0]{\vect{s}}
+\newcommand{\vf}[0]{\vect{f}}
+\newcommand{\vi}[0]{\vect{i}}
+\newcommand{\vo}[0]{\vect{o}}
+\newcommand{\vd}[0]{\vect{d}}
+\newcommand{\vy}[0]{\vect{y}}
+\newcommand{\vg}[0]{\vect{g}}
+\newcommand{\vm}[0]{\vect{m}}
+\newcommand{\vu}[0]{\vect{u}}
+\newcommand{\vL}[0]{\vect{L}}
+\newcommand{\vr}[0]{\vect{r}}
+\newcommand{\vone}[0]{\vect{1}}
+
+\newcommand{\mW}[0]{\matr{W}}
+\newcommand{\mE}[0]{\matr{E}}
+\newcommand{\mG}[0]{\matr{G}}
+\newcommand{\mX}[0]{\matr{X}}
+\newcommand{\mY}[0]{\matr{Y}}
+\newcommand{\mQ}[0]{\matr{Q}}
+\newcommand{\mU}[0]{\matr{U}}
+\newcommand{\mF}[0]{\matr{F}}
+\newcommand{\mV}[0]{\matr{V}}
+\newcommand{\mA}{\matr{A}}
+\newcommand{\mC}{\matr{C}}
+\newcommand{\mD}{\matr{D}}
+\newcommand{\mL}[0]{\matr{L}}
+\newcommand{\mR}[0]{\matr{R}}
+\newcommand{\mS}{\matr{S}}
+\newcommand{\mI}{\matr{I}}
+\newcommand{\td}[0]{\text{d}}
+\newcommand{\TT}[0]{\vects{\theta}}
+\newcommand{\vsig}[0]{\vects{\sigma}}
+\newcommand{\valpha}[0]{\vects{\alpha}}
+\newcommand{\vmu}[0]{\vects{\mu}}
+\newcommand{\vzero}[0]{\vect{0}}
+\newcommand{\tf}[0]{\text{m}}
+\newcommand{\tdf}[0]{\text{dm}}
+\newcommand{\grad}[0]{\nabla}
+\newcommand{\alert}[1]{\textcolor{red}{#1}}
+\newcommand{\N}[0]{\mathcal{N}}
+\newcommand{\YY}[0]{\mathcal{Y}}
+\newcommand{\BB}[0]{\mathcal{B}}
+\newcommand{\LL}[0]{\mathcal{L}}
+\newcommand{\HH}[0]{\mathcal{H}}
+\newcommand{\RR}[0]{\mathbb{R}}
+\newcommand{\MM}[0]{\mathcal{M}}
+\newcommand{\OO}[0]{\mathbb{O}}
+\newcommand{\II}[0]{\mathbb{I}}
+\newcommand{\Scal}[0]{\mathcal{S}}
+\newcommand{\sigmoid}{\sigma}
+\newcommand{\E}[0]{\mathbb{E}}
+\newcommand{\enabla}[0]{\ensuremath{%
+    \overset{\raisebox{-0.3ex}[0.5ex][0ex]{%
+    \ensuremath{\scriptscriptstyle e}}}{\nabla}}}
+\newcommand{\enhnabla}[0]{\nabla_{\hspace{-0.5mm}e}\,}
+\newcommand{\eos}[0]{\ensuremath{\left< \text{eos}\right>}}
+
+
+\newcommand{\todo}[1]{{\Large\textcolor{red}{#1}}}
+\newcommand{\done}[1]{{\Large\textcolor{green}{#1}}}
+\newcommand{\dd}[1]{\ensuremath{\mbox{d}#1}}
+
+\DeclareMathOperator*{\argmax}{\arg \max}
+\DeclareMathOperator*{\argmin}{\arg \min}
+\newcommand{\newln}{\\&\quad\quad{}}
+
+\newcommand{\BP}{\text{BP}}
+\newcommand{\PPL}{\text{PPL}}
+\newcommand{\PL}{\text{PL}}
+\newcommand{\MatSum}{\text{MatSum}}
+\newcommand{\MatMul}{\text{MatMul}}
+\newcommand{\KL}{\text{KL}}
+\newcommand{\data}{\text{data}}
+\newcommand{\rect}{\text{rect}}
+\newcommand{\maxout}{\text{maxout}}
+\newcommand{\train}{\text{train}}
+\newcommand{\val}{\text{val}}
+\newcommand{\init}{\text{init}}
+\newcommand{\fenc}{\text{fenc}}
+\newcommand{\renc}{\text{renc}}
+\newcommand{\enc}{\text{enc}}
+\newcommand{\dec}{\text{dec}}
+\newcommand{\test}{\text{test}}
+\newcommand{\Ax}{\mathcal{A}_x}
+\newcommand{\Ay}{\mathcal{A}_y}
+\newcommand{\ola}{\overleftarrow}
+\newcommand{\ora}{\overrightarrow}
+\newcommand{\ov}{\overline}
+\newcommand{\ts}{\rule{0pt}{2.6ex}}       % Top strut
+\newcommand{\ms}{\rule{0pt}{0ex}}         % Middle strut
+\newcommand{\bs}{\rule[-1.2ex]{0pt}{0pt}} % Bottom strut
+\newcommand{\specialcell}[2][c]{%
+  \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+
+
+%\usepackage{bibentry}
+%\nobibliography*
+
+\begin{document}
+
+\title{Introduction to Machine Learning}
+\author{Kyunghyun Cho}
+\affil{
+    Courant Institute of Mathematical Sciences and \\
+    Center for Data Science,\\
+    New York University 
+}
+
+\maketitle
+\pagenumbering{arabic}
+
+%\abstract{
+%    This is a lecture note for the course DS-GA 3001 $\left<\right.$Natural
+%    Language Understanding with Distributed Representation$\left.\right>$ at the
+%    Center for Data Science\footnote{
+%        \url{http://cds.nyu.edu/}
+%    }, New York University in Fall, 2015. As the name of the course suggests,
+%    this lecture note introduces readers to a neural network based approach to
+%    natural language understanding/processing. In order to make it as
+%    self-contained as possible, I spend much time on describing basics of
+%    machine learning and neural networks, only after which how they are used for
+%    natural languages is introduced. On the language front, I almost solely
+%    focus on language modelling and machine translation, two of which I
+%    personally find most fascinating and most fundamental to natural language
+%    understanding.
+%    
+%    After about a month of lectures and about 40 pages of writing this lecture
+%    note, I found this fascinating note \cite{goldberg2015primer} by Yoav
+%    Goldberg on neural network models for natural language processing. This note
+%    deals with wider topics on natural language processing with
+%    distributed representations in more details, and I highly recommend you to read it
+%    (hopefully along with this lecture note.) I seriously wish Yoav had written
+%    it earlier so that I could've simply used his excellent note for my course.
+%
+%    This lecture note had been written quite hastily as the course progressed,
+%    meaning that I could spare only about 100 hours in total for this note.
+%    This is my lame excuse for likely many mistakes in this lecture note, and I
+%    kindly ask for your understanding in advance. Again, how grateful I
+%    would've been had I found Yoav's note earlier.
+%
+%    I am planning to update this lecture note gradually over time, hoping that I
+%    will be able to convince the Center for Data Science to let me teach the
+%    same course next year. The latest version will always be available both in
+%    pdf and in latex source code from
+%    \url{https://github.com/nyu-dl/NLP_DL_Lecture_Note}. The arXiv version will
+%    be updated whenever a major revision is made.
+%
+%    I thank all the students and non-students who took\footnote{
+%        In fact, they are still taking the course as of 24 Nov 2015. They have
+%        two guest lectures and a final exam left until the end of the course.
+%    }
+%    this course and David Rosenberg for feedback.
+%}
+%
+%\tableofcontents
+
+%The following text books are recommended in addition to this lecture note:
+%\begin{itemize}
+%    \item ``Pattern Recognition and Machine Learning'' by Chris Bishop \cite{bishop2006pattern}
+%    \item ``Machine Learning: a probabilistic perspective'' by Kevin Murphy \cite{murphy2012machine}
+%\end{itemize}
+
+\chapter{Supervised Learning}
+\label{chap:supervised}
+
+\section{Classification}
+\label{sec:classification}
+
+\subsection{Problem Setup: Logistic Regression}
+
+\subsection{Optimization vs. Learning}
+
+\subsubsection{Expected vs. Empirical Loss Functions}
+
+\subsubsection{Gradient-based Optimization}
+
+\subsection{Support Vector Machines}
+
+\subsubsection{One Problem, Many Loss Functions}
+
+\subsubsection{Nonlinear Feature Function and Kernel Trick}
+
+\subsection{Decision Tree$^*$}
+
+\subsection{Ensemble Methods$^*$}
+
+
+\section{Regression}
+\label{sec:regression}
+
+\subsection{Linear Regression and Regularization}
+
+\subsubsection{Linear Regression}
+
+\subsubsection{Regularization and Prior Distributions}
+
+\subsection{Gaussian Process Regression: Parameter-Space View}
+
+\subsubsection{Bayesian Approach to Machine Learning}
+
+\subsubsection{Gaussian Process Regression}
+
+
+\chapter{Unsupervised Learning}
+\label{chap:unsupervised}
+
+\section{Dimensionality Reduction}
+\label{sec:dimred}
+
+\subsection{Problem Setup}
+
+\subsection{Principal Component Anslysis}
+
+\subsubsection{Maximum Variance Criterion}
+
+\subsubsection{Minimum Reconstruction Criterion}
+
+\subsubsection{Probabilistic Principal Component Anlysis}
+
+\paragraph{Expectation-Maximization Algorithm}
+
+\subsubsection{PCA with Missing Values: Collaborative Filtering}
+
+\subsection{Other Dimensionality Reduction Techniques}
+
+
+\section{Clustering}
+\label{sec:cluster}
+
+\subsection{Problem Setup}
+
+\paragraph{Clustering vs. Dimensionality Reduction}
+
+\subsection{$k$-Means Clustering}
+
+\subsection{Mixture of Gaussians}
+
+\subsection{Other Clustering Methods}
+
+\section{Time-Series Modelling}
+\label{sec:timeseries}
+
+
+
+
+
+
+
+
+
+
+\bibliographystyle{abbrv}
+\bibliography{lecture_note}
+
+
+\end{document}
+
+
+
+
+
+
