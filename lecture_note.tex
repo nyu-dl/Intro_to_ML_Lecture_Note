@@ -583,19 +583,22 @@ repeat this update until the term (a) in Eq.~\eqref{eq:perceptron_dist} becomes
 
 \paragraph{Learning}
 
-\todo{}
-
-
 As discussed earlier, we assume that we make only a finite number of queries to
 the reference machine $M^*$ using a set of inputs drawn from the unknown input
 distribution $p(\vx)$. This results in our training dataset:
 \begin{align*}
-    D_{\text{tra}} = \left\{ (\vx_1, M^*(\vx_1)), \ldots, (\vx_N, M^*(\vx_N))
-    \right\}.
+    D_{\text{tra}} = \left\{ (\vx_1, y_1), \ldots, (\vx_N, y_N) \right\},
 \end{align*}
+where we begin to use a short hand $y_n=M^*(\vx_n)$.
 
 With this dataset, our goal now is to find $M \in H$ that has the least
-empirical cost in Eq.~\eqref{eq:empirical_loss}.
+empirical cost in Eq.~\eqref{eq:empirical_loss} with the distance function
+defined in Eq.~\eqref{eq:perceptron_dist}. Combining these two, we get
+\begin{align*}
+    J(\vw, D_{\text{tra}}) = -\frac{1}{N} \sum_{n=1}^N 
+    \left( y_n - M(\vx_n) \right) 
+    \left(\vw^\top \tilde{\vx_n}\right).
+\end{align*}
 
 
 
