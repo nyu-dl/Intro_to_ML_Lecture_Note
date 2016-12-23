@@ -133,6 +133,7 @@
 \newcommand{\II}[0]{\mathbb{I}}
 \newcommand{\Scal}[0]{\mathcal{S}}
 \newcommand{\sigmoid}{\sigma}
+\newcommand{\sign}{\text{sign}}
 \newcommand{\E}[0]{\mathbb{E}}
 \newcommand{\enabla}[0]{\ensuremath{%
     \overset{\raisebox{-0.3ex}[0.5ex][0ex]{%
@@ -302,24 +303,24 @@ hypothesis set is not constructed well, there may not be a machine that
 satisfies the criterion above. 
 
 We can state the same thing in a slightly different way. First, let us assume a
-function $D$ that takes as input the outputs of $M$ and $M^*$ and returns how
-much they differ from each other, i.e.,
+function $D$ that takes as input the output of $M^*$, a machine $M$ and an input
+vector $\vx$, and returns how much they differ from each other, i.e.,
 \begin{align*}
-    D: \mathbb{R}^{d'} \times \mathbb{R}^{d'} \to \mathbb{R}_+,
+    D: \mathbb{R}^{d'} \times H \times \mathbb{R}^{d'} \to \mathbb{R}_+,
 \end{align*}
 where $\mathbb{R}_+$ is a set of non-negative real numbers. As usual in our
 everyday life, the smaller the output of $D$ the more similar the outputs of $M$
 and $M^*$. An example of such a function would be
 \begin{align*}
-    D(a, b) = \left\{
+    D(y, M, \vx) = \left\{
         \begin{array}{l l}
-            0, & \text{if }  a = b \\
+            0, & \text{if }  y = M(\vx) \\
             1, & \text{otherwise}
         \end{array}
         \right..
 \end{align*}
 
-It is certainly possible to tailor this divergence function, or a {\it
+It is certainly possible to tailor this distance function, or a {\it
 per-example cost} function, for a specific target task. For instance, consider
 an intrusion detection system $M$ which takes as input a video frame of a store
 front and returns a binary indicator, instead of a real number, whether there is
@@ -330,23 +331,23 @@ thief in front of your store ($M^*(\vx)=1$), you will lose \$100 if the alarm
 fails to detect the thief ($M(\vx)=0$) but will not lose any if the alarm went
 off. In this case, we may define the per-example cost function as
 \begin{align*}
-    D(a, b) = \left\{
+    D(y, M, \vx) = \left\{
         \begin{array}{l l}
-            0, & \text{if }  a=b \\
-            -10, & \text{if }  a=0\text{ and }b=1 \\
-            -100, & \text{if }  a=1\text{ and }b=0 
+            0, & \text{if }  y=M(\vx) \\
+            -10, & \text{if }  y=0\text{ and }M(\vx)=1 \\
+            -100, & \text{if }  y=1\text{ and }M(\vx)=0 
         \end{array}
         \right..
 \end{align*}
-Note that this divergence is asymmetric.
+Note that this distance is asymmetric.
 
-Given a divergence function $D$, we can now state the supervised learning
+Given a distance function $D$, we can now state the supervised learning
 problem as finding a machine $M$, with in a given hypothesis set $H$, that
-minimizes its divergence from the reference machine $M^*$ for any given input.
+minimizes its distance from the reference machine $M^*$ for any given input.
 That is,
 \begin{align}
     \label{eq:classification1}
-    \argmin_{M \in H} \int_{\mathbb{R}^d} D(M^*(\vx), M(\vx)) \text{d}\vx.
+    \argmin_{M \in H} \int_{\mathbb{R}^d} D(M^*(\vx), M, \vx) \text{d}\vx.
 \end{align}
 
 You may have noticed that these two conditions in
@@ -368,46 +369,46 @@ the store front, video frames will generally look similar to each other, and
 will only form a very small subset of all possible video frames, unless some
 exotic event happens. In this case, we would only care whether our alarm $M$
 works well for those frames showing the store front and people entering or
-leaving the store. Whether the divergence between the reference machine and my
+leaving the store. Whether the distance between the reference machine and my
 alarm is small for a video frame showing the earth from the outer space would
 not matter at all.
 
 And, here comes probability. We will denote by $p_X(\vx)$ the probability
 (density) assigned to the input $\vx$ under the distribution $X$, and assume
 that this probability reflects how likely the input $\vx$ is. We want to
-emphasize the impact of the divergence $D$ on likely inputs (high $p_X(\vx)$)
+emphasize the impact of the distance $D$ on likely inputs (high $p_X(\vx)$)
 while ignoring the impact on unlikely inputs (low $p_X(\vx)$). In other words,
 we weight each per-example cost with the probability of the corresponding
 example. Then the problem of supervised learning becomes 
 \begin{align}
     \label{eq:expected_loss0}
-    \argmin_{M\in H} \int_{\mathbb{R}^d} p_X(\vx) D(M^*(\vx), M(\vx)) \text{d}\vx 
-    = \argmin_{M \in H} \mathbb{E}_{\vx \sim X} \left[ D(M^*(\vx), M(\vx))
+    \argmin_{M\in H} \int_{\mathbb{R}^d} p_X(\vx) D(M^*(\vx), M, \vx) \text{d}\vx 
+    = \argmin_{M \in H} \mathbb{E}_{\vx \sim X} \left[ D(M^*(\vx),  M, \vx)
     \right].
 \end{align}
 
 Are we done yet? No, we still need to consider one more hidden cost in order to
 make the description of supervised learning more complete. This hidden cost
-comes from the operational cost of each machine $M$ in the hypothesis set $H$.
-It is reasonable to think that some machines are cheaper or more desirable to
-use than some others are. Let us denote this cost of a machine by $C(M)$, where
-$C: H \to \mathbb{R}_+$. Our goal is now slightly more complicated in that we
-want to find a machine that minimizes both the cost in
+comes from the operational cost, or {\it complexity}, of each machine $M$ in the
+hypothesis set $H$.  It is reasonable to think that some machines are cheaper or
+more desirable to use than some others are. Let us denote this cost of a machine
+by $C(M)$, where $C: H \to \mathbb{R}_+$. Our goal is now slightly more
+complicated in that we want to find a machine that minimizes both the cost in
 Eq.~\eqref{eq:expected_loss0} and its operational cost. So, at the end, we get
 \begin{align}
     \label{eq:expected_loss1}
-    \argmin_{M \in H} \underbrace{\mathbb{E}_{\vx \sim X} \left[ D(M^*(\vx), M(\vx)) \right]
+    \argmin_{M \in H} \underbrace{\mathbb{E}_{\vx \sim X} \left[ D(M^*(\vx), M, \vx) \right]
         + \lambda C(M)
     }_{
         \mathclap{\text{Expected Cost}}
     },
 \end{align}
 where $\lambda \in \mathbb{R}_+$ is a coefficient that trades off the importance
-between the expected divergence (between $M^*$ and $M$) and the operational cost
+between the expected distance (between $M^*$ and $M$) and the operational cost
 of $M$.
 
 In summary, supervised learning is a problem of finding a machine $M$ such that
-has bot the low expectation of the divergence between the outputs of $M^*$ and
+has bot the low expectation of the distance between the outputs of $M^*$ and
 $M$ over the input distribution and the low operational cost.
 
 \paragraph{In Reality}
@@ -415,7 +416,7 @@ $M$ over the input distribution and the low operational cost.
 It is unfortunately impossible to solve the minimization problem in
 Eq.~\eqref{eq:expected_loss1} in reality. There are so many reasons behind this,
 but the most important reason is the input distribution $p_X$ or lack thereof.
-We can decide on a divergence function $D$ ourselves based on our goal. We can
+We can decide on a distance function $D$ ourselves based on our goal. We can
 decide ourselves a hypothesis set $H$ ourselves based on our requirements and
 constraints. All good, but $p_X$ is not controllable in general, as it reflects
 how the world is, and the world does not care about our own requirements nor
@@ -438,12 +439,12 @@ assume that we have observed $N$ such samples: $\left\{ \vx^1, \ldots, \vx^N
 \right\}$. Then we can approximate the expected cost by
 \begin{align}
     \label{eq:empirical_loss}
-    \underbrace{\mathbb{E}_{\vx \sim X} \left[ D(M^*(\vx), M(\vx)) \right] +
+    \underbrace{\mathbb{E}_{\vx \sim X} \left[ D(M^*(\vx), M, \vx) \right] +
     \lambda C(M)}_{
         \mathclap{\text{Expected Cost}}
     } =
     \underbrace{
-        \frac{1}{N} \sum_{n=1}^N D(M^*(\vx^n), M(\vx^n))
+        \frac{1}{N} \sum_{n=1}^N D(M^*(\vx^n), M, \vx^n)
         + \lambda C(M)
     }_{\mathclap{\text{Empirical Cost}}} + \epsilon,
 \end{align}
@@ -501,8 +502,8 @@ construction of the weights.\footnote{
 inspect a set of outputs from the top-$K$ machines according to the weights.
 
 We will mainly focus on the former approach, which is often called {\it maximum
-a posteriori} (MAP) in this course. However, in a few lectures, we will also
-consider the latter approach in the framework of {\it Bayesian} modelling.
+a posteriori} (MAP), in this course. However, in a few of the lectures, we will
+also consider the latter approach in the framework of {\it Bayesian} modelling.
 
 
 \subsection{Perceptron}
@@ -510,18 +511,133 @@ consider the latter approach in the framework of {\it Bayesian} modelling.
 Let us examine how this concept of supervised learning is used in practice by
 considering a binary classification task. Binary classification is a task in
 which an input vector $\vx \in \mathbb{R}^d$ is classified into one of two
-classes, negative (0) and positive (1). 
+classes, negative (0) and positive (1). In other words, a machine $M$ takes as
+input a $d$-dimensional vector and outputs one of two values. 
+
+\paragraph{Hypothesis Set}
+
+In perceptron, a hypothesis set is defined as
+\begin{align*}
+    H = \left\{ 
+    M | M(\vx) = \sign(\vw^\top \tilde{\vx}), \vw \in \mathbb{R}^{d+1}
+    \right\},
+\end{align*}
+where $\tilde{\vx} = \left[ \vx; 1\right]$ denotes concatenating $1$ at the end
+of the input vector $\vx$, and 
+\begin{align*}
+    \sign(x) = \left\{ \begin{array}{l l}
+            0,&\text{ if } x \leq 0, \\
+            1,&\text{ otherwise}
+        \end{array}
+        \right..
+\end{align*}
+In this section, we simply assume that each and every machine in this hypothesis
+set has a constant operational cost $c$, i.e., $C(M)=c$ for all $M\in H$. 
+
+\paragraph{Distance}
+
+Given an input $\vx$, we now define a distance between $M^*$ and $M$. In
+particular, we will simply use an Euclidean distance:
+\begin{align}
+    \label{eq:perceptron_dist}
+    D(M^*(\vx), M, \vx) = -\underbrace{\left( M^*(\vx) - M(\vx)
+    \right)}_{\text{(a)}} \underbrace{\left(\vw^\top
+    \tilde{\vx}\right)}_{\text{(b)}}.
+\end{align}
+The term (a) states that the distance between the predictions of the reference
+and our machines is $0$ as long as their predictions coincide. When it is not,
+the term (a) will be 1 if $M^*(\vx) = 1$ and -1 if $M^*(\vx) = 0$.
+
+When it is not, the term (a) will be 1, which is when the term (b) comes into
+play. The dot product in (b) computes how well the weight vector $\vw$ and the
+input vector $\vx$ aligns with each other.\footnote{
+    $\vw^\top \tilde{\vx} = \sum_{i=1}^{d+1} w_i x_i$.
+} When they are positively aligned (pointing in the same direction), this term
+will be positive, making the output of the machine $1$. When they are negative
+aligned (pointing in opposite directions), it will be negative with the output
+of the machine $M$ $0$.
+
+Considering both (a) and (b), we see that the smallest value $D$ can take is $0$
+,when the prediction is correct,\footnote{
+    There is one more case. What is it?
+} and otherwise, positive. When the term (a) is 1, $\vw^\top \tilde{\vx}$ is
+negative, because $M(\vx)$ was 0, and the overall distance becomes positive
+(note the negative sign at the front.) When the term (b) is -1, $\vw^\top
+\tilde{\vx}$ is positive, because $M(\vx)$ was 1, in which case the distance is
+again positive. 
+
+What should we do in order to decrease this distance, if it is non-zero? We want
+to make the weight vector $\vw$ to be aligned more positively with $M^*(\vx)$,
+if the term (a) is 1, which can be done by moving $\vw$ toward $\tilde{\vx}$. In
+other words, the distance $D$ shrinks if we add a bit of $\tilde{\vx}$ to $\vw$,
+i.e., $\vw \leftarrow \vw + \eta \tilde{\vw}$. If the term (a) is -1, we should
+instead push $\vw$ so that it will {\it negatively} align with $\tilde{\vx}$,
+i.e., $\vw \leftarrow \vw - \eta \tilde{\vw}$. These two cases can be unified by
+\begin{align}
+    \label{eq:perceptron_rule0}
+    \vw \leftarrow \vw + \eta \left( M^*(\vx) - M(\vx)\right) \tilde{\vw},
+\end{align}
+where $\eta$ is often called a {\it step size} or {\it learning rate}.  We can
+repeat this update until the term (a) in Eq.~\eqref{eq:perceptron_dist} becomes
+0. 
+
+\paragraph{Learning}
+
+\todo{}
+
+
+As discussed earlier, we assume that we make only a finite number of queries to
+the reference machine $M^*$ using a set of inputs drawn from the unknown input
+distribution $p(\vx)$. This results in our training dataset:
+\begin{align*}
+    D_{\text{tra}} = \left\{ (\vx_1, M^*(\vx_1)), \ldots, (\vx_N, M^*(\vx_N))
+    \right\}.
+\end{align*}
+
+With this dataset, our goal now is to find $M \in H$ that has the least
+empirical cost in Eq.~\eqref{eq:empirical_loss}.
+
+
+
+\todo{}
 
 
 \subsection{Logistic Regression}
 
+The classifier above is not entirely satisfactory for a number of reasons. One
+of them is that it does not provide a well-calibrated measure of the degree to
+which a given input is either negative or positive. That is, we want to know not
+whether it is negative or positive but rather how likely it is negative. It is
+then natural to build a machine that will output the probability $p(C|\vx)$,
+where $C \in \left\{ -1, 1\right\}$.
+
+To do so, let us first modify the definition of a machine $M$. $M$ now takes as
+input a vector $\vx \in \mathbb{R}^d$ and returns a probability $p(C|\vx) \in
+\left[ 0, 1\right]$.
+
+
+\todo{}
 
 
 \subsection{Support Vector Machines}
 
-\subsubsection{One Problem, Many Loss Functions}
+\subsubsection{Hinge Loss}
 
 \subsubsection{Nonlinear Feature Function and Kernel Trick}
+
+\subsection{$k$-Nearest Neighbours and Radial Basis Function Networks}
+
+\subsubsection{Radial Basis Function Networks}
+
+Let us consider the inference method in kernel support vector machines from the
+previous section. 
+\begin{align*}
+    M(\vx) = \sign \left(\sum_{j=1}^J \alpha_j k(\vx_j, \vx)\right).
+\end{align*}
+
+
+\subsubsection{$k$-Nearest Neighbours}
+
 
 \subsection{Decision Tree$^*$}
 
@@ -546,6 +662,16 @@ classes, negative (0) and positive (1).
 
 \chapter{Unsupervised Learning}
 \label{chap:unsupervised}
+
+\section{Problem Setup}
+
+Unsupervised learning is a weird, but fascinating problem. Unlike supervised
+learning in which a machine was defined as a transformation of an input vector
+$\vx$, a machine $M$ in unsupervised learning {\it generates} an input vector.
+
+\section{Naive Bayes Classifier}
+
+\todo{}
 
 \section{Dimensionality Reduction}
 \label{sec:dimred}
@@ -584,6 +710,8 @@ classes, negative (0) and positive (1).
 \label{sec:timeseries}
 
 
+
+\chapter{Reinforcement Learning}
 
 
 
