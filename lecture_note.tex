@@ -575,7 +575,7 @@ instead push $\vw$ so that it will {\it negatively} align with $\tilde{\vx}$,
 i.e., $\vw \leftarrow \vw - \eta \tilde{\vw}$. These two cases can be unified by
 \begin{align}
     \label{eq:perceptron_rule0}
-    \vw \leftarrow \vw + \eta \left( M^*(\vx) - M(\vx)\right) \tilde{\vw},
+    \vw \leftarrow \vw + \eta \left( M^*(\vx) - M(\vx)\right) \tilde{\vx},
 \end{align}
 where $\eta$ is often called a {\it step size} or {\it learning rate}.  We can
 repeat this update until the term (a) in Eq.~\eqref{eq:perceptron_dist} becomes
@@ -594,11 +594,38 @@ where we begin to use a short hand $y_n=M^*(\vx_n)$.
 With this dataset, our goal now is to find $M \in H$ that has the least
 empirical cost in Eq.~\eqref{eq:empirical_loss} with the distance function
 defined in Eq.~\eqref{eq:perceptron_dist}. Combining these two, we get
-\begin{align*}
+\begin{align}
+    \label{eq:perceptron_cost}
     J(\vw, D_{\text{tra}}) = -\frac{1}{N} \sum_{n=1}^N 
     \left( y_n - M(\vx_n) \right) 
     \left(\vw^\top \tilde{\vx_n}\right).
-\end{align*}
+\end{align}
+
+We will again resort to an iterative method for minimizing this empirical cost
+function, as we have done with a single input vector above. What we will do is
+to collect all those input vectors on which $M$ (or equivalently $\vw$) has made
+mistakes. This is equivalent to considering only those input vectors where
+$y_n-M(\vx_n) \neq 0$. Then, we collect all the {\it update directions},
+computed using Eq.~\eqref{eq:perceptron_rules}, and move the weight vector
+$\vw$ toward its average. That is,
+\begin{align}
+    \label{eq:perceptron_rule1}
+    \vw \leftarrow \vw + \eta \frac{1}{N} \sum_{n=1}^N \left( y_n - M(\vx_n)\right) \tilde{\vx}.
+\end{align}
+We apply this rule repeatedly until the empirical cost in
+Eq.~\eqref{eq:perceptron_cost} does not improve (i.e., decrease). 
+
+This learning rule is known as a {\it perceptron learning rule} and has a nice
+property that it will find a correct $M$ in the sense that the empirical cost is
+at its minimum (0), {\it if} such $M$ is in $H$. In other words, if our
+hypothesis set $H$ is good and includes a reference machine $M^*$, this
+perceptron learning rule will eventually find an equally good machine $M$. It is
+important to note that there may be many such $M$, and the perceptron learning
+rule will find one of them. 
+
+\paragraph{Linear Separability}
+
+Let us think of what it means for the perceptron cost to be exactly $0$. 
 
 
 
