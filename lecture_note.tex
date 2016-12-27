@@ -523,7 +523,12 @@ In perceptron, a hypothesis set is defined as
     \right\},
 \end{align*}
 where $\tilde{\vx} = \left[ \vx; 1\right]$ denotes concatenating $1$ at the end
-of the input vector $\vx$, and 
+of the input vector $\vx$,\footnote{
+    Why do we augment the original input vector $\vx$ with an extra $1$? What is
+    an example in which this extra $1$ is necessary?  This is left to you as a
+    {\bf homework assignment}.
+}
+and 
 \begin{align*}
     \sign(x) = \left\{ \begin{array}{l l}
             0,&\text{ if } x \leq 0, \\
@@ -677,10 +682,55 @@ to measure the distance between are not directly comparable. One is an element
 in a discrete set (0 or 1), and the other is a probability. It is helpful now to
 think instead about {\it how often} a machine $M$ will agree with the reference
 machine $M^*$, if we randomly sample the prediction given its output
-distribution $p(C|\vx)$. This is exactly equivalent to $p(C=M^*(\vx)|\vx)$.
+distribution $p(C|\vx)$. This is exactly equivalent to $p(C=M^*(\vx)|\vx)$. In
+this sense, the distance between the reference machine $M^*$ and our machine $M$
+given an input vector $\vx$ is smaller than this frequency of $M$ being correct
+is larger, and vice versa. Therefore, we define the distance as the negative
+log-probability of the $M$'s output being correct:
+\begin{align}
+    \label{eq:logreg_dist}
+    D(M^*(\vx), M, \vx) = -\log p(C=M^*(\vx) | \vx)
+    = -(M^*(\vx) \log M(\vx) + (1-M^*(\vx)) \log (1- M(\vx))),
+\end{align}
+where $p(C=1|\vx) = M(\vx)$. The latter equality comes from the definition of
+{\it Bernoulli distribution}.\footnote{
+    \todo{give a brief def of Bernoulli distribution}
+}
 
+With this definition of our distance, how do we adjust $\vw$ of $M$ to lower it?
+In the case of perceptron, we were able to manually come up with an {\it
+algorithm} by looking at the perceptron distance in
+Eq.~\eqref{eq:perceptron_dist}. It is however not too trivial with this logistic
+regression distance.\footnote{
+    It may be trivial to some who have great mathematical intuition.
+}
+Thus, we now turn to Calculus, and use the fact that the {\it gradient} of a
+function points to the direction toward which its output increases (at least
+locally). 
 
+The gradient of the above logistic regression distance function with respect to
+the weight vector $\vw$ is\footnote{
+    The step-by-step derivation of this is left to you as a {\bf homework
+    assignment}. 
+}
+\begin{align}
+    \label{eq:grad_logreg_dist}
+    \nabla_{\vw} D(M^*(\vx), M, \vx) = -(M^*(\vx) - M(\vx)) \tilde{\vx}.
+\end{align}
+When we move the weight vector ever so slightly in the opposite direction, the
+logistic regression distance in Eq.~\eqref{eq:logreg_dist} will decrease. That
+is,
+\begin{align}
+    \label{eq:logreg_rule0}
+    \vw \leftarrow \vw + \eta \left( M^*(\vx) - M(\vx)\right) \tilde{\vx},
+\end{align}
+where $\eta \in \mathbb{R}$ is a small scalar and called either a {\it step
+size} or {\it learning rate}. 
 
+\paragraph{Coincidence?}
+
+It is surprising to realize that this rule for logistic regression is identical
+to the perceptron rule in Eq.~\eqref{eq:perceptron_rule0}.
 
 \todo{}
 
