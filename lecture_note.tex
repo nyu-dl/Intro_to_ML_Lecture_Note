@@ -606,7 +606,7 @@ function, as we have done with a single input vector above. What we will do is
 to collect all those input vectors on which $M$ (or equivalently $\vw$) has made
 mistakes. This is equivalent to considering only those input vectors where
 $y_n-M(\vx_n) \neq 0$. Then, we collect all the {\it update directions},
-computed using Eq.~\eqref{eq:perceptron_rules}, and move the weight vector
+computed using Eq.~\eqref{eq:perceptron_rule0}, and move the weight vector
 $\vw$ toward its average. That is,
 \begin{align}
     \label{eq:perceptron_rule1}
@@ -615,18 +615,18 @@ $\vw$ toward its average. That is,
 We apply this rule repeatedly until the empirical cost in
 Eq.~\eqref{eq:perceptron_cost} does not improve (i.e., decrease). 
 
-This learning rule is known as a {\it perceptron learning rule} and has a nice
-property that it will find a correct $M$ in the sense that the empirical cost is
-at its minimum (0), {\it if} such $M$ is in $H$. In other words, if our
-hypothesis set $H$ is good and includes a reference machine $M^*$, this
-perceptron learning rule will eventually find an equally good machine $M$. It is
-important to note that there may be many such $M$, and the perceptron learning
-rule will find one of them. 
+This learning rule is known as a {\it perceptron learning rule}, which was
+proposed by Rosenblatt in 1950's \cite{Rosenblatt1962}, and has a nice property
+that it will find a correct $M$ in the sense that the empirical cost is at its
+minimum (0), {\it if} such $M$ is in $H$. In other words, if our hypothesis set
+$H$ is good and includes a reference machine $M^*$, this perceptron learning
+rule will eventually find an equally good machine $M$. It is important to note
+that there may be many such $M$, and the perceptron learning rule will find one
+of them. 
 
 \paragraph{Linear Separability}
 
 Let us think of what it means for the perceptron cost to be exactly $0$. 
-
 
 
 \todo{}
@@ -634,26 +634,64 @@ Let us think of what it means for the perceptron cost to be exactly $0$.
 
 \subsection{Logistic Regression}
 
-The classifier above is not entirely satisfactory for a number of reasons. One
+The perceptron is not entirely satisfactory for a number of reasons. One
 of them is that it does not provide a well-calibrated measure of the degree to
 which a given input is either negative or positive. That is, we want to know not
 whether it is negative or positive but rather how likely it is negative. It is
 then natural to build a machine that will output the probability $p(C|\vx)$,
 where $C \in \left\{ -1, 1\right\}$.
 
+\paragraph{Hypothesis Set} 
+
 To do so, let us first modify the definition of a machine $M$. $M$ now takes as
 input a vector $\vx \in \mathbb{R}^d$ and returns a probability $p(C|\vx) \in
-\left[ 0, 1\right]$.
+\left[ 0, 1\right]$ rather than $\left\{ 0, 1\right\}$. We only need to change
+just one thing from the perceptron, that is
+\begin{align}
+    \label{eq:logreg}
+    M(\vx) = \sigmoid(\vw^\top \tilde{\vx}),
+\end{align}
+where $\sigmoid$ is a sigmoid function defined as
+\begin{align*}
+    \sigmoid(a) = \frac{1}{1 + \exp(-a)}
+\end{align*}
+and is bounded by $0$ from below and by $1$ from above. Suddenly this machine
+does not return the prediction, but the probability of the prediction being
+positive (1). That is,
+\begin{align*}
+    p(C=1|\vx) = M(\vx).
+\end{align*}
+Naturally, our hypothesis set is now
+\begin{align*}
+    H = \left\{ 
+    M | M(\vx) = \sigmoid(\vw^\top \tilde{\vx}), \vw \in \mathbb{R}^{d+1}
+    \right\},
+\end{align*}
+where $\tilde{\vx} = \left[ \vx; 1\right]$ denotes concatenating $1$ at the end
+of the input vector as before. 
+
+\paragraph{Distance}
+
+The distance is not trivial to define in this case, because the things we want
+to measure the distance between are not directly comparable. One is an element
+in a discrete set (0 or 1), and the other is a probability. It is helpful now to
+think instead about {\it how often} a machine $M$ will agree with the reference
+machine $M^*$, if we randomly sample the prediction given its output
+distribution $p(C|\vx)$. This is exactly equivalent to $p(C=M^*(\vx)|\vx)$.
+
+
 
 
 \todo{}
 
+\subsubsection{Loss Functions}
 
-\subsection{Support Vector Machines}
+\todo{}
 
-\subsubsection{Hinge Loss}
+\subsection{Regularization and Complexity}
 
-\subsubsection{Nonlinear Feature Function and Kernel Trick}
+
+\subsection{Nonlinear Classifiers}
 
 \subsection{$k$-Nearest Neighbours and Radial Basis Function Networks}
 
@@ -668,6 +706,8 @@ previous section.
 
 \subsubsection{$k$-Nearest Neighbours}
 
+\subsection{Support Vector Machines: Nonlinear Feature Functions and a Kernel Trick}
+
 
 \subsection{Decision Tree$^*$}
 
@@ -677,15 +717,25 @@ previous section.
 \section{Regression}
 \label{sec:regression}
 
-\subsection{Linear Regression and Regularization}
+We have so far considered a problem of classification, where the output of a
+machine $M$ is constrained to be a finite set of discrete labels/classes. In
+this section, we consider a {\it regression} problem in which case the machine
+outputs an element from an infinite set.
+
+\subsection{Linear Regression}
+
 
 \subsubsection{Linear Regression}
 
+
 \subsubsection{Regularization and Prior Distributions}
+
 
 \subsection{Gaussian Process Regression}
 
+
 \subsubsection{Bayesian Approach to Machine Learning}
+
 
 \subsubsection{Gaussian Process Regression}
 
