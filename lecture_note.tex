@@ -545,7 +545,11 @@ set has a constant operational cost $c$, i.e., $C(M)=c$ for all $M\in H$.
 \todo{rewrite!}
 
 Given an input $\vx$, we now define a distance between $M^*$ and $M$. In
-particular, we will simply use an Euclidean distance:
+particular, we will use the following distance function:\footnote{
+    There is a problem with this distance function. What is it? Can you come up
+    with a better distance function? This is left to you as a {\bf homework
+    assignment}.
+}
 \begin{align}
     \label{eq:perceptron_dist}
     D(M^*(\vx), M, \vx) = -\underbrace{\left( M^*(\vx) - M(\vx)
