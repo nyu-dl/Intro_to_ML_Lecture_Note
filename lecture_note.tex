@@ -529,17 +529,20 @@ of the input vector $\vx$,\footnote{
     {\bf homework assignment}.
 }
 and 
-\begin{align*}
+\begin{align}
+    \label{eq:sign}
     \sign(x) = \left\{ \begin{array}{l l}
             0,&\text{ if } x \leq 0, \\
             1,&\text{ otherwise}
         \end{array}
         \right..
-\end{align*}
+\end{align}
 In this section, we simply assume that each and every machine in this hypothesis
 set has a constant operational cost $c$, i.e., $C(M)=c$ for all $M\in H$. 
 
 \paragraph{Distance}
+
+\todo{rewrite!}
 
 Given an input $\vx$, we now define a distance between $M^*$ and $M$. In
 particular, we will simply use an Euclidean distance:
@@ -729,18 +732,93 @@ size} or {\it learning rate}.
 
 \paragraph{Coincidence?}
 
-It is surprising to realize that this rule for logistic regression is identical
-to the perceptron rule in Eq.~\eqref{eq:perceptron_rule0}.
+Is it surprising to realize that this rule for logistic regression is identical
+to the perceptron rule in Eq.~\eqref{eq:perceptron_rule0}? Let us see what this
+logistic regression rule, or equivalent to perceptron learning rule, does by
+focusing on the update term (the second term in the learning rule). The first
+multiplicative factor $(M^*(\vx) - M(\vx))$ can be written as
+\begin{align}
+    \label{eq:grad_logreg_term1}
+    M^*(\vx) - M(\vx) = \underbrace{\overline{\sign}(M^*(\vx) - M(\vx))}_{\text{(a)}}
+    \underbrace{\left| M^*(\vx) - M(\vx) \right|}_{\text{(b)}},
+\end{align}
+where 
+\begin{align*}
+    \overline{\sign}(x) = \left\{ \begin{array}{l l}
+            -1,&\text{ if } x \leq 0, \\
+            1,&\text{ otherwise}
+        \end{array}
+        \right.
+\end{align*}
+is a symmetric sign function (compare it to the asymmetric sign function in
+Eq.~\eqref{eq:sign}.)
+
+The term (a) effectively tell us {\it in which way} the machine is wrong about
+the input $\vx$. Is $M$ saying it is likely to be $0$ when the reference machine
+says $1$, or is $M$ saying it is likely to be $1$ when the reference machine
+says $0$? In the former case, we want the weight vector $\vw$ to align more with
+$\vx$, and thus the positive sign. In the latter case, we want the opposite, and
+hence the negative sign.  The second term (b) tells us {\it how much} the
+machine is wrong about the input $\vx$. This term ignores in which direction the
+machine is wrong, since it is computed by the term (a), but entirely focuses on
+how {\it far} the model's prediction is from that of the reference machine. If
+the prediction is close to that of the reference machine, we only want the
+weight vector to move ever so slowly.
+
+The second term in both the logistic regression and perceptron rules is the
+input vector, augmented with an extra $1$. This term is there, because the
+prediction by a machine $M$ is made based on how well the weight vector and the
+input vector align with each other, which is computed as a dot product between
+these two vectors. 
+
+In other words, it is not a coincidence, but only natural that they are
+equivalent, as both of them effectively solve the same problem of binary
+classification. In the case of perceptron, we have reached its learning rule
+based on our observation of the process, while in the case of logistic
+regression, we relied on a more mechanical process of using gradient to find the
+steepest ascent direction. The latter approach is often more desirable, as it
+allows us to apply the same procedure (update the machine following the steepest
+descent direction,) however with a constraint that the empirical cost be
+differentiable (almost everywhere\footnote{
+    We will see why the cost function does not have to be differentiable
+    everywhere later in the course.
+}) with respect to the machine's parameters. We will thus largely stick to this
+kind of gradient-based optimization to minimize any distance function from here
+on.
+
+The only major difference between the learning rules for the logistic regression
+and perceptron is whether the term (b) in Eq.~\eqref{eq:grad_logreg_term1} is
+discrete (in the case of perceptron) or continuous (in the case of logistic
+regression.) More specifically, the term (b) in the perceptron learning rule is
+either $0$ or $1$.
 
 \todo{}
 
 \paragraph{Learning}
+
+With the distance function defined, we can write a full empirical cost as
+\begin{align*}
+    J(\vw, D_{\text{tra}}) = -\frac{1}{N} \sum_{n=1}^N 
+    y_n \log M(\vx_n) + (1-y_n) \log (1- M(\vx_n)).
+\end{align*}
+We assume that the operational cost, or complexity, of each $M$ can be ignored. 
+Similarly to what we have done for minimizing (decreasing) the distance between
+$M$ and $M^*$ given a single input vector, we will use the gradient of the whole
+empirical cost function to decide how we change the weight vector $\vw$. The
+gradient is 
+\begin{align*}
+    \nabla_{\vw} J = -\frac{1}{N} \sum_{n=1}^N \nabla_{\vw} D(y_n, M, \vx_n),
+\end{align*}
+which is simply the average of the gradients of the distances from
+Eq.~\eqref{eq:grad_logreg_dist} over the whole training set.
 
 \todo{}
 
 \subsection{Overfitting, Regularization and Complexity}
 
 \subsubsection{Overfitting: Generalization Error}
+
+
 
 \todo{}
 
