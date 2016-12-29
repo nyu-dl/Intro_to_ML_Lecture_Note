@@ -198,67 +198,34 @@
 \abstract{
     This is a lecture note for the course CSCI-UA.0473-001 (Intro to Machine
     Learning) at the Department of Computer Science, Courant Institute of
-    Mathematical Sciences at New York University.
-
-    The following text books are recommended in addition to this lecture note:
+    Mathematical Sciences at New York University. The content of the lecture
+    note was selected to fit a single 12-week-long course (3 hours a week), and
+    many existing materials in machine learning had to be omitted. For a more
+    complete coverage of machine learning, the following text books are
+    recommended in addition to this lecture note:
     \begin{itemize}
         \item ``Pattern Recognition and Machine Learning'' by Chris Bishop \cite{bishop2006pattern}
         \item ``Machine Learning: a probabilistic perspective'' by Kevin Murphy \cite{murphy2012machine}
+        \item ``A Course in Machine Learning'' by Hal Daum\'e\footnote{
+                Available at \url{http://ciml.info/}.
+            }
     \end{itemize}
 
-    For practical exercises on using the techniques in this lecture note, I
+    For practical exercises, Python scripts based on numpy and scipy are
+    available at
+    \url{https://github.com/nyu-dl/Intro_to_ML_Lecture_Note/tree/master/notebook}.
+    They are under heavy development and subject to frequent changes over the
+    course. I recommend you to check back frequently. Again, these are not
+    exhaustive, and for a more complete coverage on machine learning practice, I
     recommend the following book:
     \begin{itemize}
         \item ``Introduction to Machine Learning with Python'' by Andreas
             M\"uller  and Sarah Guido
     \end{itemize}
 
+    Note that those sections marked with $\star$ are optional and will only be
+    covered should time permits. 
 }
-
-%\abstract{
-%    This is a lecture note for the course DS-GA 3001 $\left<\right.$Natural
-%    Language Understanding with Distributed Representation$\left.\right>$ at the
-%    Center for Data Science\footnote{
-%        \url{http://cds.nyu.edu/}
-%    }, New York University in Fall, 2015. As the name of the course suggests,
-%    this lecture note introduces readers to a neural network based approach to
-%    natural language understanding/processing. In order to make it as
-%    self-contained as possible, I spend much time on describing basics of
-%    machine learning and neural networks, only after which how they are used for
-%    natural languages is introduced. On the language front, I almost solely
-%    focus on language modelling and machine translation, two of which I
-%    personally find most fascinating and most fundamental to natural language
-%    understanding.
-%    
-%    After about a month of lectures and about 40 pages of writing this lecture
-%    note, I found this fascinating note \cite{goldberg2015primer} by Yoav
-%    Goldberg on neural network models for natural language processing. This note
-%    deals with wider topics on natural language processing with
-%    distributed representations in more details, and I highly recommend you to read it
-%    (hopefully along with this lecture note.) I seriously wish Yoav had written
-%    it earlier so that I could've simply used his excellent note for my course.
-%
-%    This lecture note had been written quite hastily as the course progressed,
-%    meaning that I could spare only about 100 hours in total for this note.
-%    This is my lame excuse for likely many mistakes in this lecture note, and I
-%    kindly ask for your understanding in advance. Again, how grateful I
-%    would've been had I found Yoav's note earlier.
-%
-%    I am planning to update this lecture note gradually over time, hoping that I
-%    will be able to convince the Center for Data Science to let me teach the
-%    same course next year. The latest version will always be available both in
-%    pdf and in latex source code from
-%    \url{https://github.com/nyu-dl/NLP_DL_Lecture_Note}. The arXiv version will
-%    be updated whenever a major revision is made.
-%
-%    I thank all the students and non-students who took\footnote{
-%        In fact, they are still taking the course as of 24 Nov 2015. They have
-%        two guest lectures and a final exam left until the end of the course.
-%    }
-%    this course and David Rosenberg for feedback.
-%}
-%
-%\tableofcontents
 
 \chapter*{Notations}
 
@@ -690,8 +657,9 @@ is larger, and vice versa. Therefore, we define the distance as the negative
 log-probability of the $M$'s output being correct:
 \begin{align}
     \label{eq:logreg_dist}
-    D(M^*(\vx), M, \vx) = -\log p(C=M^*(\vx) | \vx)
-    = -(M^*(\vx) \log M(\vx) + (1-M^*(\vx)) \log (1- M(\vx))),
+    D(M^*(\vx), M, \vx) =& -\log p(C=M^*(\vx) | \vx) \\
+    =& -(M^*(\vx) \log M(\vx) + (1-M^*(\vx)) \log (1- M(\vx))),
+    \nonumber
 \end{align}
 where $p(C=1|\vx) = M(\vx)$. The latter equality comes from the definition of
 {\it Bernoulli distribution}.\footnote{
@@ -886,9 +854,9 @@ previous section.
 \paragraph{Margin Loss}
 
 
-\subsection{Decision Tree$^*$}
+\subsection{Decision Tree$^\star$}
 
-\subsection{Ensemble Methods$^*$}
+\subsection{Ensemble Methods$^\star$}
 
 
 \section{Regression}
@@ -914,7 +882,7 @@ outputs an element from an infinite set.
 \paragraph{Bayesian Approach to Machine Learning}
 
 
-\paragraph{Gaussian Process Regression}
+\paragraph{Gaussian Process Regression$^\star$}
 
 
 \chapter{Unsupervised Learning}
@@ -941,7 +909,7 @@ $\vx$, a machine $M$ in unsupervised learning {\it generates} an input vector.
 
 \paragraph{Minimum Reconstruction Criterion}
 
-\subsection{PCA with Missing Values: Collaborative Filtering}
+\subsection{PCA with Missing Values$^\star$: Collaborative Filtering}
 
 \paragraph{Probabilistic Principal Component Anlysis}
 
@@ -959,16 +927,15 @@ $\vx$, a machine $M$ in unsupervised learning {\it generates} an input vector.
 
 \subsection{$k$-Means Clustering}
 
-\subsection{Mixture of Gaussians}
+\subsection{Mixture of Gaussians$^\star$}
 
-\subsection{Other Clustering Methods}
+\subsection{Other Clustering Methods$^\star$}
 
-\section{Time-Series Modelling}
+\section{Time-Series Modelling$^\star$}
 \label{sec:timeseries}
 
 
-
-\chapter{Reinforcement Learning}
+\chapter{Structured Output Prediction and Reinforcement Learning}
 
 
 
