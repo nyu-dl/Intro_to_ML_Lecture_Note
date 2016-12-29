@@ -239,13 +239,10 @@ Throughout this lecture note, I will use the following notational conventions:
 \end{itemize}
 
 
-\chapter{Supervised Learning}
-\label{chap:supervised}
-
-\section{Classification}
+\chapter{Classification}
 \label{sec:classification}
 
-\subsection{Problem Setup}
+\section{Supervised Learning}
 
 In supervised learning, our goal is to build or find a machine $M$ that takes as
 input a multi-dimensional vector $\vx \in \mathbb{R}^d$ and outputs a response
@@ -473,7 +470,7 @@ a posteriori} (MAP), in this course. However, in a few of the lectures, we will
 also consider the latter approach in the framework of {\it Bayesian} modelling.
 
 
-\subsection{Perceptron}
+\section{Perceptron}
 \label{sec:perceptron}
 
 Let us examine how this concept of supervised learning is used in practice by
@@ -604,7 +601,7 @@ that there may be many such $M$, and the perceptron learning rule will find one
 of them. 
 
 
-\subsection{Logistic Regression}
+\section{Logistic Regression}
 \label{sec:logreg}
 
 The perceptron is not entirely satisfactory for a number of reasons. One
@@ -782,17 +779,19 @@ algorithm. \todo{}
 
 \todo{}
 
-\subsection{Overfitting, Regularization and Complexity}
+\section{Overfitting, Regularization and Complexity}
 
-\paragraph{Overfitting: Generalization Error}
-
-\todo{}
-
-\paragraph{How Wrong is Wrong?}
+\subsection{Overfitting: Generalization Error}
 
 \todo{}
 
-\subsection{Linear Separability and Nonlinear Classifiers}
+\subsection{How Wrong is Wrong?}
+
+\todo{}
+
+\section{Linear Separability and Nonlinear Classifiers}
+
+\subsection{Classification as Scoring}
 
 \paragraph{Decision Boundary}
 
@@ -835,9 +834,9 @@ classifier}.
 \todo{}
 
 
-\subsection{$k$-Nearest Neighbours and Radial Basis Function Networks}
+\section{$k$-Nearest Neighbours and Radial Basis Function Networks}
 
-\paragraph{Radial Basis Function Networks}
+\subsection{Radial Basis Function Networks}
 
 Let us consider the inference method in kernel support vector machines from the
 previous section. 
@@ -846,20 +845,24 @@ previous section.
 \end{align*}
 
 
-\paragraph{$k$-Nearest Neighbours}
+\subsection{$k$-Nearest Neighbours}
 
 
-\subsection{Support Vector Machines: Nonlinear Feature Functions and a Kernel Trick}
+\section{Support Vector Machines: Nonlinear Feature Functions and a Kernel Trick}
 
-\paragraph{Margin Loss}
+\subsection{One Problem, Many Cost Functions}
+
+\subsection{Support Vector Machines}
+
+\subsection{Kernel Methods}
 
 
-\subsection{Decision Tree$^\star$}
+\section{Decision Tree$^\star$}
 
-\subsection{Ensemble Methods$^\star$}
+\section{Ensemble Methods$^\star$}
 
 
-\section{Regression}
+\chapter{Regression}
 \label{sec:regression}
 
 We have so far considered a problem of classification, where the output of a
@@ -867,75 +870,74 @@ machine $M$ is constrained to be a finite set of discrete labels/classes. In
 this section, we consider a {\it regression} problem in which case the machine
 outputs an element from an infinite set.
 
+\section{Linear Regression}
+
 \subsection{Linear Regression}
 
 
-\paragraph{Linear Regression}
+\subsection{Regularization and Prior Distributions}
 
 
-\paragraph{Regularization and Prior Distributions}
+\section{Bayesian Linear Regression and Gaussian Process Regression}
 
 
-\subsection{Gaussian Process Regression}
+\subsection{Bayesian Approach to Machine Learning}
 
 
-\paragraph{Bayesian Approach to Machine Learning}
+\subsection{Gaussian Process Regression$^\star$}
 
 
-\paragraph{Gaussian Process Regression$^\star$}
+\chapter{Dimensionality Reduction}
+\label{chap:dimred}
 
-
-\chapter{Unsupervised Learning}
-\label{chap:unsupervised}
-
-\section{Problem Setup}
+\section{Unsupervised Learning: Problem Setup}
 
 Unsupervised learning is a weird, but fascinating problem. Unlike supervised
 learning in which a machine was defined as a transformation of an input vector
 $\vx$, a machine $M$ in unsupervised learning {\it generates} an input vector.
 
-\section{Naive Bayes Classifier}
+\subsection{Naive Bayes Classifier}
 
 \todo{}
 
-\section{Dimensionality Reduction}
+\section{Dimensionality Reduction: Problem Setup}
 \label{sec:dimred}
 
-\subsection{Problem Setup}
+\section{Principal Component Anslysis}
 
-\subsection{Principal Component Anslysis}
+\subsection{Maximum Variance Criterion}
 
-\paragraph{Maximum Variance Criterion}
+\subsection{Minimum Reconstruction Criterion}
 
-\paragraph{Minimum Reconstruction Criterion}
+%\subsection{PCA with Missing Values$^\star$: Collaborative Filtering}
 
-\subsection{PCA with Missing Values$^\star$: Collaborative Filtering}
-
-\paragraph{Probabilistic Principal Component Anlysis}
+\subsection{Probabilistic Principal Component Analysis}
 
 \paragraph{Expectation-Maximization Algorithm}
 
-\subsection{Other Dimensionality Reduction Techniques}
+\section{Other Dimensionality Reduction Techniques$^\star$}
 
 
-\section{Clustering}
+\chapter{Clustering}
 \label{sec:cluster}
 
-\subsection{Problem Setup}
+\section{Problem Setup}
 
-\paragraph{Clustering vs. Dimensionality Reduction}
+\subsection{Clustering vs. Dimensionality Reduction}
 
-\subsection{$k$-Means Clustering}
+\section{$k$-Means Clustering}
 
-\subsection{Mixture of Gaussians$^\star$}
+\section{Mixture of Gaussians$^\star$}
 
-\subsection{Other Clustering Methods$^\star$}
+\section{Other Clustering Methods$^\star$}
+
+
+\chapter{Structured Output Prediction and Reinforcement Learning}
+
 
 \section{Time-Series Modelling$^\star$}
 \label{sec:timeseries}
 
-
-\chapter{Structured Output Prediction and Reinforcement Learning}
 
 
 
