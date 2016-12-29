@@ -791,52 +791,77 @@ algorithm. \todo{}
 
 \todo{}
 
-\section{Linear Separability and Nonlinear Classifiers}
+\section{Loss Functions and Support Vector Machines}
 
 \subsection{Classification as Scoring}
 
-\paragraph{Decision Boundary}
+%Both the perceptron from Sec.~\ref{sec:perceptron} and logistic regression from
+%Sec.~\ref{sec:logreg} define a {\it hyperplane} based on which the decision is
+%made. One side of the hyperplane is classified as positive (1), and the other
+%side negative (0). This hyperplane is characterized as
+%\begin{align}
+%    \label{eq:lin_hyperplane}
+%    \vw^\top \tilde{\vx} = 0,
+%\end{align}
+%where $\tilde{\vx}=\left[ \vx; 1\right]$.  Because this hyperplane (or a line in
+%the case of 2-D space) corresponds to the boundary between two decisions, it is
+%often called a {\it decision boundary}. 
+%%In other words, the decision boundary of
+%%the perceptron or logistic regression is {\it linear}. 
 
-Both the perceptron from Sec.~\ref{sec:perceptron} and logistic regression from
-Sec.~\ref{sec:logreg} define a {\it hyperplane} based on which the decision is
-made. One side of the hyperplane is classified as positive (1), and the other
-side negative (0). This hyperplane is characterized as
-\begin{align}
-    \label{eq:lin_hyperplane}
-    \vw^\top \tilde{\vx} = 0,
-\end{align}
-where $\tilde{\vx}=\left[ \vx; 1\right]$.  Because this hyperplane (or a line in
-the case of 2-D space) corresponds to the boundary between two decisions, it is
-often called a {\it decision boundary}. In other words, the decision boundary of
-the perceptron or logistic regression is {\it linear}. 
-
-\paragraph{A Classifier as a Score Function}
-
-Let us define a score function $s$ as a dot product between the weight vector
-$\vw$ and an input vector $\vx$, that is $s(\vx; \vw) = \vw^\top \tilde{\vx}$. The
-machine that defines a perceptron is than $\sign(s(\vx; \vw))$, and that for
-logistic regression is $\sigmoid(s(\vx; \vw))$. In either of these, the final
-decision (0 or 1) is made based on whether the score of an input vector $\vx$ is
-negative or positive. When the score is $0$, the input vector falls right on the
-decision boundary (or the hyperplane in Eq.~\eqref{eq:lin_hyperplane}.) In other
-words, the decision boundary is defined as a set of points $\vx$ in the input
-space of which their scores are $0$. That is,
-\begin{align*}
-    s(\vx; \vw) = 0.
-\end{align*}
-When the score function\footnote{
+Let us use $f$ as a shorthand for denoting the dot product between the weight
+vector $\vw$ and an input vector $\vx$ augmented with an extra $1$, that is
+$f(\vx; \vw) = \vw^\top \tilde{\vx}$. Instead of $y \in \left\{ 0, 1\right\}$ as
+a set of labels (negative and positive), we will switch to $y \in \left\{ -1,
+1\right\}$ to make later equations less cluttered. Now, let us define a score
+function\footnote{
     Note that the term ``score'' has a number of different meanings. For
     instance, in statistics, the score is defined as a gradient of the
     \todo{TODO}
-}
-is defined as a linear function of the input vector
-$\vx$, we call it a {\it linear classifier}, and otherwise, a {\it nonlinear
+} that takes as input an input vector $\vx$, the correct label $y$ (returned by
+a reference machine $M^*$) and the weight vector (or you can say the machine $M$
+itself): 
+\begin{align}
+    \label{eq:lin_score}
+    s(y, \vx; M) = y \vw^\top \tilde{\vx}.
+\end{align}
+
+Given any machine that performs binary classification, such as perceptron and
+logistic regression, this score function tells us whether a given input vector
+$\vx$ is correctly classified. If the score is larger than 0, it was correctly
+classified. Otherwise, the score would be smaller than 0. In other words, the
+score function defines a {\it decision boundary} of the machine $M$, which is
+defined as a set of points at which the score is $0$, i.e.,
+\begin{align*}
+    B(M) = \left\{ \vx | s(M(\vx), \vx; M) = 0 \right\}.
+\end{align*}
+When the score function $s$ is defined as a linear function of the input vector
+$\vx$ as in Eq.~\eqref{eq:lin_score}, the decision boundary corresponds to a
+linear hyperplane. In such a case, we call the machine a {\it linear
 classifier}. 
+
+With this definition of a score function $s$, the problem of classification is
+equivalent to finding the weight vector $\vw$, or the machine $M$, that
+positively scores each pair of an input vector and the corresponding label. In
+other words, our empirical cost function for classification is now 
+\begin{align}
+    J(M, D_{\text{tra}}) = \frac{1}{|D_{\text{tra}}|} \sum_{(y, \vx) \in D_{\text{tra}}} 
+    \underbrace{\overline{\sign}(-s(y, \vx; M))}_{
+        \text{0-1 Loss}
+    }.
+\end{align}
+
+\paragraph{Logistic Regression: Log-Loss}
 
 \todo{}
 
 
-\section{$k$-Nearest Neighbours and Radial Basis Function Networks}
+\paragraph{Hinge Loss}
+
+\todo{}
+
+
+\section{Nonlinear Classification}
 
 \subsection{Radial Basis Function Networks}
 
@@ -850,13 +875,8 @@ previous section.
 \subsection{$k$-Nearest Neighbours}
 
 
-\section{Support Vector Machines: Nonlinear Feature Functions and a Kernel Trick}
+\subsection{Kernel Support Vector Machines}
 
-\subsection{One Problem, Many Cost Functions}
-
-\subsection{Support Vector Machines}
-
-\subsection{Kernel Methods}
 
 
 \section{Decision Tree$^\star$}
