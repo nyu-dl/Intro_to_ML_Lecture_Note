@@ -507,6 +507,7 @@ also consider the latter approach in the framework of {\it Bayesian} modelling.
 
 
 \subsection{Perceptron}
+\label{sec:perceptron}
 
 Let us examine how this concept of supervised learning is used in practice by
 considering a binary classification task. Binary classification is a task in
@@ -546,9 +547,8 @@ set has a constant operational cost $c$, i.e., $C(M)=c$ for all $M\in H$.
 
 Given an input $\vx$, we now define a distance between $M^*$ and $M$. In
 particular, we will use the following distance function:\footnote{
-    There is a problem with this distance function. What is it? Can you come up
-    with a better distance function? This is left to you as a {\bf homework
-    assignment}.
+    There is a problem with this distance function. What is it?  This is left to
+    you as a {\bf homework assignment}.
 }
 \begin{align}
     \label{eq:perceptron_dist}
@@ -636,15 +636,9 @@ rule will eventually find an equally good machine $M$. It is important to note
 that there may be many such $M$, and the perceptron learning rule will find one
 of them. 
 
-\paragraph{Linear Separability}
-
-Let us think of what it means for the perceptron cost to be exactly $0$. 
-
-
-\todo{}
-
 
 \subsection{Logistic Regression}
+\label{sec:logreg}
 
 The perceptron is not entirely satisfactory for a number of reasons. One
 of them is that it does not provide a well-calibrated measure of the degree to
@@ -794,9 +788,7 @@ The only major difference between the learning rules for the logistic regression
 and perceptron is whether the term (b) in Eq.~\eqref{eq:grad_logreg_term1} is
 discrete (in the case of perceptron) or continuous (in the case of logistic
 regression.) More specifically, the term (b) in the perceptron learning rule is
-either $0$ or $1$.
-
-\todo{}
+either $0$ or $1$.  \todo{}
 
 \paragraph{Learning}
 
@@ -816,25 +808,80 @@ gradient is
 which is simply the average of the gradients of the distances from
 Eq.~\eqref{eq:grad_logreg_dist} over the whole training set.
 
+The fact that the empirical cost function is (twice) differentiable with respect
+to the weight vector allows us to use any advanced gradient-based optimization
+algorithm. \todo{}
+
 \todo{}
 
 \subsection{Overfitting, Regularization and Complexity}
 
-\subsubsection{Overfitting: Generalization Error}
-
-
+\paragraph{Overfitting: Generalization Error}
 
 \todo{}
 
-\subsubsection{How Wrong is Wrong?}
+\paragraph{How Wrong is Wrong?}
 
 \todo{}
 
-\subsection{Nonlinear Classifiers}
+\subsection{Linear Separability and Nonlinear Classifiers}
+
+\paragraph{Decision Boundary}
+
+Both the perceptron from Sec.~\ref{sec:perceptron} and logistic regression from
+Sec.~\ref{sec:logreg} define a {\it hyperplane} based on which the decision is
+made. One side of the hyperplane is classified as positive (1), and the other
+side negative (0). This hyperplane is characterized as
+\begin{align}
+    \label{eq:lin_hyperplane}
+    \vw^\top \tilde{\vx} = 0,
+\end{align}
+where $\tilde{\vx}=\left[ \vx; 1\right]$.  Because this hyperplane (or a line in
+the case of 2-D space) corresponds to the boundary between two decisions, it is
+often called a {\it decision boundary}. In other words, the decision boundary of
+the perceptron or logistic regression is {\it linear}. 
+
+\paragraph{A Classifier as a Score Function}
+
+Let us define a score function $s$ as a dot product between the weight vector
+$\vw$ and an input vector $\vx$, that is $s(\vx; \vw) = \vw^\top \tilde{\vx}$. The
+machine that defines a perceptron is than $\sign(s(\vx; \vw))$, and that for
+logistic regression is $\sigmoid(s(\vx; \vw))$. In either of these, the final
+decision (0 or 1) is made based on whether the score of an input vector $\vx$ is
+negative or positive. When the score is $0$, the input vector falls right on the
+decision boundary (or the hyperplane in Eq.~\eqref{eq:lin_hyperplane}.) In other
+words, the decision boundary is defined as a set of points $\vx$ in the input
+space of which their scores are $0$. That is,
+\begin{align*}
+    s(\vx; \vw) = 0.
+\end{align*}
+When the score function is defined as a linear function of the input vector
+$\vx$, we call it a {\it linear classifier}, and otherwise, a {\it nonlinear
+classifier}. 
+
+\todo{}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Let us think of what it means for either the perceptron or logistic regression
+to be {\it perfect}. 
+
+\todo{}
 
 \subsection{$k$-Nearest Neighbours and Radial Basis Function Networks}
 
-\subsubsection{Radial Basis Function Networks}
+\paragraph{Radial Basis Function Networks}
 
 Let us consider the inference method in kernel support vector machines from the
 previous section. 
@@ -843,7 +890,8 @@ previous section.
 \end{align*}
 
 
-\subsubsection{$k$-Nearest Neighbours}
+\paragraph{$k$-Nearest Neighbours}
+
 
 \subsection{Support Vector Machines: Nonlinear Feature Functions and a Kernel Trick}
 
@@ -864,19 +912,19 @@ outputs an element from an infinite set.
 \subsection{Linear Regression}
 
 
-\subsubsection{Linear Regression}
+\paragraph{Linear Regression}
 
 
-\subsubsection{Regularization and Prior Distributions}
+\paragraph{Regularization and Prior Distributions}
 
 
 \subsection{Gaussian Process Regression}
 
 
-\subsubsection{Bayesian Approach to Machine Learning}
+\paragraph{Bayesian Approach to Machine Learning}
 
 
-\subsubsection{Gaussian Process Regression}
+\paragraph{Gaussian Process Regression}
 
 
 \chapter{Unsupervised Learning}
@@ -899,15 +947,15 @@ $\vx$, a machine $M$ in unsupervised learning {\it generates} an input vector.
 
 \subsection{Principal Component Anslysis}
 
-\subsubsection{Maximum Variance Criterion}
+\paragraph{Maximum Variance Criterion}
 
-\subsubsection{Minimum Reconstruction Criterion}
+\paragraph{Minimum Reconstruction Criterion}
 
-\subsubsection{Probabilistic Principal Component Anlysis}
+\subsection{PCA with Missing Values: Collaborative Filtering}
+
+\paragraph{Probabilistic Principal Component Anlysis}
 
 \paragraph{Expectation-Maximization Algorithm}
-
-\subsubsection{PCA with Missing Values: Collaborative Filtering}
 
 \subsection{Other Dimensionality Reduction Techniques}
 
