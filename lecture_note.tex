@@ -807,7 +807,7 @@ automatically}.\footnote{
 
 \todo{}
 
-\section{Loss Functions and Support Vector Machines}
+\section{Support Vector Machines}
 
 \subsection{Classification as Scoring}
 
@@ -864,7 +864,7 @@ other words, our empirical cost function for classification is now
     \label{eq:0-1_loss}
     J(M, D_{\text{tra}}) = \frac{1}{|D_{\text{tra}}|} \sum_{(y, \vx) \in D_{\text{tra}}} 
     \underbrace{\overline{\sign}(-s(y, \vx; M))}_{
-        \text{0-1 Loss}
+        D_{\text{0-1}} = \text{0-1 Loss}
     }.
 \end{align}
 
@@ -906,12 +906,19 @@ score function $s$ is defined in Eq.~\eqref{eq:lin_score}.\footnote{
     \end{minipage}
 \end{figure}
 
-How is this log loss related to the 0-1 loss from Eq.~\eqref{eq:0-1_loss}?  
+How is this log loss related to the 0-1 loss from Eq.~\eqref{eq:0-1_loss}? As
+shown in Fig.~\ref{fig:loss}, the log loss is an upper-bound of the 0-1 loss.
+That is,
+\begin{align*}
+    D_{\log}(y, \vx; M) \geq D_{\text{0-1}}(y, \vx; M)\text{ for all }s(y, \vx;
+    M) \in \mathbb{R}.
+\end{align*}
 
 \todo{}
 
 
-\paragraph{Hinge Loss}
+\subsection{Hinge Loss and Support Vector Machines}
+
 
 \todo{}
 
@@ -920,17 +927,17 @@ How is this log loss related to the 0-1 loss from Eq.~\eqref{eq:0-1_loss}?
 
 \subsection{Radial Basis Function Networks}
 
-Let us consider the inference method in kernel support vector machines from the
-previous section. 
-\begin{align*}
-    M(\vx) = \sign \left(\sum_{j=1}^J \alpha_j k(\vx_j, \vx)\right).
-\end{align*}
+\todo{}
 
 
 \subsection{$k$-Nearest Neighbours}
 
+\todo{}
+
 
 \subsection{Kernel Support Vector Machines}
+
+\todo{}
 
 
 
