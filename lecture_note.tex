@@ -777,7 +777,23 @@ Eq.~\eqref{eq:grad_logreg_dist} over the whole training set.
 
 The fact that the empirical cost function is (twice) differentiable with respect
 to the weight vector allows us to use any advanced gradient-based optimization
-algorithm. \todo{}
+algorithm. Perhaps even more importantly, we can use automatic differentiation
+to compute the gradient of the empirical cost function {\it
+automatically}.\footnote{
+    Some of widely-used software packages that implement automatic
+    differentiation include
+    \begin{itemize}
+        \item Autograd for Python: \url{https://github.com/HIPS/autograd}
+        \item Autograd for Torch:
+            \url{https://github.com/twitter/torch-autograd}
+        \item Theano: \url{http://deeplearning.net/software/theano/}
+        \item TensorFlow: \url{https://www.tensorflow.org/}
+    \end{itemize}
+    Throughout this course, we will use Autograd for Python.
+}
+
+
+\todo{}
 
 \todo{}
 
@@ -851,7 +867,25 @@ other words, our empirical cost function for classification is now
     }.
 \end{align}
 
-\paragraph{Logistic Regression: Log-Loss}
+\paragraph{Log Loss: Logistic Regression}
+
+The distance\footnote{
+    From here on, I will use both {\it distance} and {\it loss} to mean the same
+    thing. This is done to make terminologies a bit more in line with how
+    others use.
+}
+function of logistic regression in Eq.~\eqref{eq:logreg_dist} can be re-written
+as
+\begin{align}
+    \label{eq:logloss}
+    D_{\log}(y, \vx; M) = \frac{1}{\log 2} \log(1+\exp(-s(y, \vx; M))),
+\end{align}
+where $y \in \left\{ -1, 1\right\}$ instead of $\left\{ 0, 1 \right\}$, and the
+score function $s$ is defined in Eq.~\eqref{eq:lin_score}.\footnote{
+    {\bf Homework assignment}: show that Eq.~\eqref{eq:logreg_dist} and
+    Eq.~\eqref{eq:logloss} are equivalent up to a constant multiplication for
+    binary logistic regression.
+} This loss function is usually referred to as {\it log loss}.
 
 \todo{}
 
