@@ -861,6 +861,7 @@ equivalent to finding the weight vector $\vw$, or the machine $M$, that
 positively scores each pair of an input vector and the corresponding label. In
 other words, our empirical cost function for classification is now 
 \begin{align}
+    \label{eq:0-1_loss}
     J(M, D_{\text{tra}}) = \frac{1}{|D_{\text{tra}}|} \sum_{(y, \vx) \in D_{\text{tra}}} 
     \underbrace{\overline{\sign}(-s(y, \vx; M))}_{
         \text{0-1 Loss}
@@ -886,6 +887,26 @@ score function $s$ is defined in Eq.~\eqref{eq:lin_score}.\footnote{
     Eq.~\eqref{eq:logloss} are equivalent up to a constant multiplication for
     binary logistic regression.
 } This loss function is usually referred to as {\it log loss}.
+
+\begin{figure}[t]
+    \centering
+    \begin{minipage}{0.6\textwidth}
+        \raggedright
+        \includegraphics[width=0.9\columnwidth,clip=True,trim=50 0 50 0]{figures/loss.pdf}
+    \end{minipage}
+    \begin{minipage}{0.39\textwidth}
+        \raggedleft
+        \caption{
+            \label{fig:loss}
+            The figure plots three major loss functions--0-1 loss, log loss and
+            hinge loss-- with respect to the output of a score function $s$.
+            Note that the log loss and hinge loss are upper-bound to the 0-1
+            loss.
+        }
+    \end{minipage}
+\end{figure}
+
+How is this log loss related to the 0-1 loss from Eq.~\eqref{eq:0-1_loss}?  
 
 \todo{}
 
