@@ -789,17 +789,59 @@ automatically}.\footnote{
         \item Theano: \url{http://deeplearning.net/software/theano/}
         \item TensorFlow: \url{https://www.tensorflow.org/}
     \end{itemize}
-    Throughout this course, we will use Autograd for Python.
+    Throughout this course, we will use Autograd for Python for demonstration.
 }
 
-
-\todo{}
 
 \todo{}
 
 \section{Overfitting, Regularization and Complexity}
 
 \subsection{Overfitting: Generalization Error}
+
+\begin{figure}[t]
+    \centering
+    \begin{minipage}{0.6\textwidth}
+        \raggedright
+        \includegraphics[width=0.9\columnwidth,clip=True,trim=50 0 50
+        0]{figures/overfit1.pdf}
+    \end{minipage}
+    \begin{minipage}{0.39\textwidth}
+        \raggedleft
+        \caption{
+            \label{fig:weight_decay}
+            Training and test errors with respect to the weight decay
+            coefficient. Notice that the test error grows back even when the
+            training error is $0$ as the weight decay coefficient decreases.
+        }
+    \end{minipage}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \hfill
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\columnwidth,clip=True,trim=50 0 50 0]{figures/overfit2_tra.pdf}
+        (a) Training Set
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\columnwidth,clip=True,trim=50 0 50 0]{figures/overfit2_tes.pdf}
+        (b) Test Set
+    \end{minipage}
+
+    \caption{
+        \label{fig:overfit}
+        Both solutions of logistic regression perfectly fit the training set
+        regardless of whether weight decay regularization was used. However, it
+        is clear that the model with the optimal weight decay coefficient
+        ({\color{blue} blue line})
+        classifies the test set better. 
+    }
+
+\end{figure}
 
 \todo{}
 
