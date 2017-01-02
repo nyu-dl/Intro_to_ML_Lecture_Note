@@ -160,6 +160,7 @@
 \newcommand{\rect}{\text{rect}}
 \newcommand{\maxout}{\text{maxout}}
 \newcommand{\train}{\text{train}}
+\newcommand{\hinge}{\text{hinge}}
 \newcommand{\val}{\text{val}}
 \newcommand{\init}{\text{init}}
 \newcommand{\fenc}{\text{fenc}}
@@ -167,6 +168,7 @@
 \newcommand{\enc}{\text{enc}}
 \newcommand{\dec}{\text{dec}}
 \newcommand{\test}{\text{test}}
+\newcommand{\tra}{\text{tra}}
 \newcommand{\Ax}{\mathcal{A}_x}
 \newcommand{\Ay}{\mathcal{A}_y}
 \newcommand{\ola}{\overleftarrow}
@@ -366,7 +368,7 @@ Eq.~\eqref{eq:expected_loss0} and its operational cost. So, at the end, we get
     \argmin_{M \in H} \underbrace{\mathbb{E}_{\vx \sim X} \left[ D(M^*(\vx), M, \vx) \right]
         + \lambda C(M)
     }_{
-        \mathclap{\text{Expected Cost}}
+        \mathclap{R = \text{Expected Cost}}
     },
 \end{align}
 where $\lambda \in \mathbb{R}_+$ is a coefficient that trades off the importance
@@ -412,7 +414,7 @@ assume that we have observed $N$ such samples: $\left\{ \vx^1, \ldots, \vx^N
     \underbrace{
         \frac{1}{N} \sum_{n=1}^N D(M^*(\vx^n), M, \vx^n)
         + \lambda C(M)
-    }_{\mathclap{\text{Empirical Cost}}} + \epsilon,
+    }_{\mathclap{\tilde{R} = \text{Empirical Cost}}} + \epsilon,
 \end{align}
 where $\epsilon$ is an approximation error. We will call this cost, computed
 using a finite set of input vectors, an {\it empirical cost}. 
@@ -458,9 +460,10 @@ strategies to {\it infer} what the output of $M^*$ given the new input $\vx$.
 Indeed, the first approach we just talked about corresponds to simply taking the
 output of the model that has the highest weight. Perhaps, I can take the
 weighted average of the outputs of all the machines:
-\begin{align*}
+\begin{align}
+    \label{eq:bayes0}
     \sum_{M \in H} \omega(M) M(\vx),
-\end{align*}
+\end{align}
 which is equivalent to $\mathbb{E}\left[ M(\vx) \right]$ under our arbitrary
 construction of the weights.\footnote{
     {\it Is it really arbitrary, though?}
@@ -799,6 +802,98 @@ automatically}.\footnote{
 
 \subsection{Overfitting: Generalization Error}
 
+At the very beginning of this course, we have talked about two cost functions;
+(1) expected cost in Eq.~\eqref{eq:expected_loss1} and (2) empirical cost in
+Eq.~\eqref{eq:empirical_loss}.\footnote{
+    Note that the complexity, or operational cost, of a machine $M$ is often
+    {\it not} included in either of the cost functions, but this is not a
+    problem to include them as long as both cost functions have them. 
+} We loosely stated that we find a machine that minimizes the empirical cost
+$\tilde{R}$ because we cannot compute the expected cost $R$, somehow hoping that
+the approximation error $\epsilon$ (from Eq.~\eqref{eq:empirical_loss}) would be
+small. Let's discuss this a bit more in detail here.
+
+Let us define the generalization error as a difference between the empirical and
+expected cost functions given a reference machine $M^*$, a machine $M$ and a
+training set $D_{\tra}$:
+\begin{align}
+    \label{eq:generr}
+    G(M^*, M, D_{\tra}) = R(M^*, M) - \tilde{R}(M^*, M, D_{\text{\tra}}).
+\end{align}
+We can further define its expectation as
+\begin{align}
+    \label{eq:generr_ee}
+    \bar{G}(M^*, M) = R(M^*, M) - \mathbb{E}_{D \sim P} \left[\tilde{R}(M^*, M,
+    D)\right],
+\end{align}
+where $P$ is the data distribution. 
+
+When this generalization error is large, it means that we are hugely
+overestimating how good the machine $M$ is compared to the reference machine
+$M^*$. Although $M$ is not really good, i.e., the expected cost $R$ is high, $M$
+is good on the training set $D_{\text{\tra}}$, i.e., the empirical cost
+$\tilde{R}$ is low. This is precisely the situation we want to avoid: we do not
+want to brag our machine is good when it is in fact a horrible approximation to
+the reference machine $M^*$. In this embarrassing situation, we say that the
+machine $M$ is {\it overfitting} to the training data.
+
+Unlike how I said earlier, the goal of supervised learning, or machine learning
+in general, is therefore to search for a machine in a hypothesis set not only to
+minimize the empirical cost function but also to minimize the generalization
+error. In other words, we want to find a machine that simultaneously minimizes
+the empirical cost function and avoids overfitting.
+
+Statistical learning theory, a major subfield of machine learning, largely
+focuses on computing the upper-bound of the generalization error. The bound,
+which is often probabilistic, is often a function of, for instance, the
+dimensionality of an input vector $\vx$ and a hypothesis set. This allows us to
+understand how well we should expect our learning setting to work, in terms of
+generalization error, even {\it without} testing it on actual data. Awesome, but
+we will skip this in this course, as the upper-bound is often too loose, and
+rough sample-based approximation of the generalization error works better in
+practice.\footnote{
+    {\it Well, the better answer is that it involves too much math..}
+} 
+
+\subsection{Validation}
+
+In practice, the generalization error itself is rarely of interest. It is rather
+the expected cost function $R$ of a machine $M$ that interests us, because we
+will eventually pick one $M$ that has the least expected cost.\footnote{
+    Though, as we discussed earlier in Eq.~\eqref{eq:bayes0}, it may be better
+    to keep more than one $M$ in certain cases. 
+} But, again, we cannot really compute the expected cost function and must
+resort to an approximate method. As done for training, we again use a set
+$D_{\val}$ of samples from the data distribution to estimate the expected cost,
+as in Eq.~\eqref{eq:empirical_loss}, that is\footnote{
+    It is a usual practice to omit the model complexity term when computing this
+    validation cost. 
+}
+\begin{align*}
+    \tilde{R}_{\val} = \frac{1}{N'} \sum_{(y, \vx) \in D_{\val}} D(y, M, \vx)
+    + \lambda C(M).
+\end{align*}
+
+In order to avoid any bias in estimating the expected cost function, via this
+validation cost, we must use a validation set $D_{\val}$ {\it independent} from
+the training set $D_{\tra}$. We ensure this in practice by splitting a given
+training set into two disjoint subsets, or partitions, and use them as training
+and validation sets. 
+
+\todo{}
+
+\paragraph{Cross-Validation}
+
+\todo{}
+
+\paragraph{Test Set}
+
+\todo{}
+
+\subsection{Complexity vs. Overfitting}
+
+\todo{}
+
 \begin{figure}[t]
     \centering
     \begin{minipage}{0.6\textwidth}
@@ -845,11 +940,7 @@ automatically}.\footnote{
 
 \todo{}
 
-\subsection{How Wrong is Wrong?}
-
-\todo{}
-
-\section{Support Vector Machines}
+\section{One Classifier, Many Loss Functions}
 
 \subsection{Classification as Scoring}
 
@@ -896,7 +987,8 @@ defined as a set of points at which the score is $0$, i.e.,
 When the score function $s$ is defined as a linear function of the input vector
 $\vx$ as in Eq.~\eqref{eq:lin_score}, the decision boundary corresponds to a
 linear hyperplane. In such a case, we call the machine a {\it linear
-classifier}. 
+classifier}, and if the reference machine $M^*$ is a linear classifier, we call
+this problem of classification {\it linear separable}.
 
 With this definition of a score function $s$, the problem of classification is
 equivalent to finding the weight vector $\vw$, or the machine $M$, that
@@ -961,26 +1053,48 @@ That is,
 
 \subsection{Hinge Loss and Support Vector Machines}
 
+One potential issue with the log loss in Eq.~\eqref{eq:logloss} is that it is
+never $0$: 
+\begin{align*}
+    D_{\log}(y, \vx; M) > 0.
+\end{align*}
+Why is this an issue? Because it means that the machine $M$ {\it wastes} its
+modelling capacity on pushing those examples as far away from the decision
+boundary as possible even if they were already correctly classified. This is
+unlike the 0--1 loss which ignores any correctly classified example. 
+
+Let us introduce another loss function, called {\it hinge loss}, which is
+defined as
+\begin{align*}
+    D_{\hinge}(y, \vx; M) = \max(0, 1 - s(y, \vx; M)).
+\end{align*}
+Similarly to the log loss, the hinge loss is always greater than or equal to the
+zero-one loss, as can be seen from Fig.~\ref{fig:loss}. We minimize this hinge
+loss and consequently minimize the 0--1 loss. 
+
+What does this imply? It implies that minimizing the empirical cost function
+that is the sum of hinge losses will find a solution in which all the examples
+are at least a unit-distance ($1$) away from the decision boundary ($s(y, \vx;
+M) = 0$). 
 
 \todo{}
 
 
 \section{Nonlinear Classification}
 
-\subsection{Radial Basis Function Networks}
-
-\todo{}
-
-
 \subsection{$k$-Nearest Neighbours}
 
 \todo{}
 
 
-\subsection{Kernel Support Vector Machines}
+\subsection{Radial Basis Function Networks}
 
 \todo{}
 
+
+\subsection{Deep Learning}
+
+\todo{}
 
 
 \section{Decision Tree$^\star$}
@@ -1020,7 +1134,8 @@ outputs an element from an infinite set.
 
 Unsupervised learning is a weird, but fascinating problem. Unlike supervised
 learning in which a machine was defined as a transformation of an input vector
-$\vx$, a machine $M$ in unsupervised learning {\it generates} an input vector.
+$\vx$, a machine $M$ in unsupervised learning {\it scores} an input vector
+according to how likely that vector is. 
 
 \subsection{Naive Bayes Classifier}
 
