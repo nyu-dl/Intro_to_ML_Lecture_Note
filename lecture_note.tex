@@ -866,8 +866,8 @@ will eventually pick one $M$ that has the least expected cost.\footnote{
 resort to an approximate method. As done for training, we again use a set
 $D_{\val}$ of samples from the data distribution to estimate the expected cost,
 as in Eq.~\eqref{eq:empirical_loss}, that is\footnote{
-    It is a usual practice to omit the model complexity term when computing this
-    validation cost. 
+    It is a usual practice to omit the model complexity term when computing the
+    validation cost. We will get to why this is so shortly.
 }
 \begin{align*}
     \tilde{R}_{\val} = \frac{1}{N'} \sum_{(y, \vx) \in D_{\val}} D(y, M, \vx)
@@ -880,17 +880,124 @@ the training set $D_{\tra}$. We ensure this in practice by splitting a given
 training set into two disjoint subsets, or partitions, and use them as training
 and validation sets. 
 
-\todo{}
+This is how we will estimate the expected cost of a trained model $M$. How are
+we going to use it? Let us consider having more than one hypothesis set $H_l$
+for $m=l, \ldots, L$. Given a training set $D_{\tra}$ and one of hypothesis sets
+$H_l$, we will find a machine $M^l \in H_l$ that minimizes the empirical cost
+function:
+\begin{align*}
+    M^l = \argmin_{M \in H_l} \tilde{R}(M, D_{\tra}).
+\end{align*}
+We now have a set of trained models $\left\{ M^1, \ldots, M^L \right\}$, and we
+must choose one of them as our final solution. In doing so, we use the
+validation cost computed using a {\it separate} validation set $D_{\val}$ which
+approximates the expected cost. We choose the one with the smallest validation
+cost among the $L$ trained models:
+\begin{align*}
+    \hat{M} = \argmin_{M^l|l=1,\ldots,L} \tilde{R}_{\val}(M^l, D_{\val}).
+\end{align*}
+
+\paragraph{Example 1: Model Selection}
+
+Let's take a simple example of having two hypothesis sets. One hypothesis set
+$H_{\text{perceptron}}$ contains all possible perceptrons, and the other set
+$H_{\text{logreg}}$ has all possible logistic regressions. We will find one
+perceptron and one logistic regression from these hypothesis sets by using the
+learning rules we learned earlier (Eq.~\eqref{eq:perceptron_rule1} and
+Eq.~\eqref{eq:logreg_rule0}). We select one of these two {\it models} based not
+on the empirical cost function but on the validation cost function. 
+
+\paragraph{Example 2: Early Stopping}
+
+Can this be useful even if we have a single hypothesis set? Indeed. So far, two
+families of classifiers we have considered, which are perceptrons and logistic
+regression, learning happened iteratively. That is, we slowly evolve the
+parameters, or more specifically the weight vector. Let us denote the weight
+vector after the $l$-th update by $\vw^l$, and assume that we have applied the
+learning rule $L$-many times. Suddenly I have $L$ different classifiers, just
+like what we had with $L$ different classifiers earlier when there were $L$
+hypothesis sets.\footnote{
+    In some sense, we can view each of these classifiers as coming from $L$
+    different (overlapping) hypothesis sets. Each hypothesis set can be
+    characterized as {\it reachable} in $l$ gradient updates from the initial
+    weight vector.
+}
+Instead of taking the very last weight vector $\vw^L$, we will
+choose
+\begin{align*}
+    \hat{M} = \argmin_{M^l|l=1, \ldots, L} \tilde{R}_{\val}(M^l, D_{\val}),
+\end{align*}
+where $M^l$ is a classifier with its weight vector $\vw^l$. This technique is
+often referred to as {\it early stopping}, and is a crucial recipe in iterative
+learning. 
 
 \paragraph{Cross-Validation}
 
-\todo{}
+Often we are not given a large enough set of examples to afford dividing it into
+two sets, and using only one of them to train competing models. Either the
+training set would be too small for the empirical (training) cost to well
+approximate the expected cost, or the validation set would be too small for the
+validation cost to be meaningful when selecting the final model (or the correct
+hypothesis set.) In this case, we use a technique called {\it $K$-fold cross
+validation}. 
+
+We first evenly split a given training set $D_{\tra}$ into $K$ partitions while
+ensuring that the statistics of all the partitions are roughly similar, for
+instance, by ensuring that the label proportion (the number of positive examples
+to that of the negative examples) stays same. For each hypothesis set $H$, we
+train $K$ classifiers, where $D_{\tra} \\ D_{\tra}^k$ is used to train the
+$k$-th classifier and $D_{\tra}^k$ to compute its validation cost. We then get
+$K$ validation costs of which the average is our estimate of the empirical cost
+of the current hypothesis set. We essentially reuse each example $K-1$ times for
+training and $K-1$ times for validation, thereby increasing both the efficiency
+of our use of training examples as well as the stability of our estimate.  When
+$K$ is set to the number of all training examples, we call it leave-one-out
+cross-validation (LOOCV). 
+
+Cross-validation is a good approach for model selection, but not usable for
+early-stopping.\footnote{
+    {\bf Homework assignment}: Why is cross-validation not a feasible strategy
+    for early-stopping? 
+} Furthermore, when the training set is large, it may easily become infeasible
+to try cross-validation, as the computational complexity grows linearly with
+respect to $K$. It is however a recommended practice to use cross-validation
+whenever you have a manageable size of training examples.
 
 \paragraph{Test Set}
 
+As soon as we use the validation set to {\it select} among multiple hypothesis
+sets or models, the validation cost of the final model is not anymore a good
+estimate of its expected cost. This is largely because again of overfitting. Our
+choice of hypothesis set or model will agree well with the validation cost, but
+unavoidably the validation cost will have its own generalization error. Thus, we
+need yet another set of examples based on which we estimate the true expected
+cost. This set of examples is often called a {\it test set}. 
+
+Most importantly, {\it the test set must be withheld} throughout the whole
+process of learning {\it until the very end}. As soon as any intermediate
+decision about learning, such as the choice of hypothesis set, is made based on
+the test set, your estimate of the expected cost of the final model becomes
+biased. Thus, in practice, what you must do is to split a training set into
+three portions; training, validation and test partitions, in advance of anything
+you do. Is there an ideal split? No.
+
+Similarly to how we estimated the validation cost, it is often the case in which
+you do not have enough data and cannot afford to withhold a substantial portion
+of it as a test set. In that case, it is also a good practice to employ the
+strategy of $K$-fold cross-validation. In this case, it is worth noting that you
+need {\it nested} $K$-fold cross-validation. That is, for each $k$-th fold from
+the outer cross-validation loop, you use the inner cross-validation ($K$
+iterations of training and validation) for model selection. It is
+computationally expensive, as now it grows quadratically with respect to $K$,
+i.e., $O(K^2)$, but this is the best practice to accurately estimate the
+expected cost of your learning algorithm given only a small number of training
+examples. 
+
 \todo{}
 
-\subsection{Complexity vs. Overfitting}
+\subsection{Overfitting and Regularization}
+
+We now know how to measure the degree of overfitting. 
 
 \todo{}
 
