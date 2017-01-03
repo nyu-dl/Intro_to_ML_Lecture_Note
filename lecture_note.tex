@@ -247,6 +247,7 @@ Throughout this lecture note, I will use the following notational conventions:
 \label{sec:classification}
 
 \section{Supervised Learning}
+\label{sec:supervised_learning}
 
 In supervised learning, our goal is to build or find a machine $M$ that takes as
 input a multi-dimensional vector $\vx \in \mathbb{R}^d$ and outputs a response
@@ -997,7 +998,14 @@ examples.
 
 \subsection{Overfitting and Regularization}
 
-We now know how to measure the degree of overfitting. 
+We now know how to measure the degree of overfitting by approximately computing
+the difference between the expected cost and the empirical cost. In this
+section, let us think of how we can use this in more detail.  Let us start from
+the ``Example 1: Model Selection'' from above. 
+
+When we select a model, the first question that needs to be answered is what are
+our hypothesis sets.     
+
 
 \todo{}
 
@@ -1189,17 +1197,43 @@ M) = 0$).
 
 \section{Nonlinear Classification}
 
+So far in this course, we have looked at a linear classifier which defines a
+hyperplane ($\vw^\top \tilde{\vx} = 0$) that partitions the input space into two
+partitions. Clearly this type of classifier can only solve linearly separable
+problems. A famous example in which a linear classifier fails is exclusive-OR
+(XOR) problem shown in Fig.~\ref{fig:perceptron_xor}.
+
+\begin{figure}
+    \centering
+    \begin{minipage}{0.6\textwidth}
+        \centering
+        \includegraphics[width=\columnwidth]{figures/perceptron_failure.pdf}
+    \end{minipage}
+    \begin{minipage}{0.39\textwidth}
+        \caption{
+            \label{fig:perceptron_xor}
+            If the problem is not linearly separable as in the case shown, a
+            linear classifier, such as perceptron, fails miserably. This is a
+            famous example of a exclusive-or (XOR) problem (with noise.)
+        }
+    \end{minipage}
+\end{figure}
+
+\todo{}
+
+
 \subsection{$k$-Nearest Neighbours}
 
 \todo{}
 
 
-\subsection{Radial Basis Function Networks}
+\subsection{Deep Learning: Adaptive Basis Networks}
+
+\paragraph{Feature Extraction}
 
 \todo{}
 
-
-\subsection{Deep Learning}
+\paragraph{Adaptive Basis Networks}
 
 \todo{}
 
@@ -1215,7 +1249,14 @@ M) = 0$).
 We have so far considered a problem of classification, where the output of a
 machine $M$ is constrained to be a finite set of discrete labels/classes. In
 this section, we consider a {\it regression} problem in which case the machine
-outputs an element from an infinite set.
+outputs an element from an infinite set.\footnote{
+    This definition however is not universal, in that even when the output is
+    from a finite set, the problem is sometimes called regression if there
+    exists natural ordering of labels.
+} A general setup of the problem remains largely identical to that from
+Sec.~\ref{sec:supervised_learning}, meaning that it is probably a good idea to
+re-read the section at this point.  In the context of regression, we will
+particularly focus on framing the whole problem as probabilistic modelling. 
 
 \section{Linear Regression}
 
@@ -1231,7 +1272,7 @@ outputs an element from an infinite set.
 \subsection{Bayesian Approach to Machine Learning}
 
 
-\subsection{Gaussian Process Regression$^\star$}
+\subsection{Gaussian Process Regression$^\star$: Weight-Space View}
 
 
 \chapter{Dimensionality Reduction}
