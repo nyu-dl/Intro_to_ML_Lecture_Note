@@ -858,6 +858,7 @@ practice.\footnote{
 } 
 
 \subsection{Validation}
+\label{sec:validation}
 
 In practice, the generalization error itself is rarely of interest. It is rather
 the expected cost function $R$ of a machine $M$ that interests us, because we
@@ -1301,14 +1302,14 @@ is categorized into a family of sparse classifiers.
 Support vector machines are perhaps the most widely used classifiers since its
 introduction in early 90's. This is evident from more than 20k citations
 \cite{cortes1995support} has gathered since then. 
-\todo{some historical account}
+\todo{some historical account and why we won't be able to cover it more in
+depth.}
 
 \section{Multi-Class Classification}
 
 
 \todo{Perhaps focus only on multi-class logistic regression, i.e., softmax
 classifier}
-
 
 \section{Nonlinear Classification}
 
@@ -1337,18 +1338,25 @@ problems. A famous example in which a linear classifier fails is exclusive-OR
 \todo{}
 
 
-\subsection{$k$-Nearest Neighbours}
-
-\todo{}
-
-
 \subsection{Deep Learning: Adaptive Basis Networks}
 
 \paragraph{Feature Extraction}
 
 \todo{}
 
-\paragraph{Adaptive Basis Networks}
+\paragraph{Adaptive Basis Networks and Representation Learning}
+
+\todo{}
+
+
+\subsection{$k$-Nearest Neighbours}
+
+\paragraph{Radial Basis Function Networks}
+
+\todo{}
+
+
+\paragraph{$k$-Nearest Neighbours}
 
 \todo{}
 
@@ -1401,17 +1409,34 @@ Unsupervised learning is a weird, but fascinating problem. Unlike supervised
 learning in which a machine was defined as a transformation of an input vector
 $\vx$, a machine $M$ in unsupervised learning {\it scores} an input vector
 according to how likely that vector is. If an input vector $\vx$ is likely, the
-output of the machine $M(\vx)$ would be higher, and otherwise lower.
-Interestingly, this allows us to {\it generate} an input vector by finding an
-input vector that maximizes the score given by the model:
+output of the machine $M(\vx)$ would be higher, and otherwise lower. The use of
+the term {\it score} should remind you of our earlier discussion on
+classification, and it is only natural because there is a strong connection
+between supervised learning and unsupervised learning. This connection is
+apparent when we consider $\vx$ as a concatenation of an input vector $\vx$ and
+its corresponding label $y$. Then, with a machine $M$ trained by unsupervised
+learning, we can classify any given input vector by
 \begin{align*}
-    \hat{\vx} = \argmax_{\vx} M(\vx).
+    \hat{y} = \argmax_y M(\left[ \vx; y\right]).
 \end{align*}
-We can also use it to {\it detect an outlier} by deciding a given input vector
-as an outlier when the score is lower than a certain threshold:
+We can similarly perform regression in this framework.  
+
+This capability of scoring an input vector allows us to use it for {\it outlier
+detection} as well. Given an input vector $\vx$, we will declare it as an
+outlier if its score is lower than a certain, predefined threshold:
 \begin{align*}
     \vx\text{ is an outlier if }M(\vx) < \tau.
 \end{align*}
+The threshold $\tau$ may be found by any of the validation techniques we
+discussed in Sec.~\ref{sec:validation}.  Furthermore, we can even {\it generate}
+a novel input vector by finding an input vector that maximizes the score given
+by the model:
+\begin{align*}
+    \hat{\vx} = \argmax_{\vx} M(\vx).
+\end{align*}
+
+
+
 
 \subsection{Naive Bayes Classifier}
 
