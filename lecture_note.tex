@@ -1166,7 +1166,9 @@ That is,
 \todo{}
 
 
-\subsection{Hinge Loss and Support Vector Machines}
+\subsection{Support Vector Machines: Max-Margin Classifier}
+
+\paragraph{Hinge Loss}
 
 One potential issue with the log loss in Eq.~\eqref{eq:logloss} is that it is
 never $0$: 
@@ -1185,12 +1187,36 @@ defined as
 \end{align*}
 Similarly to the log loss, the hinge loss is always greater than or equal to the
 zero-one loss, as can be seen from Fig.~\ref{fig:loss}. We minimize this hinge
-loss and consequently minimize the 0--1 loss. 
+loss and consequently minimize the 0--1 loss.\footnote{
+    One major difference between this hinge loss and the log loss is that the
+    former is not differentiable everywhere. Does it mean that we cannot use a
+    gradient-based optimization algorithm for finding a solution that minimizes
+    the empirical cost function based on the hinge loss? If not, what can we do
+    about it? The answer is left to you as a {\bf homework assignment}.
+}
 
 What does this imply? It implies that minimizing the empirical cost function
 that is the sum of hinge losses will find a solution in which all the examples
 are at least a unit-distance ($1$) away from the decision boundary ($s(y, \vx;
-M) = 0$). 
+M) = 0$). Once any example is further than a unit-distance away from  {\it and}
+on the correct side of the decision boundary, there will not be any penalty, i.e.,
+zero loss. This is contrary to the log loss which penalizes even correctly
+classified examples unless they are infinitely far away from and on the correct
+side of the boundary.
+
+\paragraph{Max-Margin Classifier}
+
+It is time for a thought experiment. We have only two unique training examples;
+one positive example $\vx^+$ and one negative example $\vx^-$.  We can draw a
+line $l$ between these two points.  Any linear classifier perfectly classifies
+these two examples into their correct classes as long as the decision boundary,
+or {\it separating hyperplane}, meets the line $l$ connecting the two examples.
+Because we are in the real space, there are infinitely many such classifiers.
+Among these infinitely many classifiers, which one should we use? Should the
+intersection between the separating hyperplane and the connecting line $l$ be
+close to either one of those examples? Or, should the intersection be as far
+from both points as possible?
+
 
 \todo{}
 
@@ -1283,7 +1309,18 @@ particularly focus on framing the whole problem as probabilistic modelling.
 Unsupervised learning is a weird, but fascinating problem. Unlike supervised
 learning in which a machine was defined as a transformation of an input vector
 $\vx$, a machine $M$ in unsupervised learning {\it scores} an input vector
-according to how likely that vector is. 
+according to how likely that vector is. If an input vector $\vx$ is likely, the
+output of the machine $M(\vx)$ would be higher, and otherwise lower.
+Interestingly, this allows us to {\it generate} an input vector by finding an
+input vector that maximizes the score given by the model:
+\begin{align*}
+    \hat{\vx} = \argmax_{\vx} M(\vx).
+\end{align*}
+We can also use it to {\it detect an outlier} by deciding a given input vector
+as an outlier when the score is lower than a certain threshold:
+\begin{align*}
+    \vx\text{ is an outlier if }M(\vx) < \tau.
+\end{align*}
 
 \subsection{Naive Bayes Classifier}
 
