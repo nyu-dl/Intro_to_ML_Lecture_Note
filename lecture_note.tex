@@ -202,7 +202,7 @@
     Learning) at the Department of Computer Science, Courant Institute of
     Mathematical Sciences at New York University. The content of the lecture
     note was selected to fit a single 12-week-long course (3 hours a week) and
-    to mainly serve undergraduate students majoring in computer science.  Many
+    to mainly serve undergraduate students majoring in computer science. Many
     existing materials in machine learning therefore had to be omitted. 
     
     For a more complete coverage of machine learning (with math!), the following
@@ -227,8 +227,9 @@
             M\"uller  and Sarah Guido
     \end{itemize}
 
-    Note that those sections marked with $\star$ are optional and will only be
-    covered should time permits. 
+    Note that those sections marked with $\star$ are optional and will not be
+    covered during regular lectures. They will likely not be filled in by the
+    end of the first round of the lectures either.. 
 }
 
 \chapter*{Notations}
@@ -1207,18 +1208,100 @@ side of the boundary.
 \paragraph{Max-Margin Classifier}
 
 It is time for a thought experiment. We have only two unique training examples;
-one positive example $\vx^+$ and one negative example $\vx^-$.  We can draw a
-line $l$ between these two points.  Any linear classifier perfectly classifies
-these two examples into their correct classes as long as the decision boundary,
-or {\it separating hyperplane}, meets the line $l$ connecting the two examples.
-Because we are in the real space, there are infinitely many such classifiers.
-Among these infinitely many classifiers, which one should we use? Should the
-intersection between the separating hyperplane and the connecting line $l$ be
-close to either one of those examples? Or, should the intersection be as far
-from both points as possible?
+one positive example $\tilde{\vx}^+$ and one negative example $\tilde{\vx}^-$.
+We can draw a line $l$ between these two points.  Any linear classifier
+perfectly classifies these two examples into their correct classes as long as
+the decision boundary, or {\it separating hyperplane}, meets the line $l$
+connecting the two examples.  Because we are in the real space, there are
+infinitely many such classifiers.  Among these infinitely many classifiers,
+which one should we use? Should the intersection between the separating
+hyperplane and the connecting line $l$ be close to either one of those examples?
+Or, should the intersection be as far from both points as possible? An intuitive
+answer is ``yes'' to the latter: we want the intersection to be as far away from
+both points as possible. 
 
+Let us define a margin $\gamma$ as the distance between the decision boundary
+($\vw^\top \tilde{\vx} = 0$) and the nearest training example $\tilde{\vx}$, of
+course, (loosely) assuming that the decision boundary classifies most of, if not
+all, the training examples correctly. This assumption is necessary to ensure
+that there are at least one correctly classified example on each side of the
+decision boundary.  The above thought experiment now corresponds to an idea of
+finding a classifier that has the largest margin, i.e., a {\it max-margin
+classifier}. 
 
-\todo{}
+The distance to the nearest positive and negative examples can be respectively
+written down as 
+\begin{align*}
+    d^+ =& \frac{\vw^\top \tilde{\vx}^+}{\| \vw \|}, \\
+    d^- =& -\frac{\vw^\top \tilde{\vx}^-}{\| \vw \|}, 
+\end{align*}
+Then, the margin can be defined in terms of these two distances as
+\begin{align}
+    \label{eq:maxmargin}
+    \gamma =& \frac{1}{2} (d^+ + d^-) \\
+    =& \mathbf{?} \\
+    =& \frac{1}{2 \|\vw \|}(\vw^\top \tilde{\vx}^+ - \vw^\top \tilde{\vw}^-) \\
+    =& \mathbf{?} \\
+    =& \frac{1}{2 \|\vw \|}(C + C) \\
+    =& \frac{C}{\|\vw\|},
+\end{align}
+where $C$ is the unnormalized distance to the positive and negative examples
+from the decision boundary. These two examples are equi-distance $C$ away from
+the decision boundary, because our thought experiment earlier suggests that the
+decision boundary with the maximum margin should be as far away from both of
+these examples as possible.\footnote{
+    {\bf Homework assignment}: Fill in the missing equations marked by ? in
+    Eq.~\eqref{eq:maxmargin}, and explain in words the derivation. 
+}
+
+Eq.~\eqref{eq:maxmargin} states that the margin $\gamma$ is {\it inversely
+proportional} to the norm of the weight vector $\| \vw\|$. In other words, we
+should minimize the norm of the weight vector if we want to maximize the margin.
+
+\paragraph{Support vector machines}
+
+Now let us put together the hinge loss based empirical cost function and the
+principle of maximum margin into one optimization problem:
+\begin{align}
+    \label{eq:svm}
+    J_{\text{svm}}(M,D_{\tra}) = \frac{C}{2}
+    \underbrace{\|\vw\|^2}_{\mathclap{\text{(a)}}} + 
+    \underbrace{\frac{1}{|D_{\tra}|} \sum_{(y,x)
+    \in D_{\tra}} D_{\hinge}(y, \vx; M)}_{
+        \mathclap{\text{(b)}}
+    },
+\end{align}
+where $C/2$ can be thought of as a regularization coefficient. This is a cost
+function for so-called support vector machines~\cite{cortes1995support}. 
+
+This classifier is called a {\it support vector} machine, because at its
+minimum, the weight vector can be fully described by a small set of training
+examples which are often referred to as support vectors. Let us derive it
+quickly here:
+\begin{align*}
+    &\frac{\partial J_{\text{svm}}}{\partial \vw} = 
+    C \vw - \frac{1}{|D_{\tra}|} \sum_{(y, x) \in D_{\tra}} \mathbb{I}(y\vw^\top
+    \vx \leq 1) y \vx = 0 \\
+    \Leftrightarrow&
+    \vw = \frac{1}{C|D_{\tra}|} \sum_{(y, x) \in D_{\text{misclas}}} y \vx,
+\end{align*}
+where $D_{\text{miscla}}$ is a set of misclassified, or barely classified,
+training examples, and
+\begin{align*}
+    \mathbb{I}(a) = \left\{ 
+        \begin{array}{l l}
+            1,&\text{ if }a\text{ is true} \\
+            0,&\text{ otherwise}
+        \end{array}
+        \right..
+\end{align*} 
+Often, $|D_{\text{miscla}}| \ll |D_{\tra}|$, and thus, a support vector machine
+is categorized into a family of sparse classifiers.
+
+Support vector machines are perhaps the most widely used classifiers since its
+introduction in early 90's. This is evident from more than 20k citations
+\cite{cortes1995support} has gathered since then. 
+\todo{some historical account}
 
 
 \section{Nonlinear Classification}
@@ -1263,6 +1346,8 @@ problems. A famous example in which a linear classifier fails is exclusive-OR
 
 \todo{}
 
+
+\section{Kernel Support Vector Machines$^\star$}
 
 \section{Decision Tree$^\star$}
 
