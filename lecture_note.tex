@@ -1317,7 +1317,8 @@ So far in this course, we have looked at a linear classifier which defines a
 hyperplane ($\vw^\top \tilde{\vx} = 0$) that partitions the input space into two
 partitions. Clearly this type of classifier can only solve linearly separable
 problems. A famous example in which a linear classifier fails is exclusive-OR
-(XOR) problem shown in Fig.~\ref{fig:perceptron_xor}.
+(XOR) problem shown in Fig.~\ref{fig:perceptron_xor}. In this section, we
+discuss how to build a classifier for problems which are not linearly separable.
 
 \begin{figure}
     \centering
@@ -1335,10 +1336,24 @@ problems. A famous example in which a linear classifier fails is exclusive-OR
     \end{minipage}
 \end{figure}
 
-\todo{}
-
-
 \subsection{Deep Learning: Adaptive Basis Networks}
+
+\begin{figure}
+    \centering
+    \begin{minipage}{0.6\textwidth}
+        \centering
+        \includegraphics[width=\columnwidth]{figures/adaptive_basis1.png}
+    \end{minipage}
+    \begin{minipage}{0.39\textwidth}
+        \caption{
+            \label{fig:feature_extraction}
+            The goal of adaptive basis networks is to find a parametrized
+            mapping from the original input space $\vx \in \mathbb{R}^d$ to
+            another space $g(\vx) \in \mathbb{R}^q$ that makes the problem
+            linearly separable. 
+        }
+    \end{minipage}
+\end{figure}
 
 \paragraph{Feature Extraction}
 
