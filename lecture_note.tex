@@ -800,263 +800,6 @@ automatically}.\footnote{
 
 \todo{}
 
-\section{Overfitting, Regularization and Complexity}
-
-\subsection{Overfitting: Generalization Error}
-
-At the very beginning of this course, we have talked about two cost functions;
-(1) expected cost in Eq.~\eqref{eq:expected_loss1} and (2) empirical cost in
-Eq.~\eqref{eq:empirical_loss}.\footnote{
-    Note that the complexity, or operational cost, of a machine $M$ is often
-    {\it not} included in either of the cost functions, but this is not a
-    problem to include them as long as both cost functions have them. 
-} We loosely stated that we find a machine that minimizes the empirical cost
-$\tilde{R}$ because we cannot compute the expected cost $R$, somehow hoping that
-the approximation error $\epsilon$ (from Eq.~\eqref{eq:empirical_loss}) would be
-small. Let's discuss this a bit more in detail here.
-
-Let us define the generalization error as a difference between the empirical and
-expected cost functions given a reference machine $M^*$, a machine $M$ and a
-training set $D_{\tra}$:
-\begin{align}
-    \label{eq:generr}
-    G(M^*, M, D_{\tra}) = R(M^*, M) - \tilde{R}(M^*, M, D_{\text{\tra}}).
-\end{align}
-We can further define its expectation as
-\begin{align}
-    \label{eq:generr_ee}
-    \bar{G}(M^*, M) = R(M^*, M) - \mathbb{E}_{D \sim P} \left[\tilde{R}(M^*, M,
-    D)\right],
-\end{align}
-where $P$ is the data distribution. 
-
-When this generalization error is large, it means that we are hugely
-overestimating how good the machine $M$ is compared to the reference machine
-$M^*$. Although $M$ is not really good, i.e., the expected cost $R$ is high, $M$
-is good on the training set $D_{\text{\tra}}$, i.e., the empirical cost
-$\tilde{R}$ is low. This is precisely the situation we want to avoid: we do not
-want to brag our machine is good when it is in fact a horrible approximation to
-the reference machine $M^*$. In this embarrassing situation, we say that the
-machine $M$ is {\it overfitting} to the training data.
-
-Unlike how I said earlier, the goal of supervised learning, or machine learning
-in general, is therefore to search for a machine in a hypothesis set not only to
-minimize the empirical cost function but also to minimize the generalization
-error. In other words, we want to find a machine that simultaneously minimizes
-the empirical cost function and avoids overfitting.
-
-Statistical learning theory, a major subfield of machine learning, largely
-focuses on computing the upper-bound of the generalization error. The bound,
-which is often probabilistic, is often a function of, for instance, the
-dimensionality of an input vector $\vx$ and a hypothesis set. This allows us to
-understand how well we should expect our learning setting to work, in terms of
-generalization error, even {\it without} testing it on actual data. Awesome, but
-we will skip this in this course, as the upper-bound is often too loose, and
-rough sample-based approximation of the generalization error works better in
-practice.\footnote{
-    {\it Well, the better answer is that it involves too much math..}
-} 
-
-\subsection{Validation}
-\label{sec:validation}
-
-In practice, the generalization error itself is rarely of interest. It is rather
-the expected cost function $R$ of a machine $M$ that interests us, because we
-will eventually pick one $M$ that has the least expected cost.\footnote{
-    Though, as we discussed earlier in Eq.~\eqref{eq:bayes0}, it may be better
-    to keep more than one $M$ in certain cases. 
-} But, again, we cannot really compute the expected cost function and must
-resort to an approximate method. As done for training, we again use a set
-$D_{\val}$ of samples from the data distribution to estimate the expected cost,
-as in Eq.~\eqref{eq:empirical_loss}, that is\footnote{
-    It is a usual practice to omit the model complexity term when computing the
-    validation cost. We will get to why this is so shortly.
-}
-\begin{align*}
-    \tilde{R}_{\val} = \frac{1}{N'} \sum_{(y, \vx) \in D_{\val}} D(y, M, \vx)
-    + \lambda C(M).
-\end{align*}
-
-In order to avoid any bias in estimating the expected cost function, via this
-validation cost, we must use a validation set $D_{\val}$ {\it independent} from
-the training set $D_{\tra}$. We ensure this in practice by splitting a given
-training set into two disjoint subsets, or partitions, and use them as training
-and validation sets. 
-
-This is how we will estimate the expected cost of a trained model $M$. How are
-we going to use it? Let us consider having more than one hypothesis set $H_l$
-for $m=l, \ldots, L$. Given a training set $D_{\tra}$ and one of hypothesis sets
-$H_l$, we will find a machine $M^l \in H_l$ that minimizes the empirical cost
-function:
-\begin{align*}
-    M^l = \argmin_{M \in H_l} \tilde{R}(M, D_{\tra}).
-\end{align*}
-We now have a set of trained models $\left\{ M^1, \ldots, M^L \right\}$, and we
-must choose one of them as our final solution. In doing so, we use the
-validation cost computed using a {\it separate} validation set $D_{\val}$ which
-approximates the expected cost. We choose the one with the smallest validation
-cost among the $L$ trained models:
-\begin{align*}
-    \hat{M} = \argmin_{M^l|l=1,\ldots,L} \tilde{R}_{\val}(M^l, D_{\val}).
-\end{align*}
-
-\paragraph{Example 1: Model Selection}
-
-Let's take a simple example of having two hypothesis sets. One hypothesis set
-$H_{\text{perceptron}}$ contains all possible perceptrons, and the other set
-$H_{\text{logreg}}$ has all possible logistic regressions. We will find one
-perceptron and one logistic regression from these hypothesis sets by using the
-learning rules we learned earlier (Eq.~\eqref{eq:perceptron_rule1} and
-Eq.~\eqref{eq:logreg_rule0}). We select one of these two {\it models} based not
-on the empirical cost function but on the validation cost function. 
-
-\paragraph{Example 2: Early Stopping}
-
-Can this be useful even if we have a single hypothesis set? Indeed. So far, two
-families of classifiers we have considered, which are perceptrons and logistic
-regression, learning happened iteratively. That is, we slowly evolve the
-parameters, or more specifically the weight vector. Let us denote the weight
-vector after the $l$-th update by $\vw^l$, and assume that we have applied the
-learning rule $L$-many times. Suddenly I have $L$ different classifiers, just
-like what we had with $L$ different classifiers earlier when there were $L$
-hypothesis sets.\footnote{
-    In some sense, we can view each of these classifiers as coming from $L$
-    different (overlapping) hypothesis sets. Each hypothesis set can be
-    characterized as {\it reachable} in $l$ gradient updates from the initial
-    weight vector.
-}
-Instead of taking the very last weight vector $\vw^L$, we will
-choose
-\begin{align*}
-    \hat{M} = \argmin_{M^l|l=1, \ldots, L} \tilde{R}_{\val}(M^l, D_{\val}),
-\end{align*}
-where $M^l$ is a classifier with its weight vector $\vw^l$. This technique is
-often referred to as {\it early stopping}, and is a crucial recipe in iterative
-learning. 
-
-\paragraph{Cross-Validation}
-
-Often we are not given a large enough set of examples to afford dividing it into
-two sets, and using only one of them to train competing models. Either the
-training set would be too small for the empirical (training) cost to well
-approximate the expected cost, or the validation set would be too small for the
-validation cost to be meaningful when selecting the final model (or the correct
-hypothesis set.) In this case, we use a technique called {\it $K$-fold cross
-validation}. 
-
-We first evenly split a given training set $D_{\tra}$ into $K$ partitions while
-ensuring that the statistics of all the partitions are roughly similar, for
-instance, by ensuring that the label proportion (the number of positive examples
-to that of the negative examples) stays same. For each hypothesis set $H$, we
-train $K$ classifiers, where $D_{\tra} \\ D_{\tra}^k$ is used to train the
-$k$-th classifier and $D_{\tra}^k$ to compute its validation cost. We then get
-$K$ validation costs of which the average is our estimate of the empirical cost
-of the current hypothesis set. We essentially reuse each example $K-1$ times for
-training and $K-1$ times for validation, thereby increasing both the efficiency
-of our use of training examples as well as the stability of our estimate.  When
-$K$ is set to the number of all training examples, we call it leave-one-out
-cross-validation (LOOCV). 
-
-Cross-validation is a good approach for model selection, but not usable for
-early-stopping.\footnote{
-    {\bf Homework assignment}: Why is cross-validation not a feasible strategy
-    for early-stopping? 
-} Furthermore, when the training set is large, it may easily become infeasible
-to try cross-validation, as the computational complexity grows linearly with
-respect to $K$. It is however a recommended practice to use cross-validation
-whenever you have a manageable size of training examples.
-
-\paragraph{Test Set}
-
-As soon as we use the validation set to {\it select} among multiple hypothesis
-sets or models, the validation cost of the final model is not anymore a good
-estimate of its expected cost. This is largely because again of overfitting. Our
-choice of hypothesis set or model will agree well with the validation cost, but
-unavoidably the validation cost will have its own generalization error. Thus, we
-need yet another set of examples based on which we estimate the true expected
-cost. This set of examples is often called a {\it test set}. 
-
-Most importantly, {\it the test set must be withheld} throughout the whole
-process of learning {\it until the very end}. As soon as any intermediate
-decision about learning, such as the choice of hypothesis set, is made based on
-the test set, your estimate of the expected cost of the final model becomes
-biased. Thus, in practice, what you must do is to split a training set into
-three portions; training, validation and test partitions, in advance of anything
-you do. Is there an ideal split? No.
-
-Similarly to how we estimated the validation cost, it is often the case in which
-you do not have enough data and cannot afford to withhold a substantial portion
-of it as a test set. In that case, it is also a good practice to employ the
-strategy of $K$-fold cross-validation. In this case, it is worth noting that you
-need {\it nested} $K$-fold cross-validation. That is, for each $k$-th fold from
-the outer cross-validation loop, you use the inner cross-validation ($K$
-iterations of training and validation) for model selection. It is
-computationally expensive, as now it grows quadratically with respect to $K$,
-i.e., $O(K^2)$, but this is the best practice to accurately estimate the
-expected cost of your learning algorithm given only a small number of training
-examples. 
-
-\todo{}
-
-\subsection{Overfitting and Regularization}
-
-We now know how to measure the degree of overfitting by approximately computing
-the difference between the expected cost and the empirical cost. In this
-section, let us think of how we can use this in more detail.  Let us start from
-the ``Example 1: Model Selection'' from above. 
-
-When we select a model, the first question that needs to be answered is what are
-our hypothesis sets.     
-
-
-\todo{}
-
-\begin{figure}[t]
-    \centering
-    \begin{minipage}{0.6\textwidth}
-        \raggedright
-        \includegraphics[width=0.9\columnwidth,clip=True,trim=50 0 50
-        0]{figures/overfit1.pdf}
-    \end{minipage}
-    \begin{minipage}{0.39\textwidth}
-        \raggedleft
-        \caption{
-            \label{fig:weight_decay}
-            Training and test errors with respect to the weight decay
-            coefficient. Notice that the test error grows back even when the
-            training error is $0$ as the weight decay coefficient decreases.
-        }
-    \end{minipage}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \hfill
-    \begin{minipage}{0.49\textwidth}
-        \centering
-        \includegraphics[width=\columnwidth,clip=True,trim=50 0 50 0]{figures/overfit2_tra.pdf}
-        (a) Training Set
-    \end{minipage}
-    \hfill
-    \begin{minipage}{0.49\textwidth}
-        \centering
-        \includegraphics[width=\columnwidth,clip=True,trim=50 0 50 0]{figures/overfit2_tes.pdf}
-        (b) Test Set
-    \end{minipage}
-
-    \caption{
-        \label{fig:overfit}
-        Both solutions of logistic regression perfectly fit the training set
-        regardless of whether weight decay regularization was used. However, it
-        is clear that the model with the optimal weight decay coefficient
-        ({\color{blue} blue line})
-        classifies the test set better. 
-    }
-
-\end{figure}
-
-\todo{}
-
 \section{One Classifier, Many Loss Functions}
 
 \subsection{Classification as Scoring}
@@ -1305,8 +1048,323 @@ introduction in early 90's. This is evident from more than 20k citations
 \todo{some historical account and why we won't be able to cover it more in
 depth.}
 
-\section{Multi-Class Classification}
+\section{Overfitting, Regularization and Complexity}
 
+\subsection{Overfitting: Generalization Error}
+
+At the very beginning of this course, we have talked about two cost functions;
+(1) expected cost in Eq.~\eqref{eq:expected_loss1} and (2) empirical cost in
+Eq.~\eqref{eq:empirical_loss}.\footnote{
+    Note that the complexity, or operational cost, of a machine $M$ is often
+    {\it not} included in either of the cost functions, but this is not a
+    problem to include them as long as both cost functions have them. 
+} We loosely stated that we find a machine that minimizes the empirical cost
+$\tilde{R}$ because we cannot compute the expected cost $R$, somehow hoping that
+the approximation error $\epsilon$ (from Eq.~\eqref{eq:empirical_loss}) would be
+small. Let's discuss this a bit more in detail here.
+
+Let us define the generalization error as a difference between the empirical and
+expected cost functions given a reference machine $M^*$, a machine $M$ and a
+training set $D_{\tra}$:
+\begin{align}
+    \label{eq:generr}
+    G(M^*, M, D_{\tra}) = R(M^*, M) - \tilde{R}(M^*, M, D_{\text{\tra}}).
+\end{align}
+We can further define its expectation as
+\begin{align}
+    \label{eq:generr_ee}
+    \bar{G}(M^*, M) = R(M^*, M) - \mathbb{E}_{D \sim P} \left[\tilde{R}(M^*, M,
+    D)\right],
+\end{align}
+where $P$ is the data distribution. 
+
+When this generalization error is large, it means that we are hugely
+overestimating how good the machine $M$ is compared to the reference machine
+$M^*$. Although $M$ is not really good, i.e., the expected cost $R$ is high, $M$
+is good on the training set $D_{\text{\tra}}$, i.e., the empirical cost
+$\tilde{R}$ is low. This is precisely the situation we want to avoid: we do not
+want to brag our machine is good when it is in fact a horrible approximation to
+the reference machine $M^*$. In this embarrassing situation, we say that the
+machine $M$ is {\it overfitting} to the training data.
+
+Unlike how I said earlier, the goal of supervised learning, or machine learning
+in general, is therefore to search for a machine in a hypothesis set not only to
+minimize the empirical cost function but also to minimize the generalization
+error. In other words, we want to find a machine that simultaneously minimizes
+the empirical cost function and avoids overfitting.
+
+Statistical learning theory, a major subfield of machine learning, largely
+focuses on computing the upper-bound of the generalization error. The bound,
+which is often probabilistic, is often a function of, for instance, the
+dimensionality of an input vector $\vx$ and a hypothesis set. This allows us to
+understand how well we should expect our learning setting to work, in terms of
+generalization error, even {\it without} testing it on actual data. Awesome, but
+we will skip this in this course, as the upper-bound is often too loose, and
+rough sample-based approximation of the generalization error works better in
+practice.\footnote{
+    {\it Well, the better answer is that it involves too much math..}
+} 
+
+\subsection{Validation}
+\label{sec:validation}
+
+In practice, the generalization error itself is rarely of interest. It is rather
+the expected cost function $R$ of a machine $M$ that interests us, because we
+will eventually pick one $M$ that has the least expected cost.\footnote{
+    Though, as we discussed earlier in Eq.~\eqref{eq:bayes0}, it may be better
+    to keep more than one $M$ in certain cases. 
+} But, again, we cannot really compute the expected cost function and must
+resort to an approximate method. As done for training, we again use a set
+$D_{\val}$ of samples from the data distribution to estimate the expected cost,
+as in Eq.~\eqref{eq:empirical_loss}, that is\footnote{
+    It is a usual practice to omit the model complexity term when computing the
+    validation cost. We will get to why this is so shortly.
+}
+\begin{align*}
+    \tilde{R}_{\val} = \frac{1}{N'} \sum_{(y, \vx) \in D_{\val}} D(y, M, \vx)
+    + \lambda C(M).
+\end{align*}
+
+In order to avoid any bias in estimating the expected cost function, via this
+validation cost, we must use a validation set $D_{\val}$ {\it independent} from
+the training set $D_{\tra}$. We ensure this in practice by splitting a given
+training set into two disjoint subsets, or partitions, and use them as training
+and validation sets. 
+
+This is how we will estimate the expected cost of a trained model $M$. How are
+we going to use it? Let us consider having more than one hypothesis set $H_l$
+for $m=l, \ldots, L$. Given a training set $D_{\tra}$ and one of hypothesis sets
+$H_l$, we will find a machine $M^l \in H_l$ that minimizes the empirical cost
+function:
+\begin{align*}
+    M^l = \argmin_{M \in H_l} \tilde{R}(M, D_{\tra}).
+\end{align*}
+We now have a set of trained models $\left\{ M^1, \ldots, M^L \right\}$, and we
+must choose one of them as our final solution. In doing so, we use the
+validation cost computed using a {\it separate} validation set $D_{\val}$ which
+approximates the expected cost. We choose the one with the smallest validation
+cost among the $L$ trained models:
+\begin{align*}
+    \hat{M} = \argmin_{M^l|l=1,\ldots,L} \tilde{R}_{\val}(M^l, D_{\val}).
+\end{align*}
+
+\paragraph{Example 1: Model Selection}
+
+Let's take a simple example of having three hypothesis sets. One hypothesis set
+$H_{\text{perceptron}}$ contains all possible perceptrons, the next set
+$H_{\text{logreg}}$ has all possible logistic regressions, and the last set
+$H_{\text{svm}}$ has all possible support vector machines. We will find one
+perceptron, one logistic regression and one support vector machine from these
+hypothesis sets by using the learning rules we learned earlier.  We select one
+of these two {\it models} based not on the empirical cost function but on the
+validation cost function. 
+
+\paragraph{Example 2: Early Stopping}
+
+Can this be useful even if we have a single hypothesis set? Indeed. So far, two
+families of classifiers we have considered, which are perceptrons and logistic
+regression, learning happened iteratively. That is, we slowly evolve the
+parameters, or more specifically the weight vector. Let us denote the weight
+vector after the $l$-th update by $\vw^l$, and assume that we have applied the
+learning rule $L$-many times. Suddenly I have $L$ different classifiers, just
+like what we had with $L$ different classifiers earlier when there were $L$
+hypothesis sets.\footnote{
+    In some sense, we can view each of these classifiers as coming from $L$
+    different (overlapping) hypothesis sets. Each hypothesis set can be
+    characterized as {\it reachable} in $l$ gradient updates from the initial
+    weight vector.
+}
+Instead of taking the very last weight vector $\vw^L$, we will
+choose
+\begin{align*}
+    \hat{M} = \argmin_{M^l|l=1, \ldots, L} \tilde{R}_{\val}(M^l, D_{\val}),
+\end{align*}
+where $M^l$ is a classifier with its weight vector $\vw^l$. This technique is
+often referred to as {\it early stopping}, and is a crucial recipe in iterative
+learning. 
+
+\paragraph{Cross-Validation}
+
+Often we are not given a large enough set of examples to afford dividing it into
+two sets, and using only one of them to train competing models. Either the
+training set would be too small for the empirical (training) cost to well
+approximate the expected cost, or the validation set would be too small for the
+validation cost to be meaningful when selecting the final model (or the correct
+hypothesis set.) In this case, we use a technique called {\it $K$-fold cross
+validation}. 
+
+We first evenly split a given training set $D_{\tra}$ into $K$ partitions while
+ensuring that the statistics of all the partitions are roughly similar, for
+instance, by ensuring that the label proportion (the number of positive examples
+to that of the negative examples) stays same. For each hypothesis set $H$, we
+train $K$ classifiers, where $D_{\tra} \\ D_{\tra}^k$ is used to train the
+$k$-th classifier and $D_{\tra}^k$ to compute its validation cost. We then get
+$K$ validation costs of which the average is our estimate of the empirical cost
+of the current hypothesis set. We essentially reuse each example $K-1$ times for
+training and $K-1$ times for validation, thereby increasing both the efficiency
+of our use of training examples as well as the stability of our estimate.  When
+$K$ is set to the number of all training examples, we call it leave-one-out
+cross-validation (LOOCV). 
+
+Cross-validation is a good approach for model selection, but not usable for
+early-stopping.\footnote{
+    {\bf Homework assignment}: Why is cross-validation not a feasible strategy
+    for early-stopping? 
+} Furthermore, when the training set is large, it may easily become infeasible
+to try cross-validation, as the computational complexity grows linearly with
+respect to $K$. It is however a recommended practice to use cross-validation
+whenever you have a manageable size of training examples.
+
+\paragraph{Test Set}
+
+As soon as we use the validation set to {\it select} among multiple hypothesis
+sets or models, the validation cost of the final model is not anymore a good
+estimate of its expected cost. This is largely because again of overfitting. Our
+choice of hypothesis set or model will agree well with the validation cost, but
+unavoidably the validation cost will have its own generalization error. Thus, we
+need yet another set of examples based on which we estimate the true expected
+cost. This set of examples is often called a {\it test set}. 
+
+Most importantly, {\it the test set must be withheld} throughout the whole
+process of learning {\it until the very end}. As soon as any intermediate
+decision about learning, such as the choice of hypothesis set, is made based on
+the test set, your estimate of the expected cost of the final model becomes
+biased. Thus, in practice, what you must do is to split a training set into
+three portions; training, validation and test partitions, in advance of anything
+you do. Is there an ideal split? No.
+
+Similarly to how we estimated the validation cost, it is often the case in which
+you do not have enough data and cannot afford to withhold a substantial portion
+of it as a test set. In that case, it is also a good practice to employ the
+strategy of $K$-fold cross-validation. In this case, it is worth noting that you
+need {\it nested} $K$-fold cross-validation. That is, for each $k$-th fold from
+the outer cross-validation loop, you use the inner cross-validation ($K$
+iterations of training and validation) for model selection. It is
+computationally expensive, as now it grows quadratically with respect to $K$,
+i.e., $O(K^2)$, but this is the best practice to accurately estimate the
+expected cost of your learning algorithm given only a small number of training
+examples. 
+
+\todo{}
+
+\subsection{Overfitting and Regularization}
+
+We now know how to measure the degree of overfitting by approximately computing
+the difference between the expected cost and the empirical cost. In this
+section, let us think of how we can use this in more detail.  Let us start from
+the ``Example 1: Model Selection'' from above. 
+
+When we select a model, the first question that needs to be answered is what are
+our hypothesis sets. An obvious approach is to choose each hypothesis set to
+include all possible configurations of one model family, such as perceptron,
+logistic regression or support vector machine. Instead, we can also decide on a
+model family, and sub-divide the gigantic hypothesis sets into several subsets.
+The latter is one we will discuss further here.
+
+Let us consider the cost function of support vector machines from
+Eq.~\eqref{eq:svm}: 
+\begin{align*}
+    J_{\text{svm}}(M,D_{\tra}) = \frac{C}{2}
+    \underbrace{\|\vw\|^2}_{\mathclap{\text{(a) Regularization}}} + 
+    \frac{1}{|D_{\tra}|} \sum_{(y,x)
+    \in D_{\tra}} D_{\hinge}(y, \vx; M).
+\end{align*}
+
+The term (a) controls how much our separating hyperplane ($\vw^\top
+\tilde{\vx}=0$) may deviate from a flat line ($\vw = 0$). What does it mean? Let
+us now look at the gradient of the cost function:
+\begin{align*}
+    \nabla_{\vw} J_{\text{svm}} = 
+    \underbrace{
+    C \vw 
+}_{(a)}
+    + 
+    \frac{1}{|D_{\tra}|} \sum_{(y,x)
+    \in D_{\tra}} \nabla_{\vw} D_{\hinge}(y, \vx; M).
+\end{align*}
+The first term corresponds to pulling the weight vector $\vw$ closer to an
+all-zero vector, effectively disallowing the weight vector to move too far away
+from a vector with small values. The degree to which this {\it pull} toward a
+{\it simple} setting is determined by the {\it regularization coefficient} $C$.
+When $C=0$, there is no force pulling the weight vector toward a small vector,
+while with a large $C$, this pulling force is greater. 
+
+Based on this observation, we can now define a smaller hypothesis set $H_{C'}$,
+which is a subset of the larger hypothesis set of all support vector machines,
+as all the support vector machines reachable by minimizing the cost function of
+a support vector machine when the {\it regularization coefficient} $C$ is set to
+$C'$. In other words, given a set of predefined coefficients $\left\{ C_1, C_2,
+\ldots, C_M\right\}$, we can construct as many hypothesis sets $H_{C_1}, \ldots,
+H_{C_M}$. 
+
+We find a support vector machine that minimizes the cost function
+$J_{\text{svm}}$ for each of these hypothesis sets. Then, as we discussed
+earlier in Sec.~\ref{sec:validation}, we choose one of them based on the
+validation cost which in this case should omit the regularization term
+$\frac{C}{2} \|\vw\|^2$. 
+
+Two question naturally arise here. First, why don't we estimate the
+regularization coefficient $C$ just like we did with the weight vector $\vw$?
+In other words, is it possible to simply find $\hat{C}$ such that 
+\begin{align*}
+    \hat{C} = \argmin_C J_{\text{svm}}?
+\end{align*}
+Second, why do we need to omit this regularization term when selecting among
+trained support vector machines each belonging to a different hypothesis set?
+
+\todo{Answer these questions!}
+
+\begin{figure}[t]
+    \centering
+    \begin{minipage}{0.6\textwidth}
+        \raggedright
+        \includegraphics[width=0.9\columnwidth,clip=True,trim=50 0 50
+        0]{figures/overfit1.pdf}
+    \end{minipage}
+    \begin{minipage}{0.39\textwidth}
+        \raggedleft
+        \caption{
+            \label{fig:weight_decay}
+            Training and test errors with respect to the weight decay
+            coefficient. Notice that the test error grows back even when the
+            training error is $0$ as the weight decay coefficient decreases.
+        }
+    \end{minipage}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \hfill
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\columnwidth,clip=True,trim=50 0 50 0]{figures/overfit2_tra.pdf}
+        (a) Training Set
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\columnwidth,clip=True,trim=50 0 50 0]{figures/overfit2_tes.pdf}
+        (b) Test Set
+    \end{minipage}
+
+    \caption{
+        \label{fig:overfit}
+        Both solutions of logistic regression perfectly fit the training set
+        regardless of whether weight decay regularization was used. However, it
+        is clear that the model with the optimal weight decay coefficient
+        ({\color{blue} blue line})
+        classifies the test set better. 
+    }
+
+\end{figure}
+
+\paragraph{Example} In Fig.~\ref{fig:weight_decay}, we plot how the training and
+validation costs change with respect to the regularization coefficient $C$ (or
+equivalently $\log C$). 
+
+\todo{}
+
+\section{Multi-Class Classification}
 
 \todo{Perhaps focus only on multi-class logistic regression, i.e., softmax
 classifier}
@@ -1395,12 +1453,20 @@ outputs an element from an infinite set.\footnote{
     exists natural ordering of labels.
 } A general setup of the problem remains largely identical to that from
 Sec.~\ref{sec:supervised_learning}, meaning that it is probably a good idea to
-re-read the section at this point.  In the context of regression, we will
+re-read that section at this point.  In the context of regression, we will
 particularly focus on framing the whole problem as probabilistic modelling. 
 
 \section{Linear Regression}
 
 \subsection{Linear Regression}
+
+As we have done with classification, we will start with considering {\it linear}
+regression. In linear regression, our machine $M$ is defined as 
+\begin{align*}
+    M(\vx) = \vw^\top \tilde{\vx},
+\end{align*}
+where we use $\tilde{\vx}$ to denote the input vector with an extra $1$ attached
+at the end. 
 
 
 \subsection{Regularization and Prior Distributions}
@@ -1408,11 +1474,37 @@ particularly focus on framing the whole problem as probabilistic modelling.
 
 \section{Bayesian Linear Regression and Gaussian Process Regression}
 
-
 \subsection{Bayesian Approach to Machine Learning}
 
+\begin{figure}[t]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\columnwidth,clip=True,trim=50 0 50
+        0]{figures/bayes_logreg.pdf}
 
-\subsection{Gaussian Process Regression$^\star$: Weight-Space View}
+        (a)
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\columnwidth,clip=True,trim=50 0 50
+        0]{figures/bayes_linreg_mlp.pdf}
+
+        (b)
+    \end{minipage}
+
+    \caption{
+        \label{fig:bayes_logreg}
+        (a) Bayesian logistic regression, and (b) Bayesian multilayer
+        perceptron. Both of them were done with ``ensemble samplers with affine
+        invariance'' \cite{goodman2010ensemble} using Python emcee available at
+        \url{http://dan.iel.fm/emcee/current/}. 
+    }
+\end{figure}
+
+
+\subsection{Gaussian Process Regression$^\star$}
 
 
 \chapter{Dimensionality Reduction}
@@ -1450,6 +1542,8 @@ by the model:
     \hat{\vx} = \argmax_{\vx} M(\vx).
 \end{align*}
 
+\todo{}
+
 
 
 
@@ -1462,9 +1556,9 @@ by the model:
 
 \section{Principal Component Anslysis}
 
-\subsection{Maximum Variance Criterion}
-
 \subsection{Minimum Reconstruction Criterion}
+
+\subsection{Maximum Variance Criterion}
 
 %\subsection{PCA with Missing Values$^\star$: Collaborative Filtering}
 
@@ -1489,7 +1583,10 @@ by the model:
 \section{Other Clustering Methods$^\star$}
 
 
-\chapter{Structured Output Prediction and Reinforcement Learning}
+\chapter{Sequential Decision Making}
+
+\section{Sequential Decision Making as a Series of Classification Problems}
+\todo{}
 
 
 \section{Time-Series Modelling$^\star$}
