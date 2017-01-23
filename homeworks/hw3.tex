@@ -186,7 +186,7 @@
 
 \begin{document}
 
-\title{Homework Assignment 1}
+\title{Homework Assignment 2}
 \author{Lecturer: Kyunghyun Cho}
 %\affil{
 %    Courant Institute of Mathematical Sciences and \\
@@ -197,25 +197,25 @@
 \maketitle
 \pagenumbering{arabic}
 
-\paragraph{1.} When defining a perceptron, we have augmented an input vector
-$\vx$ with an extra $1$: 
+\paragraph{1.} Unlike the log loss, the hinge loss, defined below, is not
+differentiable everywhere:
 \begin{align*}
-    M(\vx) = \sign(\vw^\top \tilde{\vx}),
+    D_{\hinge}(y, \vx; M) = \max(0, 1 - s(y, \vx; M)).
 \end{align*}
-where $\tilde{\vx} = \left[ \vx; 1\right]$. Why is this necessary? Provide an
-example in which this extra $1$ is necessary.
+Does it mean that we cannot use a gradient-based optimization algorithm for
+finding a solution that minimizes the hinge loss? If not, what can we do about
+it?
 
 \vspace{30mm}
 
-\paragraph{2.} We used the following distance function for perceptron in the
-lecture:
+\paragraph{2.} When the
+distances to the nearest positive and negative examples are defined as $d^+$ and
+$d^-$, the margin is 
 \begin{align*}
-    D(M^*(\vx), M, \vx) = -\left( M^*(\vx) - M(\vx)
-    \right) \left(\vw^\top
-    \tilde{\vx}\right).
+    \gamma =& \frac{1}{2} (d^+ + d^-).
 \end{align*}
-This distance function has a problem of a trivial solution. What does it mean by
-this? What is the trivial solution?
+Show that minimizing the norm of the weight vector of a support vector machine
+is equivalent to maximizing the margin. 
 
 \vspace{30mm}
 

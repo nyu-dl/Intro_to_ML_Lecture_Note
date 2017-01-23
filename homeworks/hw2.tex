@@ -186,7 +186,7 @@
 
 \begin{document}
 
-\title{Homework Assignment 1}
+\title{Homework Assignment 2}
 \author{Lecturer: Kyunghyun Cho}
 %\affil{
 %    Courant Institute of Mathematical Sciences and \\
@@ -197,25 +197,22 @@
 \maketitle
 \pagenumbering{arabic}
 
-\paragraph{1.} When defining a perceptron, we have augmented an input vector
-$\vx$ with an extra $1$: 
+\paragraph{1.} The distance function of logistic regression was defined as 
 \begin{align*}
-    M(\vx) = \sign(\vw^\top \tilde{\vx}),
+    D(M^*(\vx), M, \vx) = -(M^*(\vx) \log M(\vx) + (1-M^*(\vx)) \log (1- M(\vx))).
 \end{align*}
-where $\tilde{\vx} = \left[ \vx; 1\right]$. Why is this necessary? Provide an
-example in which this extra $1$ is necessary.
+Derive its gradient with respect to the weight vector $\vw$ step-by-step.
 
 \vspace{30mm}
 
-\paragraph{2.} We used the following distance function for perceptron in the
-lecture:
+\paragraph{2.} After replacing the label set from $\left\{ 0,1 \right\}$ to
+$\left\{ -1,1 \right\}$, we introduced the log loss
 \begin{align*}
-    D(M^*(\vx), M, \vx) = -\left( M^*(\vx) - M(\vx)
-    \right) \left(\vw^\top
-    \tilde{\vx}\right).
+    D_{\log}(y, \vx; M) = \frac{1}{\log 2} \log(1+\exp(-s(y, \vx; M))),
 \end{align*}
-This distance function has a problem of a trivial solution. What does it mean by
-this? What is the trivial solution?
+as an alternative to the
+logistic regression distance function above. Show that these two are equivalent
+up to a constant multiplication for logistic regression.
 
 \vspace{30mm}
 
