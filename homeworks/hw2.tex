@@ -186,7 +186,9 @@
 
 \begin{document}
 
-\title{Homework Assignment 2}
+\title{Homework Assignment 2 \\
+    Loss Functions and Support Vector Machines
+}
 \author{Lecturer: Kyunghyun Cho}
 %\affil{
 %    Courant Institute of Mathematical Sciences and \\
@@ -197,15 +199,7 @@
 \maketitle
 \pagenumbering{arabic}
 
-\paragraph{1.} The distance function of logistic regression was defined as 
-\begin{align*}
-    D(M^*(\vx), M, \vx) = -(M^*(\vx) \log M(\vx) + (1-M^*(\vx)) \log (1- M(\vx))).
-\end{align*}
-Derive its gradient with respect to the weight vector $\vw$ step-by-step.
-
-\vspace{30mm}
-
-\paragraph{2.} After replacing the label set from $\left\{ 0,1 \right\}$ to
+\paragraph{1.} After replacing the label set from $\left\{ 0,1 \right\}$ to
 $\left\{ -1,1 \right\}$, we introduced the log loss
 \begin{align*}
     D_{\log}(y, \vx; M) = \frac{1}{\log 2} \log(1+\exp(-s(y, \vx; M))),
@@ -214,9 +208,31 @@ as an alternative to the
 logistic regression distance function above. Show that these two are equivalent
 up to a constant multiplication for logistic regression.
 
-\vspace{30mm}
+\vspace{10mm}
 
-\paragraph{3.} \todo{PROGRAMMING ASSIGNMENT}
+\paragraph{2.} Unlike the log loss, the hinge loss, defined below, is not
+differentiable everywhere:
+\begin{align*}
+    D_{\hinge}(y, \vx; M) = \max(0, 1 - s(y, \vx; M)).
+\end{align*}
+Does it mean that we cannot use a gradient-based optimization algorithm for
+finding a solution that minimizes the hinge loss? If not, what can we do about
+it?
+
+\vspace{10mm}
+
+\paragraph{3.} When the
+distances to the nearest positive and negative examples are defined as $d^+$ and
+$d^-$, the margin is 
+\begin{align*}
+    \gamma =& \frac{1}{2} (d^+ + d^-).
+\end{align*}
+Show that minimizing the norm of the weight vector of a support vector machine
+is equivalent to maximizing the margin. 
+
+\vspace{10mm}
+
+\paragraph{4.} \todo{PROGRAMMING ASSIGNMENT}
 
 
 
