@@ -514,8 +514,6 @@ set has a constant operational cost $c$, i.e., $C(M)=c$ for all $M\in H$.
 
 \paragraph{Distance}
 
-\todo{rewrite!}
-
 Given an input $\vx$, we now define a distance between $M^*$ and $M$. In
 particular, we will use the following distance function:\footnote{
     There is a problem with this distance function. What is it?  This is left to
@@ -667,7 +665,17 @@ log-probability of the $M$'s output being correct:
 \end{align}
 where $p(C=1|\vx) = M(\vx)$. The latter equality comes from the definition of
 {\it Bernoulli distribution}.\footnote{
-    \todo{give a brief def of Bernoulli distribution}
+    A binary, or Bernoulli, random variable $X$ may take one of two values $c_0$
+    and $c_1$ (often $0$ and $1$). The probability of $X$ being $c_1$ is defined
+    as a scalar $p \in \left[0, 1\right]$, and the probability of $X$ being $c_0$
+    as $1-p$. When $c_0=0$ and $c_1=1$, we can write the probability of $X$ as
+    \begin{align*}
+        p(X) = p^X (1-p)^(1-X),
+    \end{align*}
+    and its logarithm is
+    \begin{align*}
+        \log p(X) = X \log p + (1-X) \log (1-p).
+    \end{align*}
 }
 
 With this definition of our distance, how do we adjust $\vw$ of $M$ to lower it?
@@ -760,7 +768,9 @@ The only major difference between the learning rules for the logistic regression
 and perceptron is whether the term (b) in Eq.~\eqref{eq:grad_logreg_term1} is
 discrete (in the case of perceptron) or continuous (in the case of logistic
 regression.) More specifically, the term (b) in the perceptron learning rule is
-either $0$ or $1$.  \todo{}
+either $0$ or $1$. In the case of logistic regression, on the other hand, the
+term (b) corresponds to what degree the logistic regression's output is close to
+the true output.
 
 \paragraph{Learning}
 
@@ -796,9 +806,15 @@ automatically}.\footnote{
     \end{itemize}
     Throughout this course, we will use Autograd for Python for demonstration.
 }
+Any further discussion on advanced optimization algorithms is out of this
+course's scope, and I recommend you the following courses:
+\begin{itemize}
+    \item DS-GA 3001.03: Optimization and Computational Linear Algebra for Data
+        Science
+    \item CSCI-GA.2420 NUMERICAL METHODS I
+    \item CSCI-GA.2421 NUMERICAL METHODS II
+\end{itemize}
 
-
-\todo{}
 
 \section{One Classifier, Many Loss Functions}
 
@@ -826,7 +842,10 @@ a set of labels (negative and positive), we will switch to $y \in \left\{ -1,
 function\footnote{
     Note that the term ``score'' has a number of different meanings. For
     instance, in statistics, the score is defined as a gradient of the
-    \todo{TODO}
+    log-probability, that is
+    \begin{align*}
+        \frac{\partial \log p(x)}{\partial x}.
+    \end{align*}
 } that takes as input an input vector $\vx$, the correct label $y$ (returned by
 a reference machine $M^*$) and the weight vector (or you can say the machine $M$
 itself): 
@@ -907,8 +926,10 @@ That is,
     D_{\log}(y, \vx; M) \geq D_{\text{0-1}}(y, \vx; M)\text{ for all }s(y, \vx;
     M) \in \mathbb{R}.
 \end{align*}
-
-\todo{}
+By minimizing this upper-bound, we can indirectly minimize the 0-1 loss. Of
+course, minimizing the upper-bound does not necessarily minimize the 0-1 loss,
+but we can be certain that the 0-1 loss, or true classification loss, is lower
+than how far we have minimized the log loss. 
 
 
 \subsection{Support Vector Machines: Max-Margin Classifier}
@@ -983,10 +1004,10 @@ Then, the margin can be defined in terms of these two distances as
 \begin{align}
     \label{eq:maxmargin}
     \gamma =& \frac{1}{2} (d^+ + d^-) \\
-    =& \mathbf{?} \\
-    =& \frac{1}{2 \|\vw \|}(\vw^\top \tilde{\vx}^+ - \vw^\top \tilde{\vw}^-) \\
-    =& \mathbf{?} \\
-    =& \frac{1}{2 \|\vw \|}(C + C) \\
+    %=& \mathbf{?} \\
+    %=& \frac{1}{2 \|\vw \|}(\vw^\top \tilde{\vx}^+ - \vw^\top \tilde{\vw}^-) \\
+    %=& \mathbf{?} \\
+    %=& \frac{1}{2 \|\vw \|}(C + C) \\
     =& \frac{C}{\|\vw\|},
 \end{align}
 where $C$ is the unnormalized distance to the positive and negative examples
@@ -1042,11 +1063,14 @@ training examples, and
 Often, $|D_{\text{miscla}}| \ll |D_{\tra}|$, and thus, a support vector machine
 is categorized into a family of sparse classifiers.
 
-Support vector machines are perhaps the most widely used classifiers since its
-introduction in early 90's. This is evident from more than 20k citations
-\cite{cortes1995support} has gathered since then. 
-\todo{some historical account and why we won't be able to cover it more in
-depth.}
+%Support vector machines are perhaps the most widely used classifiers since its
+%introduction in early 90's. This is evident from more than 20k citations
+%\cite{cortes1995support} has gathered since then. 
+%
+%
+%
+%\todo{some historical account and why we won't be able to cover it more in
+%depth.}
 
 \section{Overfitting, Regularization and Complexity}
 
@@ -1225,13 +1249,18 @@ unavoidably the validation cost will have its own generalization error. Thus, we
 need yet another set of examples based on which we estimate the true expected
 cost. This set of examples is often called a {\it test set}. 
 
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.8\columnwidth]{figures/neverever.png}
+\end{figure}
+
 Most importantly, {\it the test set must be withheld} throughout the whole
-process of learning {\it until the very end}. As soon as any intermediate
-decision about learning, such as the choice of hypothesis set, is made based on
-the test set, your estimate of the expected cost of the final model becomes
-biased. Thus, in practice, what you must do is to split a training set into
-three portions; training, validation and test partitions, in advance of anything
-you do. Is there an ideal split? No.
+process of learning {\it until the very end}.  As soon as any intermediate
+decision about learning, such as the choice of hypothesis set, is made (even
+subconsciously) based on the test set, your estimate of the expected cost of the
+final model becomes biased. Thus, in practice, what you must do is to split a
+training set into three portions; training, validation and test partitions, in
+advance of anything you do. Is there an ideal split? No.
 
 Similarly to how we estimated the validation cost, it is often the case in which
 you do not have enough data and cannot afford to withhold a substantial portion
@@ -1244,8 +1273,6 @@ computationally expensive, as now it grows quadratically with respect to $K$,
 i.e., $O(K^2)$, but this is the best practice to accurately estimate the
 expected cost of your learning algorithm given only a small number of training
 examples. 
-
-\todo{}
 
 \subsection{Overfitting and Regularization}
 
@@ -1303,7 +1330,7 @@ earlier in Sec.~\ref{sec:validation}, we choose one of them based on the
 validation cost which in this case should omit the regularization term
 $\frac{C}{2} \|\vw\|^2$. 
 
-Two question naturally arise here. First, why don't we estimate the
+Two questions naturally arise here. First, why don't we estimate the
 regularization coefficient $C$ just like we did with the weight vector $\vw$?
 In other words, is it possible to simply find $\hat{C}$ such that 
 \begin{align*}
@@ -1362,12 +1389,172 @@ trained support vector machines each belonging to a different hypothesis set?
 validation costs change with respect to the regularization coefficient $C$ (or
 equivalently $\log C$). 
 
-\todo{}
+\todo{Explain}
 
 \section{Multi-Class Classification}
 
-\todo{Perhaps focus only on multi-class logistic regression, i.e., softmax
-classifier}
+So far, we have considered a {\it binary} classification only. In reality, there
+are often more than two categories to which an input vector belongs.  It is
+indeed interesting to build a machine that can tell whether an object of a
+particular type, such as a dog, is in a given image, but we often want our
+machine to be able to classify an object in a given image into one of many
+object types. That is, we want our machine to answer ``what is in an image?''
+rather than ``is a dog in an image?'' A slightly different formulation of the
+same question is ``which of the following animals does this image describe, dog,
+cat, rabbit, fish, giraffe or tiger?'' This kind of problem is a {\it
+multi-class classification}. Instead of two possible categories as in binary
+classification, now each input vector may belong to one of more than two
+categories. 
+
+Let us start from logistic regression in Sec.~\ref{sec:logreg}. We already
+learned that the logistic regression classifier outputs a Bernoulli distribution
+over two possible categories--negative and positive. We extend it so that the
+logistic regression classifier is now returning a distribution over $K$-many
+possible categories $\left\{ 0, 1, \ldots, K \right\}$. 
+
+First, we must decide what kind of distribution, other than Bernoulli
+distribution, we should use. In this case of multi-class classification, we use
+a categorical distribution. The categorical distribution is defined over a set
+of $K$ events (equivalent to $K$ categories in our case) with a set of $L$
+probabilities $\left\{ p_1, \ldots, p_K \right\}$. $p_k$ is the probability of
+the $k$-th event happening, or the input vector belonging to the $k$-th
+category. As usual with any other probability, those probabilities are
+constrained to sum to $1$, i.e.,
+\begin{align*}
+    \sum_{k=1}^K p_k = 1.
+\end{align*}
+
+Now given an input vector $\vx$, we should let our new multi-class classifier
+output this categorical distribution. This is equivalent to building a machine
+that takes as input a vector $\vx$ and outputs $K$ probabilities that sum to
+$1$. In order to do so, we turn the $d$-dimensional input vector
+into a $K$-dimensional vector by
+\begin{align*}
+    \va = \mW \tilde{\vx},
+\end{align*}
+where $\tilde{\vx}$ is as before $\left[ \vx; 1 \right]$. $\mW$, to which we
+refer as a weight {\it matrix}, is a $K \times d$-dimensional matrix. Do you see
+how it has changed from a weight vector earlier to a weight matrix now?
+
+We have $K$ real numbers in $\va$. These numbers however are not constrained,
+meaning that their sum is not $1$, and that some of them may even be negative.
+Let us now turn this $K$ numbers into $K$ probabilities of a categorical
+distribution. First, we make them positive by exponentiating each of them
+separately. That is,
+\begin{align*}
+    \va^+ = \exp(\va) > 0.
+\end{align*}
+Then, we force those $K$ positive numbers to sum to 1 by
+\begin{align}
+    \label{eq:multlog_out}
+    \vp = \frac{1}{\sum_{k=1}^K a^+_k} \va^+.
+\end{align}
+That was easy, right? This transformation--exponentiation followed by
+normalization-- is called {\it softmax} \cite{Bridle1990}. 
+
+\paragraph{Hypothesis Set} 
+
+This new machine, often called {\it multinomial logistic regression}, is fully
+characterized by the weight matrix $\mW$. In other words, our hypothesis set is
+a set of all $K$-by-$d$ real-valued matrices. 
+
+\paragraph{Distance} 
+We define the distance function similarly to how we did with logistic
+regression. That is, it is the negative log-probability of the correct category
+returned by the reference machine $M^*$:
+\begin{align}
+    \label{eq:multlog_dist}
+    D(M^*(\vx), M, \vx) = -\log p(C=M^*(\vx) | \vx) = -\log p_{M^*(\vx)}.
+\end{align}
+I used $p_{M^*(\vx)}$ to denote the $M^*(\vx)$-th probability value stored in
+$\vp$, which is by our definition of the machine the probability of the correct
+category predicted by our machine.  Let's expand it a bit further:
+\begin{align*}
+    D(y^*, M, \vx) &= -\log p_{M^*(\vx)} \\
+                   &= -a_{y^*} + \log \sum_{k=1}^K \exp(a_k).
+\end{align*}
+
+\paragraph{Gradient of the Distance}
+
+As we have done so with logistic regression and support vector machines earlier,
+we need to compute the gradient of the distance function in
+Eq.~\eqref{eq:multlog_dist} with respect to the weight matrix.\footnote{
+    The full derivation is left for you as a {\bf homework assignment}.
+}
+
+We will do this
+for each row of the weight matrix separately. First, we consider the $y^*$-th
+row vector, that corresponds to the correct class outputted by the reference
+machine: 
+\begin{align*}
+    \frac{\partial D(y^*, M, \vx)}{\partial \vw_{y^*}} =&
+    -\frac{\partial}{\partial \vw_{y^*}} \left(
+        \vw_{y^*}^\top \tilde{\vx} - \log \sum_{k=1}^K \exp(a_k)
+    \right) \\
+    =& -( 1 - p(C=y^* | \vx)) \tilde{\vx}.
+\end{align*}
+Similarly, we can compute the gradient of the distance function with respect to
+the weight vector that corresponds to any other incorrect class $y \in \left\{1,
+\ldots, K \right\} \backslash \left\{ y^* \right\}$:
+\begin{align*}
+    \frac{\partial D(y^*, M, \vx)}{\partial \vw_{y}} =&
+    -\frac{\partial}{\partial \vw_{y}} \left(
+        \vw_{y}^\top \tilde{\vx} - \log \sum_{k=1}^K \exp(a_k)
+    \right) \\
+    =& -( 0 - p(C=y | \vx)) \tilde{\vx}.
+\end{align*}
+
+We can combine them together into a single vector equation:
+\begin{align*}
+\nabla_{\mW} D(y^*, M, \vx) =
+    -
+    \left( 
+        \vy^* - \vp
+    \right) \tilde{\vw}^\top,
+\end{align*}
+where 
+\begin{align*}
+    \vy^* = 
+    \left[ 
+        \begin{array}{c}
+            0, \\
+            \vdots, \\
+            1, \\
+            \vdots, \\
+            0
+        \end{array}
+    \right]
+    \begin{array}{c}
+         \\
+         \\
+         \leftarrow y^*\text{-th row} \\
+         \\
+         \\
+    \end{array}
+\end{align*}
+is an {\it one-hot vector} corresponding to a desired output, and $\vp$ is the
+actual output from the multinomial logistic regression from
+Eq.~\eqref{eq:multlog_out}.
+
+This equation above reminds us of the learning rule of logistic regression (and
+naturally that of perceptron.) See for instance Eq.~\eqref{eq:grad_logreg_dist}
+as a comparison. Both rules (logistic regression and multinomial logistic
+regression) have a multiplicative term in the front, and that multiplicative
+term is a difference between the predicted output (or the predicted conditional
+distribution over the categories given an input vector) and the desired output
+generated by the reference machine.
+
+For the row vector of the weight matrix corresponding to the correct category
+$y^*$, this learning rule will add the input vector (augmented with an extra
+one) to the this vector so that they would align better. On the other hand, for
+any other category, the learning rule will subtract the input vector instead to
+make them less aligned. The degree to which the input vector is subtracted is
+decided based on how well the reference machine and our machine agree.  Learning
+terminates, when the multinomial logistic regression puts all the probability
+mass ($1$) to the correct class. 
+
+
+
 
 \section{Nonlinear Classification}
 
@@ -1422,7 +1609,8 @@ discuss how to build a classifier for problems which are not linearly separable.
 \todo{}
 
 
-\subsection{$k$-Nearest Neighbours}
+\subsection{$k$-Nearest Neighbours: Fixed Basis Networks}
+
 
 \paragraph{Radial Basis Function Networks}
 
