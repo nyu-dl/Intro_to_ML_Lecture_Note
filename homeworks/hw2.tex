@@ -204,11 +204,11 @@ $\left\{ -1,1 \right\}$, we introduced the log loss
 \begin{align*}
     D_{\log}(y, \vx; M) = \frac{1}{\log 2} \log(1+\exp(-s(y, \vx; M))),
 \end{align*}
-as an alternative to the
-logistic regression distance function above. Show that these two are equivalent
-up to a constant multiplication for logistic regression.
+as an alternative to the logistic regression distance function above. Show that
+these two are equivalent up to a constant multiplication for logistic
+regression.
 
-\vspace{10mm}
+\vspace{5mm}
 
 \paragraph{2.} Unlike the log loss, the hinge loss, defined below, is not
 differentiable everywhere:
@@ -219,18 +219,17 @@ Does it mean that we cannot use a gradient-based optimization algorithm for
 finding a solution that minimizes the hinge loss? If not, what can we do about
 it?
 
-\vspace{10mm}
+\vspace{5mm}
 
-\paragraph{3.} When the
-distances to the nearest positive and negative examples are defined as $d^+$ and
-$d^-$, the margin is 
+\paragraph{3.} When the distances to the nearest positive and negative examples
+are defined as $d^+$ and $d^-$, the margin is 
 \begin{align*}
     \gamma =& \frac{1}{2} (d^+ + d^-).
 \end{align*}
 Show that minimizing the norm of the weight vector of a support vector machine
 is equivalent to maximizing the margin. 
 
-\vspace{10mm}
+\vspace{5mm}
 
 \paragraph{4.} \todo{PROGRAMMING ASSIGNMENT}
 

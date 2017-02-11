@@ -1015,8 +1015,8 @@ from the decision boundary. These two examples are equi-distance $C$ away from
 the decision boundary, because our thought experiment earlier suggests that the
 decision boundary with the maximum margin should be as far away from both of
 these examples as possible.\footnote{
-    {\bf Homework assignment}: Fill in the missing equations marked by ? in
-    Eq.~\eqref{eq:maxmargin}, and explain in words the derivation. 
+    {\bf Homework assignment}: Derive Eq.~\eqref{eq:maxmargin}, and explain in
+    words the derivation. 
 }
 
 Eq.~\eqref{eq:maxmargin} states that the margin $\gamma$ is {\it inversely
@@ -1198,8 +1198,7 @@ hypothesis sets.\footnote{
     characterized as {\it reachable} in $l$ gradient updates from the initial
     weight vector.
 }
-Instead of taking the very last weight vector $\vw^L$, we will
-choose
+Instead of taking the very last weight vector $\vw^L$, we will choose
 \begin{align*}
     \hat{M} = \argmin_{M^l|l=1, \ldots, L} \tilde{R}_{\val}(M^l, D_{\val}),
 \end{align*}
@@ -1553,6 +1552,7 @@ decided based on how well the reference machine and our machine agree.  Learning
 terminates, when the multinomial logistic regression puts all the probability
 mass ($1$) to the correct class. 
 
+\todo{Show some examples}
 
 
 
