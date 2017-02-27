@@ -186,7 +186,7 @@
 
 \begin{document}
 
-\title{Homework Assignment 2}
+\title{Homework Assignment 3}
 \author{Lecturer: Kyunghyun Cho}
 %\affil{
 %    Courant Institute of Mathematical Sciences and \\
@@ -197,25 +197,35 @@
 \maketitle
 \pagenumbering{arabic}
 
-\paragraph{1.} Unlike the log loss, the hinge loss, defined below, is not
-differentiable everywhere:
-\begin{align*}
-    D_{\hinge}(y, \vx; M) = \max(0, 1 - s(y, \vx; M)).
-\end{align*}
-Does it mean that we cannot use a gradient-based optimization algorithm for
-finding a solution that minimizes the hinge loss? If not, what can we do about
-it?
+\paragraph{1.} Suppose we are given a set of input-output pairs $D=\left\{
+    (\vx_1, y^*_1), \ldots, (\vx_N, y^*_N)
+\right\}$, and we want to find the best classifier among the following
+hypothesis sets:
+\begin{enumerate}
+    \item $H_{\text{perceptron}}$: Perceptron classifier
+    \item $H_{\text{logreg}}$: Logistic regression
+    \item $H_{\text{svm}, C}$: Support vector machine with a regularization
+        coefficient $C$
+\end{enumerate}
+where $C$ is one of $\left\{ c_0, \ldots, c_M \right\}$. Our goal is two folds;
+(1) choose the best classifier, and (2) report its generalization performance
+(or its estimate). Describe in words how these two goals are met using the
+nested $K$-fold cross validation.
 
 \vspace{30mm}
 
-\paragraph{2.} When the
-distances to the nearest positive and negative examples are defined as $d^+$ and
-$d^-$, the margin is 
+\paragraph{2.} The distance function of multi-class logistic regression was
+defined as
 \begin{align*}
-    \gamma =& \frac{1}{2} (d^+ + d^-).
+    D(y^*, M, \vx) &= -\log p_{M^*(\vx)} \\
+                   &= -a_{y^*} + \log \sum_{k=1}^K \exp(a_k),
 \end{align*}
-Show that minimizing the norm of the weight vector of a support vector machine
-is equivalent to maximizing the margin. 
+where 
+\begin{align*}
+    \va = \mW \tilde{\vx}.
+\end{align*}
+Derive a learning rule step-by-step for each column vector $\vw_c$ of the weight
+matrix $\mW$.
 
 \vspace{30mm}
 

@@ -1333,19 +1333,28 @@ Two questions naturally arise here. First, why don't we estimate the
 regularization coefficient $C$ just like we did with the weight vector $\vw$?
 In other words, is it possible to simply find $\hat{C}$ such that 
 \begin{align*}
-    \hat{C} = \argmin_C J_{\text{svm}}?
+    \hat{C} = \argmin_C J_{\text{svm}}(M, D_{\tra})?
 \end{align*}
-Second, why do we need to omit this regularization term when selecting among
-trained support vector machines each belonging to a different hypothesis set?
+It is because we are not supposed to use the training set to estimate such a
+regularization coefficient $C$. This would be equivalent to selecting a
+hypothesis set based on the training set, which we have learned {\it not} to do.
 
-\todo{Answer these questions!}
+Second, why do we omit this regularization term when selecting among trained
+support vector machines each belonging to a different hypothesis set? Because at
+the end of the day, what we are really interested in is how well our classifier
+{\it classifies} unseen input vectors, which is precisely what the 0-1 loss in
+Eq.~\eqref{eq:0-1_loss} measures. This is however not a universal practice, and
+you should choose how each hypothesis set, or the machine found within it, is
+scored based on your actual constraints. For instance, if an intrusion detection
+system can only run a low-end processor due to the power consumption constraint,
+you may have to {\it down-weight} the machines you've found from hypothesis sets
+with high computational requirement. 
 
 \begin{figure}[t]
     \centering
     \begin{minipage}{0.6\textwidth}
         \raggedright
-        \includegraphics[width=0.9\columnwidth,clip=True,trim=50 0 50
-        0]{figures/overfit1.pdf}
+        \includegraphics[width=0.9\columnwidth]{figures/overfit1.pdf}
     \end{minipage}
     \begin{minipage}{0.39\textwidth}
         \raggedleft
@@ -1363,14 +1372,14 @@ trained support vector machines each belonging to a different hypothesis set?
     \hfill
     \begin{minipage}{0.49\textwidth}
         \centering
-        \includegraphics[width=\columnwidth,clip=True,trim=50 0 50 0]{figures/overfit2_tra.pdf}
+        \includegraphics[width=\columnwidth]{figures/overfit2_tra.pdf}
         (a) Training Set
     \end{minipage}
     \hfill
     \begin{minipage}{0.49\textwidth}
         \centering
-        \includegraphics[width=\columnwidth,clip=True,trim=50 0 50 0]{figures/overfit2_tes.pdf}
-        (b) Test Set
+        \includegraphics[width=\columnwidth]{figures/overfit2_tes.pdf}
+        (b) Validation Set
     \end{minipage}
 
     \caption{
@@ -1384,11 +1393,27 @@ trained support vector machines each belonging to a different hypothesis set?
 
 \end{figure}
 
-\paragraph{Example} In Fig.~\ref{fig:weight_decay}, we plot how the training and
-validation costs change with respect to the regularization coefficient $C$ (or
-equivalently $\log C$). 
+\paragraph{Example} 
 
-\todo{Explain}
+In this example there are 20 training pairs and 100 validation pairs. We search
+for the best regularization coefficient, or corresponding hypothesis sets, over
+the set of 50 equally-spaced $\log C$ from $-5$ to $3$. We plot how the training
+and validation errors (0-1 loss) change with respect to the regularization
+coefficient $C$ (or equivalently $\log C$) in Fig.~\ref{fig:weight_decay}. It is
+clear from the plot that as the regularization strength weakens ($\log C \to
+-\infty$) the training error drops to zero. On the other hand, the validation
+error decreases until $\log C = 0$, but from there on, increases, which is a
+clear evidence of overfitting. 
+
+In Fig.~\ref{fig:overfit}, we see the difference between the support vector
+machines found using $C=0$ (no regularization, red dashed line) and $\log C=0$
+(best regularization according to the validation error, blue dashed line). The
+red dashed decision boundary, which corresponds to the support vector machine
+without any regularization, classifies all the training input vectors perfectly,
+while the blue dashed decision boundary fails to classify one training input
+vector near $(-0.1, 1.3)$ correctly. However, when we consider the validation
+input vectors, the picture looks different. A better machine is now the
+regularized support vector machine. 
 
 \section{Multi-Class Classification}
 
@@ -1552,8 +1577,72 @@ decided based on how well the reference machine and our machine agree.  Learning
 terminates, when the multinomial logistic regression puts all the probability
 mass ($1$) to the correct class. 
 
-\todo{Show some examples}
+\section{What does the weight vector tell us?}
 
+Before we move on to more advanced topics, let us briefly discuss about what the
+weight vector or matrix tells us. In a standard setting of binary
+classification, each component $x_j$ of an input vector $\vx$ has a
+corresponding weight value $w_j$. When this associated weight value is close to
+$0$, what does it mean? It means that this $j$-th component does not matter!
+This is easy to verify by looking at the score function we defined in
+Eq.~\eqref{eq:lin_score} which can be rewritten as
+\begin{align*}
+    s(y, \vx; M) = y \vw^\top \tilde{\vx} = 
+    y \left( \sum_{j=1}^{d} w_j x_j + w_{d+1} \right).
+\end{align*}
+Let's consider the $k$-th component of the input vector:
+\begin{align*}
+    s(y, \vx; M) = 
+    y \left( 
+        \sum_{j=1}^{k-1} w_j x_j + 
+        w_k x_k +
+        \sum_{j'=k+1}^{d} w_{j'} x_{j'} + 
+    w_{d+1} \right),
+\end{align*}
+which is equivalent to the equation below, if $w_k=0$.
+\begin{align*}
+    s(y, \vx; M) =&
+    y \left( 
+        \sum_{j=1}^{k-1} w_j x_j + 
+        \underbrace{w_k x_k}_{\mathclap{=0\text{ if }w_k=0}} +
+        \sum_{j'=k+1}^{d} w_{j'} x_{j'} + 
+    w_{d+1} \right)
+    \\
+    =& 
+    y \left( 
+        \sum_{j=1}^{k-1} w_j x_j + 
+        \sum_{j'=k+1}^{d} w_{j'} x_{j'} + 
+    w_{d+1} \right).
+\end{align*}
+This is as if our input vector never had the $k$-th component to start with. 
+
+Along the same line of reasoning, we can see that the magnitude of each weight
+value $\left| w_k \right|$ roughly corresponds to how sensitive the output of a
+machine to the change in the value of the $k$-th component of the input vector
+$x_k$. Can we make it slightly more precise by defining the sensitivity more
+carefully? Indeed, we can. The sensitivity of the output of our machine,
+$\vw^\top \tilde{\vx}$ with respect to a single input component $x_k$ is
+precisely the definition of the partial derivative of the output with respect to
+the input component. That is,
+\begin{align*}
+    \frac{\partial \vw^\top \tilde{\vw}}{\partial x_k}
+    =& \frac{\partial}{\partial x_k} \left(
+    \sum_{j=1}^{k-1} w_j x_j + 
+    w_k x_k +
+    \sum_{j'=k+1}^{d} w_{j'} x_{j'} \right) \\
+    =& \frac{\partial w_k x_k} {\partial x_k} \\
+    =& w_k.
+\end{align*}
+This definition of sensitivity via partial derivative will become handy in the
+later part of the course.
+
+In other words, we can understand which components of the input vector are
+meaningful for or have high influence on the output of our machine by inspecting
+the weight vector. For an example of inspecting the weight vector, or matrix in
+the case of multi-class classification, see
+\url{https://github.com/nyu-dl/Intro_to_ML_Lecture_Note/blob/master/notebook/Weight%20Analyzer.ipynb}.
+
+\alert{TODO: Add some explanation going through the example}
 
 
 \section{Nonlinear Classification}
@@ -1583,6 +1672,39 @@ discuss how to build a classifier for problems which are not linearly separable.
 
 \subsection{Deep Learning: Adaptive Basis Networks}
 
+\paragraph{Feature Extraction}
+
+We have so far assumed that an input vector $\vx$ is somehow given together with
+data. Is this assumption reasonable? Let us think of what kind of data we run
+into in practice. For instance, in the example of intrusion detection system
+from earlier sections, the input to a machine is not a vector but a picture
+taken by a camera installed at the front of the store. In the case of building a
+machine that categorizes a document, the input to a machine is again not a
+vector but a long list of words. If we are building a machine for detecting
+violent scenes from a movie, our machine takes as input a video not a single,
+flat vector. What all these examples suggest is that we need one more step in
+addition to what we have discussed as a full pipeline of machine learning. That
+is the step of feature extraction, or sometimes called feature engineering.
+
+Let us introduce another symbol $\mathcal{X}$ to denote the original input which
+could be anything from a colour image, video clip to a friend network of a
+person. Then, the feature extraction stage can be thought of as a function
+$\phi$ that maps from this arbitrary original input $\mathcal{X}$ to a
+corresponding input vector $\vx$. That is,
+\begin{align*}
+    \vx = \phi(\mathcal{X}).
+\end{align*}
+
+What does this process called {\it feature extraction}? That is because the
+function $\phi$ can be thought of as extracting $d$-many characteristics of the
+original input $\mathcal{X}$. Let us consider an example of document
+categorization. 
+
+\todo{TODO}
+
+
+
+
 \begin{figure}
     \centering
     \begin{minipage}{0.6\textwidth}
@@ -1599,10 +1721,6 @@ discuss how to build a classifier for problems which are not linearly separable.
         }
     \end{minipage}
 \end{figure}
-
-\paragraph{Feature Extraction}
-
-\todo{}
 
 \paragraph{Adaptive Basis Networks and Representation Learning}
 
