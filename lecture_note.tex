@@ -1434,7 +1434,11 @@ Let us start from logistic regression in Sec.~\ref{sec:logreg}. We already
 learned that the logistic regression classifier outputs a Bernoulli distribution
 over two possible categories--negative and positive. We extend it so that the
 logistic regression classifier is now returning a distribution over $K$-many
-possible categories $\left\{ 0, 1, \ldots, K \right\}$. 
+possible categories 
+\begin{align}
+    \label{eq:catset}
+    \mathcal{C} = \left\{ 0, 1, \ldots, K \right\}.
+\end{align}
 
 First, we must decide what kind of distribution, other than Bernoulli
 distribution, we should use. In this case of multi-class classification, we use
@@ -1534,10 +1538,11 @@ We can combine them together into a single vector equation:
     -
     \left( 
         \vy^* - \vp
-    \right) \tilde{\vw}^\top,
+    \right) \tilde{\vx}^\top,
 \end{align*}
 where 
-\begin{align*}
+\begin{align}
+    \label{eq:onehot}
     \vy^* = 
     \left[ 
         \begin{array}{c}
@@ -1555,7 +1560,7 @@ where
          \\
          \\
     \end{array}
-\end{align*}
+\end{align}
 is an {\it one-hot vector} corresponding to a desired output, and $\vp$ is the
 actual output from the multinomial logistic regression from
 Eq.~\eqref{eq:multlog_out}.
@@ -1578,6 +1583,7 @@ terminates, when the multinomial logistic regression puts all the probability
 mass ($1$) to the correct class. 
 
 \section{What does the weight vector tell us?}
+\label{sec:weight}
 
 Before we move on to more advanced topics, let us briefly discuss about what the
 weight vector or matrix tells us. In a standard setting of binary
@@ -1670,9 +1676,7 @@ discuss how to build a classifier for problems which are not linearly separable.
     \end{minipage}
 \end{figure}
 
-\subsection{Deep Learning: Adaptive Basis Networks}
-
-\paragraph{Feature Extraction}
+\subsection{Feature Extraction}
 
 We have so far assumed that an input vector $\vx$ is somehow given together with
 data. Is this assumption reasonable? Let us think of what kind of data we run
@@ -1687,7 +1691,7 @@ addition to what we have discussed as a full pipeline of machine learning. That
 is the step of feature extraction, or sometimes called feature engineering.
 
 Let us introduce another symbol $\mathcal{X}$ to denote the original input which
-could be anything from a colour image, video clip to a friend network of a
+could be anything from a colour image, video clip to a social network of a
 person. Then, the feature extraction stage can be thought of as a function
 $\phi$ that maps from this arbitrary original input $\mathcal{X}$ to a
 corresponding input vector $\vx$. That is,
@@ -1695,15 +1699,258 @@ corresponding input vector $\vx$. That is,
     \vx = \phi(\mathcal{X}).
 \end{align*}
 
-What does this process called {\it feature extraction}? That is because the
+Why is this process called {\it feature extraction}? That is because the
 function $\phi$ can be thought of as extracting $d$-many characteristics of the
-original input $\mathcal{X}$. Let us consider an example of document
-categorization. 
+original input $\mathcal{X}$. We extract features out of a given input
+$\mathcal{X}$ and build the corresponding input vector $\vx \in \RR^d$.
 
-\todo{TODO}
+\paragraph{Example: Bag-of-Words Representation}
+
+Let us consider an example of document categorization we learned about earlier.
+What is a property of a given document that largely determines the category or
+topic of the document? One thing that immediately comes to our mind is the
+existence of category-related words. For instance, if a word ``hockey'' is
+mentioned in the document, it is highly likely that it is a document about
+sports, and more specifically about hockey rather than baseball. Perhaps, it is
+also important how frequently such a word appeared in the document. If the word
+``baseball'' appeared ten times more than the word ``baseball'', the topic of
+the document is likely ``hockey'' rather than ``baseball'', even though the word
+``baseball'' appeared. 
+
+This observation leads us to use a so-called bag-of-words (BoW) feature
+representation of a document for document categorization. As the name suggests,
+this representation puts all the words in a given document into a bag and counts
+how often each word appeared in the document, ignoring any order among those
+words. This is equivalent to turning each word into a one-hot vector from
+Eq.~\eqref{eq:onehot} and sum them into a single vector. In order to do so, we
+will first build a vocabulary of all unique words in all the document from a
+training set (again, do not touch any test document!), which is similar to
+building a category set from Eq.~\eqref{eq:catset}. We then transform a document
+into a sequence of one-hot vectors $w_i$'s, and sum all those one-hot vector to
+obtain a bag-of-words vector:
+\begin{align*}
+    \vx = \sum_{i=1}^{|\mathcal{X}|} w_i,
+\end{align*}
+where $|\mathcal{X}|$ denotes the length, or the number of words, of the
+document $\mathcal{X}$. This BoW vector $\vx$ can be used with any machine
+learning algorithm, such as any of the classifiers we have learned so far.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\columnwidth]{figures/xor_transform.pdf}
+
+    \caption{
+        \label{fig:xor_transformed}
+        The XOR problem in the original coordinate system (left) is not linearly
+        separable, but as shown in the right panel, it become linearly
+        separable by transforming the space (center and right). See the main
+        text for more details.
+    }
+\end{figure}
+
+\paragraph{Linear Separable Feature Extraction}
+
+Feature extraction serves two purposes. The first purpose is to build a
+fixed-dimensional vector $\vx$ from an arbitrary input $\mathcal{X}$, of which
+an example was to build a bag-of-word vector from a document of arbitrary
+length. The second purpose is to make a given dataset {\it easier} for a
+classifier, or any other {\it linear} machines. More specifically for the case
+of classifiers we have learned so far, the goal of feature extraction is to make
+a dataset {\it linearly separable}, even when it is not so in the original input
+$\mathcal{X}$ space. 
+
+Let us go back to the example of XOR problem from earlier. In its original form,
+the XOR problem is not solvable by a linear classifier, because the positive and
+negative classes are not linear separable, meaning that there is no 1-D
+hyperplane (line) that separates the examples into the positive and negative
+classes. The question is then: can we somehow transform the original input--a
+vector in a 2-D space-- so that the transformed data is linear separable?
+
+First, let us rotate the whole space, or every single point in the space,
+clock-wise by 45 degrees. This can be done by first defining a rotation matrix
+as
+\begin{align*}
+    R(\theta) = \left[
+        \begin{array}{c c}
+            \cos \theta & -\sin \theta \\
+            \sin \theta & \cos \theta
+        \end{array}
+    \right],
+\end{align*}
+where $\theta$ is in radian ($\text{rad}(45^\circ) \approx 0.785$). We then
+rotate each point in the space by
+\begin{align*}
+    \vx^r = R(\text{rad}(45^\circ)) \vx.
+\end{align*}
+The XOR problem after this rotation is illustrated in the center panel of
+Fig.~\ref{fig:xor_transformed}. 
+
+The problem is however not linearly separable yet. Let us then further apply one
+more transformation. That is, we will take the absolute value of each element of
+the resulting, rotate vector:
+\begin{align*}
+    \vx^{ra} = \left[ 
+        \begin{array}{c}
+            |x^r_1| \\
+            |x^r_2|
+        \end{array}
+    \right].
+\end{align*}
+Effectively, we fold the four quadrants of the rotated space into the first
+quadrant (the top-right one), and the resulting space is now linearly separable
+as shown in the right panel of Fig.~\ref{fig:xor_transformed}.  Within this new
+transformed space, the XOR problem, which was not linearly separable, is now
+linearly separable, and we can use any of the linear classification machines we
+have learned earlier. 
+
+This is a great news! Apparently, we can find a set of features--the elements in
+an input vector $\vx$-- that turn a problem, which is not linearly separable in
+its original form, into a linearly separable one. As long as we can find such a
+transformation, or a sequence of them, we are pretty much solve any
+classification problem.  
+
+Unfortunately, it is  often impossible to find such a transformation manually,
+because the original inputs or the original feature vectors are almost always
+high-dimensional. In the remainder of this section, we will discuss how we can
+automate such a procedure. 
+
+\subsection{$k$-Nearest Neighbours: Fixed Basis Networks}
+
+Let us consider another transformation for the XOR problem above. We start with
+selecting four points in the space that correspond to 
+\begin{align*}
+    &\vr^1 = [-1, -1] \\
+    &\vr^2 = [1, 1] \\
+    &\vr^3 = [-1, 1] \\
+    &\vr^4 = [1, -1] \\
+\end{align*}
+to which we refer as {\it basis vectors}. With these basis vectors, we will
+transform each two-dimensional input vector $\vx$ into a four-dimensional vector
+$\phi(\vx)$ such that
+\begin{align}
+    \label{eq:rbf}
+    \phi_i(\vx) = \exp\left( -(\vx - \vr^i)^2 \right).
+\end{align}
+This is equivalent to saying that the $i$-th element of the transformed vector
+$\phi(\vx)$ is inversely proportional to the distance between the input vector
+$\vx$ and the $i$-th basis vector. 
+
+This function is often called a (Gaussian) {\it radial basis function}. This
+function's output is bounded between $0$ and $1$. The output is closer to $1$,
+when the input vector $\vx$ is close to the basis vector $\vr$, but converges to
+$0$ as the distance between them grows. 
+
+In this newly transformed space, the XOR problem is linearly separable. How do
+we confirm this? We can either train a linear classifier, such as the ones we
+have learned so far in the course, or manually find a weight vector $\vw \in
+\RR^5$ that solves the problem perfectly. Let us try the latter, based on the
+intuition we built from Sec.~\ref{sec:weight}.
+
+We first observe that any input vector that is close to one of the first two
+basis vectors $\vr^1$ and $\vr^2$ should be classified as a positive class, and
+an input vector closer to either $\vr^3$ or $\vr^4$ should be classified as a
+negative class. In other words, any positive input vector would have either the
+first or second element of the transformed vector close to 1, while any negative
+input vector close to 0. For the third and fourth elements, they would have a
+value close to 1, if the original input vector is negative, and close to 0
+otherwise. 
+
+Based on this observation, we can easily notice that the following weight vector
+will perfectly solve the problem:\footnote{
+    It is a {\bf homework assignment} for you to show that this weight vector
+    solves the XOR problem in the new space. 
+}
+\begin{align*}
+    \vw = \left[ 1, 1, -1, -1, 0 \right]^\top.
+\end{align*}
+
+The weight vector above can be written alternatively as 
+\begin{align}
+    \label{eq:w_rbf}
+    \vw = \left[ y^1, y^2, y^3, y^4, 0\right]^\top,
+\end{align}
+where $y^i$ is the class label (-1 or 1) of the $i$-th basis vector.\footnote{
+    It is your {\bf homework assignment} to find such a weight vector when the
+    class labels are given as $0$ and $1$.
+}
+In other words, the input vector $\vx$ belongs to the class to which the {\it
+nearest} basis vector belongs. 
+
+Let us generalize this idea by assuming that we have $K$ basis vectors and their
+corresponding labels:
+\begin{align*}
+    \left\{ (\vr^1, y^1), \ldots, (\vr^K, y^K) \right\}.
+\end{align*}
+Each input vector $\vx$ is transformed into
+\begin{align}
+    \label{eq:W_rbf}
+    \phi(\vx) = \left[ 
+        \begin{array}{c}
+            \exp\left( -(\vx - \vr^1)^2 \right)  \\
+            \vdots \\
+            \exp\left( -(\vx - \vr^K)^2 \right)  \\
+        \end{array}
+    \right]
+\end{align}
+
+In the case of binary classification, the optimal weight vector is given in
+Eq.~\eqref{eq:w_rbf}. In multi-class classification, the weight matrix $\mW$ can
+be constructed as
+\begin{align*}
+    \mW = \left[
+        \vy^1, \ldots, \vy^K
+    \right],
+\end{align*}
+where $\vy^i$ is the one-hot vector corresponding to the class to which the
+$i$-th basis vector belongs (see Eq.~\eqref{eq:onehot}.) Again, it is left for
+you as a {\bf homework assignment} to show that this construction of the weight
+matrix solves the problem of multi-class classification.
+
+Suddenly the problem of finding a linearly separable transformation has become a
+problem of finding a set of good basis vectors and their own classes. Of course,
+now a big question is what these good basis vectors. An even bigger question is
+how we know to which class each of those basis vectors belongs. After all, the
+whole point of classification is to figure out this latter question.
+
+\paragraph{$k$-Nearest Neighbours}
+
+We can push this idea to the extreme by declaring each and every input vector in
+a training set as basis vectors. Furthermore, instead of building a linear
+classifier in the transformed space (using all the training input vectors as
+basis vectors,) we can simply use the class label of the nearest basis vector,
+or more conventionally {\it nearest neighbour}. 
+
+This can be written down more formally by first defining as many basis vectors
+as there are training examples. That is,
+\begin{align*}
+    \vr^i = \vx_i,
+\end{align*}
+where $\vx^i$ is the $i$-th input vector in a training set. Then, each input
+vector is transformed in two stages. First, we use the radial basis function to
+get $\phi(\vx)$ as done in Eq.~\eqref{eq:rbf}. Second, we turn the resulting
+vector into an one-hot vector by setting the element with the largest value to
+$1$ and all the others to $0$:
+\begin{align*}
+    \phi'(\vx) = \argmax(\phi(\vx)).
+\end{align*}
+The weight matrix is constructed as before in Eq.~\eqref{eq:W_rbf}.
+In practice, none of these formal steps is necessary. All that is needed is to
+find the nearest neighbour from a training set given an arbitrary (test) vector,
+and return the class of the nearest neighbour. We call this classifier a {\it
+nearest-neighbour classifier}.
+
+\todo{Extension to a $k$ nearest neighbour classifier}
+
+\paragraph{Radial Basis Function Networks}
+
+\todo{}
 
 
 
+
+
+
+\subsection{Deep Learning: Adaptive Basis Networks}
 
 \begin{figure}
     \centering
@@ -1723,19 +1970,6 @@ categorization.
 \end{figure}
 
 \paragraph{Adaptive Basis Networks and Representation Learning}
-
-\todo{}
-
-
-\subsection{$k$-Nearest Neighbours: Fixed Basis Networks}
-
-
-\paragraph{Radial Basis Function Networks}
-
-\todo{}
-
-
-\paragraph{$k$-Nearest Neighbours}
 
 \todo{}
 
