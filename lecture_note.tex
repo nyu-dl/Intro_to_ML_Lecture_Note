@@ -1933,22 +1933,94 @@ $1$ and all the others to $0$:
 \begin{align*}
     \phi'(\vx) = \argmax(\phi(\vx)).
 \end{align*}
-The weight matrix is constructed as before in Eq.~\eqref{eq:W_rbf}.
-In practice, none of these formal steps is necessary. All that is needed is to
-find the nearest neighbour from a training set given an arbitrary (test) vector,
-and return the class of the nearest neighbour. We call this classifier a {\it
+The weight matrix is constructed as before in Eq.~\eqref{eq:W_rbf}.  In
+practice, none of these formal steps is necessary. All that is needed is to find
+the nearest neighbour from a training set given an arbitrary (test) vector, and
+return the class of the nearest neighbour. We call this classifier a {\it
 nearest-neighbour classifier}.
 
-\todo{Extension to a $k$ nearest neighbour classifier}
+The nearest-neighbour classifier can be written down in a single equation:
+\begin{align*}
+    \argmin_{(\vx, y) \in D_{\text{tra}}} \| \vx - \vx' \|^2,
+\end{align*}
+where $\vx'$ is a new input vector of which label must be found. Note that it is
+not necessary to use the Euclidean distance $\| a - b \|^2$, and any distance
+function may be used instead.
 
-\paragraph{Radial Basis Function Networks}
+\begin{figure}[t]
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\columnwidth]{figures/knn_k1.pdf}
+
+        (a) $k=1$
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\columnwidth]{figures/knn_k5.pdf}
+
+        (b) $k=5$
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\columnwidth]{figures/knn_k20.pdf}
+
+        (c) $k=20$
+    \end{minipage}
+
+    \caption{
+        \label{fig:knn}
+        The effect of varying $k$ in $k$-nearest-neighbour classifier. We
+        observe that the decision boundary becomes {\it smoother} as $k$
+        increases, which suggests that a large $k$ corresponds to having a
+        stronger regularization term.
+    }
+\end{figure}
+
+The nearest-neighbour classifier is rarely used in practice. Instead, it is more
+common to use its variant, called a {\it $k$-nearest-neighbour} (KNN)
+classifier.  Unlike the nearest-neighbour classifier, the KNN classifier selects
+$k$ nearest input vectors from a training set given a new input vector, and lets
+them vote on which category this new vector belongs to. The nearest-neighbour
+classifier is thus a special case of the KNN classifier, where $k$ is fixed to
+$1$. 
+
+Increasing $k$ has the effect of regularization, similarly to the weight decay
+regularization term, or the max-margin regularization term from support vector
+machines (see Eq.~\eqref{eq:svm}~(a).) When $k=1$, the empirical cost on a
+training set is perfect by definition, but this nearest-neighbour classifier is
+susceptible to outliers or noise. Imagine a case where one negative input vector
+was accidentally placed in the middle of a cluster\footnote{
+    A cluster refers to a group of closely located input vectors. 
+}
+of positive input vectors. The nearest-neighbour classifier would assign any
+input vector in a small region around this negative input vector to a negative
+class, although it is quite clear that this training example is an outlier, or
+was labelled incorrectly. This behaviour, which is a classical example of
+overfitting, is easily mitigated by using $k > 2$, as this would ignore such an
+outlier training example. On the other hand, we can also think of a case where
+$k = |D_{\tra}|$, in which case any new input vector would be assigned to a
+majority class, and such a KNN classifier wouldn't be able to correctly classify
+any training input vector belonging to a minority class. The latter case is
+considered {\it over-regularized} or {\it under-fitted}. 
+
+
+\subsection{Radial Basis Function Networks}
+
+The most obvious weakness of the KNN classifier is that it requires (a) a large
+storage (since it must maintain the entire training set,) and (b) a sweep
+through the entire training set (unless some smart indexing with an appropriate
+approximation strategy is used.) This becomes more severe, as the size of a
+training set grows (which is precisely what is happening everyday,) and if there
+is a computational constraint in run-time (such as when run on a mobile phone.) 
+
+A radial basis function (RBF) network overcomes this weakness of the KNN
+classifier by selecting only a small number of basis vectors, according to
+memory and computational constraints. Of course, as we discussed earlier, how
+should we choose such basis vectors?
 
 \todo{}
-
-
-
-
-
 
 \subsection{Deep Learning: Adaptive Basis Networks}
 
