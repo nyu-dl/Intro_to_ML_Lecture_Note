@@ -2020,9 +2020,198 @@ classifier by selecting only a small number of basis vectors, according to
 memory and computational constraints. Of course, as we discussed earlier, how
 should we choose such basis vectors?
 
-\todo{}
+There are two widely-used approaches, when there is a constraint on the number
+of basis vectors. Let this constraint be $K$. The first approach is rather dumb
+in that it uniform-randomly selects $K$ training input vectors without
+replacement:
+\begin{enumerate}
+    \item Uniform-randomly select an index $i$ from $\left\{ 1, \ldots, |D|
+        \right\}$
+    \item $B \leftarrow B \cup \left\{ \vx_i \right\}$
+    \item $D \leftarrow D \backslash \left\{ \vx_i \right\}$
+    \item Go back to 1, if $|B| < K$.
+\end{enumerate}
+where $D$ is initialized with a training set $D_{\tra}$, and $B$ is a set of
+basis vectors initialized to be an empty set. This approach works surprisingly
+well, because (a) no basis vector is too far away from the training examples,
+and (b) uniform-randomly sampling ensures that the selected basis vectors are
+evenly distributed across the region occupied by the training examples.
+In this random-sampling approach, we know precisely what the correct label, or
+that predicted by a reference machine, of each basis vector is. This allows us
+to set the weight vector, or weight matrix, exactly, as we have done with the
+nearest-neighbour classifier in Eq.~\eqref{eq:W_rbf}.
 
-\subsection{Deep Learning: Adaptive Basis Networks}
+The other approach is to find a set of clusters of training input vectors and
+pick the centroids\footnote{
+    A centroid is the average of all the input vectors in the corresponding
+    cluster.
+}
+of these clusters as basis vectors. In the case of the XOR problem in
+Fig.~\ref{fig:xor_transformed}, there are four clusters centered at (1,1),
+(-1,1), (-1,-1) and (1,-1), respectively. Hence we would take these four
+centroids $\left[1,1\right]$, $\left[-1,1\right]$, $\left[-1,-1\right]$ and
+$\left[1,-1\right]$ as basis vectors. This ensures that there is at least one
+basis vector for any group of training input vectors, and this guarantee is much
+stronger than we get with the random-sampling approach. Despite this nice
+property, we are now faced with two additional issues. 
+
+First, how do we get those clusters? In the case of low-dimensional input
+vectors (e.g., 2-D or 3-D), it may be possible for us to visually inspect the
+input vectors to manually select clusters. This however becomes implausible when
+the dimensionality $d$ of the input vector grows beyond $3$. We then resort to
+automatic clustering which is another class of algorithms in machine learning.
+We will learn about automatic clustering later in the course. 
+
+When we have found clusters and their centroids, we have the second question to
+answer. That is, how should we set the weight vector, or matrix, without having
+the correct labels for these basis vectors? Unlike the random-sampling approach,
+or the nearest-neighbour classifier (which is the special case of
+random-sampling approach with $K=|D_{\tra}|$), the centroids are not necessarily
+included in a training set, and thereby, are without correct labels.
+Fortunately we already have a solution to this problem. In fact we have been
+learning how to answer this problem this entire semester. 
+
+Let us assume that we have $K$ basis vectors $\left\{ \vr^1, \vr^2, \ldots,
+\vr^K\right\}$ corresponding to the centroids of $K$ clusters. With these basis
+vectors, we now transform each and every input vector in a training set into a
+$K$-dimensional vector:
+\begin{align*}
+    \phi(\vx) = \left[
+        \begin{array}{c}
+            \exp\left( -(\vx - \vr^1)^2 \right) \\
+            \exp\left( -(\vx - \vr^2)^2 \right) \\
+            \vdots \\
+            \exp\left( -(\vx - \vr^K)^2 \right) 
+        \end{array}
+    \right] \in \RR^K.
+\end{align*}
+This transformation of every training input vector is equivalent to building a
+new training set consisting of pairs of a transformed input vector and its
+correct class. That is,
+\begin{align*}
+    D_{\tra} \leftarrow \left\{
+        (\phi(\vx_1), y_1), \ldots, (\phi(\vx_N), y_N)
+    \right\}.
+\end{align*}
+Once this transformation is done, we can find the $K+1$-dimensional weight
+vector, or $(K+1)\times |\mathcal{C}|$-dimensional matrix, using any of the
+techniques we have learned earlier, including perceptron, logistic regression,
+support vector machines and multinomial logistic regression. 
+
+In other words, we have now learned how to use the linear classifiers we have
+learned so far for problems that are {\it not} linearly separable. We first find
+a set of basis vectors based on which each input vector is transformed using a
+radial basis function from Eq.~\eqref{eq:rbf}, and fit a linear classifier on
+a new training set with these transformed input vectors. A nonlinear classifier
+constructed in this way is often referred to as a {\it radial basis function
+network} (RBFN). Also, as both kNN and RBFN use a {\it fixed} set of basis
+vectors, we call this family of classifiers a {\it fixed basis network}.
+
+
+
+\subsection{Adaptive Basis Function Networks or Deep Learning}
+
+\paragraph{Adaptive Basis Function Networks}
+
+A natural question that follows our discussion on the fixed basis network is
+whether it is necessary to {\it fix} basis vectors. Perhaps a more fundamental
+question would be how we know that those fixed basis vectors we have selected
+are good for the final classification accuracy. Is it possible that there is a
+better strategy for selecting basis vectors than the ones we have discussed
+already? Is it possible that this new strategy selects basis vectors not based
+on our intuition but based on the actual classification accuracy?
+
+Let us go back to logistic regression and consider its distance function from
+Eq.~\eqref{eq:logreg_dist}:
+\begin{align}
+    \label{eq:logreg_dist}
+    D(M^*(\vx), M, \vx) =& -\log p(C=M^*(\vx) | \vx) \\
+    =& -(M^*(\vx) \log M(\vx) + (1-M^*(\vx)) \log (1- M(\vx))),
+    \nonumber
+\end{align}
+where 
+\begin{align*}
+    M(\vx) = \sigma(\vw^\top \vw + b)
+\end{align*}
+and $\sigma$ is a sigmoid function.\footnote{
+    I have split the weight vector into two components; (a) the weight vector
+    $\vw$ and (b) the bias $b$, as this is a more standard notation in deep
+    learning. 
+} 
+Given this distance function, we were able to derive a learning rule for
+logistic regression by computing its gradient with respect to the weight vector
+(and a bias scalar). 
+
+With $K$ basis vectors, we can rewrite this distance function as
+\begin{align*}
+    D(M^*(\phi(\vx)), M, \phi(\vx)) 
+    = -(M^*(\phi(\vx)) \log M(\phi(\vx)) + (1-M^*(\phi(\vx))) \log (1-
+    M(\phi(\vx)))),
+\end{align*}
+where 
+\begin{align*}
+    \phi(\vx) = \left[ 
+        \begin{array}{c}
+            \exp\left( -(\vx - \vr^1)^2 \right)  \\
+            \vdots \\
+            \exp\left( -(\vx - \vr^K)^2 \right)  \\
+        \end{array}
+    \right]
+\end{align*}
+from Eq.~\eqref{eq:W_rbf}. In this rewritten form, we notice that we can compute
+the gradient of the distance with respect not only to the weight vector ($\vw$
+and $b$), but also to each and every basis vector. That is, we can compute
+\begin{align*}
+    \nabla_{\vr^k} D(M^*(\phi(\vx)), M, \phi(\vx)).
+\end{align*}
+
+Let's compute this gradient:
+\begin{align*}
+    \nabla_{\vr^k} D(y^*, M, \phi(\vx)) =&
+    \underbrace{-(y^* - \sigma(\vw^\top \phi(\vx) + b))}_{
+        \frac{\partial D}{\partial a}
+    }
+    \underbrace{w_k}_{\frac{\partial a}{\partial \phi_k(\vx)}}
+    \underbrace{(2 \phi_k(\vx)) (\vx - \vr^k)}_{
+    \nabla_{\vr^k} \phi_k(\vx)} \\
+    =& -2(y^* - \sigma(\vw^\top \phi(\vx) + b)) w_k \phi_k(\vx) (\vx - \vr^k)
+    ,
+\end{align*}
+where $a = \vw^\top \phi(\vx) + b$.\footnote{
+    At this point, you should already know that the full derivation is left for
+    you as a {\bf homework assignment}.
+}
+With this gradient, we now know how to adjust the $k$-th basis vector $\vr^k$ to
+reduce the distance given a training example $(\vx, y^*)$:
+\begin{align*}
+    \vr^k \leftarrow \vr^k - \eta \nabla_{\vr^k} D(y^*, M, \phi(\vx)).
+\end{align*}
+This is just like how we have learned to update the weight vector to minimize
+the distance earlier for the linear classifiers.  Unlike those learning rules,
+however, this learning rule is not easily interpretable. For instance, when
+should the basis vector $\vr^k$ become similar to the input vector $\vx$? And,
+how much should it be adjusted toward or against $\vx$? How does this value
+correlate with the classification accuracy? Despite the fact that we cannot or
+are not willing to answer these questions, one thing is clear; this learning
+rule will adjust the $k$-th basis vector to reduce the distance.
+
+What does this imply? It implies that we can use the very same technique we
+learned earlier for training a linear classifier for automatically adapting the
+basis vectors as well. As long as the gradient of the distance function could be
+computed with respect to any of the basis vectors, we can simultaneously update
+the weight vector, or matrix, and all the basis vectors to minimize the
+distance, thereby maximizing the classification accuracy. Even better, we do not
+even need to compute the gradient ourselves, but can leave this tedious job to
+automatic differentiation. 
+
+In practice, we use one of the two selection strategies from the previous
+section to {\it initialize} basis vectors rather than fixing them. Then, we can
+use any off-the-shelf optimization algorithm to {\it jointly} tune both the
+weight vector, or matrix, and all the basis vectors to minimize the empirical
+cost function, using the gradient computed again automatically by automatic
+differentiation algorithm. When the basis vectors are not anymore fixed, we call
+this type of a classifier an {\it adaptive basis function network} (ABFN). 
+
 
 \begin{figure}
     \centering
@@ -2035,15 +2224,77 @@ should we choose such basis vectors?
             \label{fig:feature_extraction}
             The goal of adaptive basis networks is to find a parametrized
             mapping from the original input space $\vx \in \mathbb{R}^d$ to
-            another space $g(\vx) \in \mathbb{R}^q$ that makes the problem
+            another space $\phi(\vx) \in \mathbb{R}^q$ that makes the problem
             linearly separable. 
         }
     \end{minipage}
 \end{figure}
 
-\paragraph{Adaptive Basis Networks and Representation Learning}
 
-\todo{}
+\paragraph{Deep Learning}
+
+A further implication of gradient-based learning is that there is absolutely no
+constraint that the feature extraction function $\phi$ be a radial basis
+function. In fact, $\phi$ can be any parametrized, {\it differentiable} function
+that maps from an input vector $\vx$ to its transformation. In the case of a
+radial basis function, for instance, $\phi$ is a function from $\RR^d$ to
+$\RR^K$ parametrized by a set of $K$ basis vectors. This feature extraction
+function is differentiable with respect to all the $K$ basis vectors, and this
+allows us to use any gradient-based off-the-shelf optimization algorithm to
+train the whole classifier jointly.
+
+What is a good parametric, differentiable function $\phi$? In order to answer
+this question, we should think of what we want this feature extraction function
+to do. We want this feature extraction function to make the problem {\it linear
+separable} so that the linear classifier acting on $\phi(\vx)$ can do its job
+well. See Fig.~\ref{fig:feature_extraction} for graphical illustration. 
+
+This can be done in two ways. First, we can make one large function $\phi$ that
+does the perfect job in one go. Or, we can compose a series of {\it simple
+feature extraction functions} such that each feature extraction function makes
+the problem slightly more linearly separable than it was beforehand. That is, we
+stack a series of feature extraction function $\phi^1, \ldots \phi^L$ such that
+$\phi^L(\cdots\phi^1(\vx))$ (or $\phi^1 \circ \cdots \circ \phi^L$) is linearly
+separable, as illustrated in Fig.~\ref{fig:feature_extraction_deep}.
+
+What kind of simple feature extraction function should we use then, and how does
+the stack of such simple feature extraction functions make the problem more
+linearly separable? This question requires us finally to think of and understand
+the underlying structures or properties behind a target task (classification)
+and data. Based on the underlying structures, suitable feature extraction
+functions may be selected and composed into a {\it deep} feature extraction
+function which is often followed by a linear classifier. This composition of a
+linear classifier and a deep feature extraction function is jointly trained to
+minimize the empirical cost function using a gradient-based off-the-shelf
+optimization algorithm, and the field in which this type of machine learning
+models is studied is called {\it deep learning}. 
+
+There are many fascinating recent developments in deep learning, but they are
+out of the scope of this course. For comprehensive discussion on deep learning,
+I highly recommend you to read a newly published text book {\it Deep Learning}
+by Ian Goodfellow, Yoshua Bengio and Aaron Courville \cite{goodfellow2016deep}.
+For a general overview of recent advances, see the review article
+\cite{lecun2015deep}. If you are a student at New York University, you can also
+attend the course {\it Deep Learning} taught by Prof. Yann LeCun.
+
+
+
+\begin{figure}
+    \centering
+    \begin{minipage}{0.6\textwidth}
+        \centering
+        \includegraphics[width=\columnwidth]{figures/adaptive_basis2.png}
+    \end{minipage}
+    \begin{minipage}{0.39\textwidth}
+        \caption{
+            \label{fig:feature_extraction_deep}
+            The goal of deep learning is to stack many feature extraction
+            functions $\phi^l$'s on top of each other to gradually transform the
+            problem to become linearly separable. 
+        }
+    \end{minipage}
+\end{figure}
+
 
 
 \section{Kernel Support Vector Machines$^\star$}
@@ -2075,10 +2326,36 @@ particularly focus on framing the whole problem as probabilistic modelling.
 As we have done with classification, we will start with considering {\it linear}
 regression. In linear regression, our machine $M$ is defined as 
 \begin{align*}
-    M(\vx) = \vw^\top \tilde{\vx},
+    M(\vx) = \mW^\top \tilde{\vx},
 \end{align*}
 where we use $\tilde{\vx}$ to denote the input vector with an extra $1$ attached
-at the end. 
+at the end.  Similarly to the earlier classification problems, we are given a
+set of training examples:
+\begin{align*}
+    D_{\tra} = \left\{ 
+        (\vx_1, \vy_1^*), \ldots, (\vx_N, \vy_N^*)
+    \right\}.
+\end{align*}
+Unlike classification, the output $\vy_n^* \in \RR^q$ is a $q$-dimensional real
+vector. 
+
+As should be obvious at this point, the goal of linear regression is to find a
+machine, or equivalently its weight vector, so as to minimize the distance
+between the reference machine's output and our machine's output. The reference
+machine's outputs are given as a part of the training set.
+
+\paragraph{Distance Functions}
+
+Given two vectors, one natural way to define the distance between them is a
+Euclidean distance which is defined as
+\begin{align*}
+    \|\vy^* - \vy\|_2 = \sqrt{\sum_{k=1}^q (y^*_k - y_k)^2}.
+\end{align*}
+Of course, this is not the only way, and a straightforward generalization is to
+consider $L_p$ norm of which Euclidean distance is a special case with $p=2$:
+\begin{align*}
+    \|\vy^* - \vy\|_p = \sqrt[p]{\sum_{k=1}^q (y^*_k - y_k)^p}.
+\end{align*}
 
 
 \subsection{Regularization and Prior Distributions}
