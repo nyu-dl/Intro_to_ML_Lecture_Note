@@ -1416,6 +1416,7 @@ input vectors, the picture looks different. A better machine is now the
 regularized support vector machine. 
 
 \section{Multi-Class Classification}
+\label{sec:multlogreg}
 
 So far, we have considered a {\it binary} classification only. In reality, there
 are often more than two categories to which an input vector belongs.  It is
@@ -2320,8 +2321,8 @@ particularly focus on framing the whole problem as probabilistic modelling.
 
 \subsection{Linear Regression}
 
-As we have done with classification, we will start with considering {\it linear}
-regression. In linear regression, our machine $M$ is defined as 
+As we have done with classification, we will start with considering {\it linear
+regression}. In linear regression, our machine $M$ is defined as 
 \begin{align*}
     M(\vx) = \mW^\top \tilde{\vx},
 \end{align*}
@@ -2346,11 +2347,437 @@ machine's outputs are given as a part of the training set.
 Given two vectors, one natural way to define the distance between them is a
 Euclidean distance which is defined as
 \begin{align*}
-    \|\vy^* - \vy\|_2 = \sqrt{\sum_{k=1}^q (y^*_k - y_k)^2}.
+    \|\vy^* - \vy\|_2^2 = \sqrt{\sum_{k=1}^q (y^*_k - y_k)^2}.
 \end{align*}
+Following our convention, we thus obtain the following distance function for
+{\it linear regression}:
+\begin{align}
+    \label{eq:linreg_dist}
+    D(M^*(\vx), M, \vx) = \|M^*(\vx) - M(\vx)\|_2^2.
+\end{align}
+
+At this point of this course, you already know what you need to do. First, you
+would define an empirical cost using a training set as
+\begin{align*}
+    \hat{R}(M, D_{\tra}) = \frac{1}{N} \sum_{n=1}^N
+    \|\vy^*_n - M(\vx_n)\|^2_2.
+\end{align*}
+Then, you would compute the gradient of this empirical cost with respect to the
+weight matrix $\mW$ (or more strictly its flattened vector):
+\begin{align*}
+    \nabla_{\mW} \hat{R}.
+\end{align*}
+Then, you would use an off-the-shelf optimization algorithm to find a weight
+matrix that minimizes the empirical cost function. This would the final step,
+right? No! You should use validation to find a correct hypothesis set (or
+early-stop learning) to approximately minimize the expected cost function
+instead of empirical cost function.
+
+Instead of going this whole pipeline once more in the setting of regression, we
+will consider a slightly difference framework in which these machine learning
+problems, including both classification and regression, could be embedded. 
 
 
 \subsection{Regularization and Prior Distributions}
+
+\section{Recap: Probability and Distribution}
+
+Let us briefly go over a few concepts from probability here. They will become
+useful in the later discussion where a new framework is introduced. 
+
+\paragraph{Random Variables}
+
+A random variable is not a usual variable in mathematics. A usual variable is
+often given a single value. When I say $x=2$, the variable $x$ is equivalent to
+the value $2$, and it is equivalent to replacing $x$ with $2$ in any subsequent
+equations that include $x$. This is however not true in the case of a random
+variable, and sometimes we call a normal variable a {\it deterministic variable}
+as opposed to a random variable or a {\it stochastic variable}.
+
+A {\it random variable} is assigned not a single value but a distribution over
+all possible values it could take. As an example, consider flipping a coin. We
+may declare a random variable $X$ to denote the outcome of flipping a coin. $X$
+can then take one of two values $\Omega = \left\{0\text{ (Head)}, 1\text{
+(Tail)}\right\}$.  Because we do not know what the outcome would be, we do not
+assign $X$ to any one of these values explicitly but assign to it a {\it
+distribution} over these two possible choices. 
+
+A distribution is characterized by a function $p$ that maps from one of all
+possible values to its corresponding probability, and by a set of constraints on
+this function. In this example of coin flipping, $p: \Omega \to \RR$. There are
+two constraints on this function $p$. First, the output of this function must be
+non-negative:
+\begin{align*}
+    p(x) \geq 0.
+\end{align*}
+Second, the probabilities of all possible values must sum to $1$:
+\begin{align*}
+    \sum_{x \in \Omega} p(x) = 1.
+\end{align*}
+This function is called a {\it probability mass function}. 
+
+This idea of distribution can be extended to a continuous random variable. A
+continuous random variable is assigned correspondingly a {\it continuous
+distribution} over a continuous set $\Omega$. Similarly to the definition of a
+distribution we defined above for a {\it discrete random variable}, we
+characterize a continuous distribution by a function $F$ and a set of
+constraints.  Unlike the earlier case, this function $F$ does not return a
+probability of a given value, but computes a cumulative probability. That is,
+\begin{align}
+    \label{eq:cdf}
+    F(x) = P(X \leq x),
+\end{align}
+i.e., what is the probability of a random variable $X$ being less than or equal
+to $x$? 
+
+There are two major constraints on this cumulative probability function
+$F$.\footnote{
+    In addition to two more constraints that are out of scope for this course.
+} First, as was the case with the discrete random variable, the value of $F$
+must be bounded, and in this case, between $0$ and $1$:
+\begin{align*}
+    0 \leq F(x) \leq 1, \forall x \in \Omega.
+\end{align*}
+Second, as the name suggests, this function must be monotonically non-decreasing:
+\begin{align*}
+    F(x+\epsilon) \geq F(x),
+\end{align*}
+where $\epsilon > 0$.
+
+Of course, we want something similar to $p$ with a continuous random variable as
+well in order to easily mix discrete and continuous random variables. The
+definition of the cumulative probability function $F$ in Eq.~\eqref{eq:cdf}
+suggests such a function which acts on a single value $x$, rather than a set of
+values (i.e. $\left\{ y \in \Omega | y \leq x \right\}$): 
+\begin{align*}
+    F(x) = \int_{-\infty}^x f(x) \dd{x}.
+\end{align*}
+This function $f$ is called a {\it probability density function}. 
+
+It is a very bad habit, but a lot of people, including myself, often refer to
+both the probability mass function and probability density function simply as a
+{\it probability}. This is certainly not correct, but often helps us make our
+explanation as well as equations concise, without introducing much, if any,
+confusion. Especially, at the level of our discussion in this course, it is
+almost always okay to mix them up.\footnote{
+    But again, as your instructor, I must insist you know this distinction, and
+    will likely ask you to clarify this distinction in the final exam.
+}
+
+\begin{figure}[t]
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\columnwidth]{figures/gauss.pdf}
+        (a) Normal Distribution
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\columnwidth]{figures/gamma.pdf}
+        (b) Gamma Distribution
+    \end{minipage}
+    \caption{
+        \label{fig:distributions}
+        In these two figures, we plot both a probability density function $f$,
+        cumulative density function $F$, the mean and the mode. Additionally, in
+        the case of (a) Normal distribution, we coloured the area corresponding
+        to the deviation from the mean by one standard deviation.
+    }
+\end{figure}
+
+\paragraph{Expectation, Variance and Other Statistics}
+
+When a distribution is defined over many possible values, or sometimes
+infinitely many values as in the case of continuous random variables, it is
+useful to extract a small set of representative values of such a distribution.
+This is often what we do in everyday life as well. For instance, when we move to
+a new city, we often ask the average monthly rent of an apartment rather than a
+full distribution over all possible rent prices. Furthermore, we also want to
+know how much a usual monthly rent varies from this average monthly rent so as
+not to be surprised. 
+
+First, let us define what we mean by the average X by defining a quantity called
+{\it mean}. The mean of a random variable $X$, which has been assigned a
+distribution whose probability function is $p$, is defined as
+\begin{align*}
+    \E\left[ X \right] = \sum_{x \in \Omega} x p(x),
+\end{align*}
+or in the case of a continuous variable $X$,
+\begin{align*}
+    \E\left[ X \right] = \int_{x \in \Omega} x p(x) \dd x.
+\end{align*}
+
+When we say an ``average'' of a collection of $N$ values, what we often mean is
+the following:
+\begin{align*}
+    \frac{1}{N} \sum_{n=1}^N x_n.
+\end{align*}
+Can we somehow connect this intuitive definition of average and the new
+definition above? 
+
+Indeed we can. This can be done by thinking of $p(x)$ as a frequency of $x$
+being selected out of all possible values in $\Omega$. Let's say we have
+infinitely many realizations of the random variable $X$. $p(x)$ then corresponds
+to how many there are $x$ in this set of infinitely many realizations of $X$,
+meaning how frequently $x$ occurred when we observed $X$ infinitely many times.
+In this case, multiplying $x$ with the frequency $p(x)$ corresponds to adding
+all the occurrences of $x$. By doing this for all possible values of $x$, we end
+up with our everyday life definition of ``average''.
+
+Next, let us define {\it variance}. We want to know how far each realization is
+from the mean on average. Based on what we have discussed, it should be clear
+that
+\begin{align*}
+    \text{Var}(X) = \sum_{x \in \Omega} (x - \E\left[ X \right])^2 p(x).
+\end{align*}
+When $X$ is a continuous random variable, we replace the summation $\sum$ with
+the integral $\int$. The square-root of the variance is called a {\it standard
+deviation}, and is often easier to understand intuitively as it is in the same
+scale as the original input $x$. 
+
+Can we generalize this notion of variance further? How about this?
+\begin{align*}
+    \text{Moment}-p(X) = \sum_{x \in \Omega} (x - \E\left[ X \right])^p p(x).
+\end{align*}
+This is called a {\it $p$-th central moment}, and has turned out to have
+interesting properties. For instance, the 3-rd central moment, to which we refer
+as {\it skewness}, indicates whether the distribution is symmetric. For
+instance, the Normal distribution plotted in Fig.~\ref{fig:distributions}~(a)
+has a zero 3-rd central moment, while the Gamma distribution in
+Fig.~\ref{fig:distributions}~(b) has a non-zero 3-rd central moment. The 4-th
+central moment, called {\it kurtosis}, indicates the flatness of the
+distribution with respect to the Normal distribution. Many of these moments have
+fascinating use cases in machine learning, but they are out of scope for this
+course. 
+
+One interesting observation about the mean is that the mean may not correspond
+to an actual value. As a simple example, let us consider a distribution over a
+5-star moving rating. Let us assume that {\it a priori} a 5-star moving rating
+obeys the following distribution:
+\begin{align*}
+    p(1) = 0.3, p(2) = 0.2, p(3) = 0.05, p(4) = 0.15, p(5) = 0.3.
+\end{align*}
+The mean is $2.95$. This number is however not at all informative because of
+two reasons.
+
+First, there is no rating of $2.95$. In other words, this is some fantasy number
+that summarizes the whole distribution, however, without corresponding to any
+real rating. This could be problematic, if our goal is to use this mean to make
+a decision or act. For instance, consider placing a bet on predicting the rating
+of a newly released movie. I cannot place my bet on $2.95$ but only on one of
+those five scores.  Second, even if we decide to round the mean to select the
+nearest integer score, we notice that this is far from being representative of
+the distribution. The nearest score $3$ has only 5\% chance! 
+
+This latter issue encourages us to define yet another metric called a {\it mode}
+of a distribution. A mode of a distribution is a value of which probability is
+highest:
+\begin{align*}
+    \text{Mode}(X) = \argmax_{x \in \Omega} p(x).
+\end{align*}
+As you can easily guess, a mode is often not unique, and there may be multiple
+modes that have the same probability. In fact, a uniform distribution, which
+assigns the same probability of each and every possible value, has as many modes
+as the size of $\Omega$ (in the case of a continuous random variable, this would
+correspond to the infinity.) In practice, we often relax this definition, and
+consider all {\it local maxima} as modes of a distribution.
+
+Examples of these statistics with real distributions are presented in
+Fig.~\ref{fig:distributions}. 
+
+
+\paragraph{Distributions}
+
+There are a number of widely used distributions, both discrete and continuous.
+As this course is an introduction to machine learning, we will consider only a
+small subset of such distributions. 
+
+In the case of discrete variables, we have already learned two popular
+distributions. First, we used a {\it Bernoulli distribution} for logistic
+regression in Sec.~\ref{sec:logreg}. Bernoulli distribution is defined over a
+set of two possible values and fully specified by a single parameter $\mu$:
+\begin{align*}
+    p(x) = \mu^x (1-\mu)^(1-x),
+\end{align*}
+where $x \in \left\{ 0, 1\right\}$. The mean of the Bernoulli distribution is
+$\mu$, and the variance is $\mu (1-\mu)$. 
+
+Later on in Sec.~\ref{sec:multlogreg}, we extended this Bernoulli distribution
+to a {\it categorical distribution} to build a multi-class logistic regression.
+Categorical distribution is defined over a set of $C$ possible values, and is
+specified by $C$-many probabilities:
+\begin{align*}
+    p(x) = p_x,
+\end{align*}
+with a constraint that they are all non-negative and sum to $1$:
+\begin{align*}
+    &p_x \geq 0, \forall x \in C, \\
+    &\sum_{x \in \Omega} p_x = 1.
+\end{align*}
+
+In the case of continuous variables, we will solely use a normal distribution,
+or often Gaussian distribution, throughout this course. A normal distribution is
+defined over an unbounded real vector space $\RR^d$, and is fully specified by
+two parameters--mean vector $\mu \in \RR^d$ and covariance matrix $\Sigma \in
+\RR^{d\times d}$. Its probability density function is defined as
+\begin{align*}
+    f(\vx) = \frac{1}{Z} \exp\left( 
+        -\frac{1}{2} (\vx - \mu)^\top \Sigma^{-1} (\vs - \mu)
+    \right),
+\end{align*}
+where $Z$ is the normalization constant that ensures the integral of the density
+function is $1$. That is,
+\begin{align*}
+    Z &= \int_{\vx \in \RR^d} \exp\left( 
+        -\frac{1}{2} (\vx - \mu)^\top \Sigma^{-1} (\vs - \mu)
+    \right) \dd \vx \\
+    &= (2\pi)^{-d/2} |\Sigma|^{-1/2},
+\end{align*}
+where $|\Sigma|$ is the determinant of the covariance matrix.
+
+In practice, and for most of cases throughout this course, we will assume that
+the covariance matrix is a diagonal matrix, i.e.,
+\begin{align*}
+    \Sigma = \left[
+        \begin{array}{c c c c}
+            \sigma_1^2 & 0 & \cdots & 0 \\
+            0 & \sigma_2^2 & \cdots & 0 \\
+            \vdots & 0 & \cdots & 0 \\
+            \vdots & \vdots & \cdots & \vdots \\
+            0 & 0 & \cdots & \sigma_d^2 
+        \end{array}
+    \right].
+\end{align*}
+In other words, we assume that each dimension of the input $\vx$ is decorrelated
+from each other. In this case, the probability density function simplifies
+to\footnote{
+    Of course, you may now have noticed that this simplification is left for you
+    as a {\bf homework assignment}. 
+}
+\begin{align*}
+    f(\vx) = \prod_{i=1}^d 
+    \frac{1}{\sqrt{2\pi} \sigma_i}
+    \exp\left(
+        -\frac{1}{2} \frac{1}{\sigma_i^2}(x_i - \mu_i)^2
+    \right).
+\end{align*}
+
+\begin{figure}[t]
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\columnwidth]{figures/joint.pdf}
+        (a) Joint Distribution
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\columnwidth]{figures/conditionals.pdf}
+        (b) (Un-normalized) Conditional Distributions
+    \end{minipage}
+    \caption{
+        \label{fig:conditionals}
+        In the left figure, we plot the joint distribution over $X$ and $Y$. In
+        the right figure, we plot the conditional distributions over $X$ given
+        select values of $Y$.
+    }
+\end{figure}
+
+\paragraph{Bayes' Rule}
+
+Let us consider having two random variables $X$ and $Y$. It is not too difficult
+to imagine a joint distribution over them, which could easily be done by
+assigning a {\it multivariate} distribution, such as the multivariate normal
+distribution from above, to a pair of $X$ and $Y$:\footnote{
+    When it is not confusing, we will use $p(x,y)$ as a shorthand notation.
+}
+\begin{align*}
+    p(X=x, Y=y).
+\end{align*}
+This distribution computes the probability of $X$ and $Y$ having the values $x$
+and $y$ respectively. We call this distribution a {\it joint distribution}
+between random variables $X$ and $Y$.
+
+Based on this, we can further define a {\it conditional distribution}. A
+conditional distribution considers only a subset of all possible joint
+probabilities (via the joint distribution) by fixing the value of one random
+variable $Y$ to a pre-specified value $y$:
+\begin{align*}
+    p(X, Y=y).
+\end{align*}
+In other words, given that the random variable $Y$ is fixed to a value $y$, what
+is the distribution over the other {\it free} random variable $X$?
+
+One thing we notice is that the above quantity $p(X, Y=y)$ is not a valid
+distribution as it will not sum to $1$ in general. Instead, we need to normalize
+it by 
+\begin{align*}
+    p(X|Y=y) = \frac{p(X, Y=y)}{p(Y=y)}
+\end{align*}
+to get a proper conditional probability $p(X|Y)$. We often omit $=y$ to denote
+that this equation holds regardless of which value $Y$ was assigned to:
+\begin{align}
+    \label{eq:condprob}
+    p(X|Y) = \frac{p(X, Y)}{p(Y)}
+\end{align}
+
+From this definition, we can establish one interesting notion of {\it
+independence}. If the random variables $X$ and $Y$ are independent from each
+other (or mutually independent), then the conditional distribution over $X$
+given $Y$ should simply be the distribution over $X$, and vice versa. What does
+this notion of independence imply?
+If $X$ is independent from $Y$, i.e.,
+\begin{align*}
+    p(X|Y) = p(X),
+\end{align*}
+then
+\begin{align*}
+    p(X|Y) = p(X) = \frac{p(X, Y)}{p(Y)} 
+    \iff p(X, Y) = p(X)p(Y).
+\end{align*}
+In fact, the converse of this statement is also true. That is, if $p(X, Y) =
+p(X)p(Y)$, then $X$ and $Y$ are mutually independent.   
+
+These two definitions can easily be mixed in. Consider three random variables
+$X$, $Y$ and $Z$. A joint distribution over all of them is $p(X, Y, Z)$. A
+conditional distribution over $X$ and $Y$ given $Z$ can be written as $p(X,
+Y|Z)$. $X$ and $Y$ are {\it conditionally independent} from each other given
+$Z$ {\it iff} $p(X,Y|Z) = p(X|Z)p(Y|Z)$. 
+
+From this definition of conditional distribution, we can compute the conditional
+distribution in the opposite direction:
+\begin{align}
+    \label{eq:bayes-rule}
+    p(Y|X) = \frac{p(X|Y)p(Y)}{p(X)}.
+\end{align}
+This rule is called {\it Bayes' rule}, and it is left for you as a {\bf homework
+assignment} to verify that this rule is indeed true. The importance of this rule
+will become self-evident in the following sections.
+
+We have so far used $p(X)$ and $p(Y)$ together with a joint distribution
+$p(X,Y)$ without establishing their relationship. Of course, the definition of
+the conditional probability tells us that 
+\begin{align*}
+    p(X,Y) = p(X|Y)p(Y),
+\end{align*}
+but this is simply a circular definition. Instead, can we define $p(X)$ (or
+$p(Y)$) on its own based on the joint distribution without resorting to the use
+of conditional distribution?  Yes, and we do it by {\it marginalizing out} the
+other random variable:
+\begin{align*}
+    p(X) = \sum_{y \in \Omega_Y} p(X, Y=y),
+\end{align*}
+where $\Omega_Y$ is a set of all possible values for $Y$. With this
+marginalization, we can rewrite the Bayes' rule in Eq.~\eqref{eq:bayes-rule} as
+\begin{align*}
+    p(Y|X) = \frac{p(X|Y)p(Y)}{\sum_{Y} p(X, Y)}.
+\end{align*}
+
+The usefulness of these probabilistic tools--joint distribution, conditional
+distribution, independence, marginalization and Bayes' rule-- will become
+self-evident in the following sections, when we start to introduce a so-called
+Bayesian approach to machine learning.
+
+
 
 
 \section{Bayesian Linear Regression and Gaussian Process Regression}
