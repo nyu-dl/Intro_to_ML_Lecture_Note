@@ -1819,10 +1819,10 @@ automate such a procedure.
 Let us consider another transformation for the XOR problem above. We start with
 selecting four points in the space that correspond to 
 \begin{align*}
-    &\vr^1 = [-1, -1] \\
-    &\vr^2 = [1, 1] \\
-    &\vr^3 = [-1, 1] \\
-    &\vr^4 = [1, -1] \\
+    &\vr^1 = [-1, -1]^\top \\
+    &\vr^2 = [1, 1]^\top \\
+    &\vr^3 = [-1, 1]^\top \\
+    &\vr^4 = [1, -1]^\top 
 \end{align*}
 to which we refer as {\it basis vectors}. With these basis vectors, we will
 transform each two-dimensional input vector $\vx$ into a four-dimensional vector
@@ -1869,10 +1869,7 @@ The weight vector above can be written alternatively as
     \label{eq:w_rbf}
     \vw = \left[ y^1, y^2, y^3, y^4, 0\right]^\top,
 \end{align}
-where $y^i$ is the class label (-1 or 1) of the $i$-th basis vector.\footnote{
-    It is your {\bf homework assignment} to find such a weight vector when the
-    class labels are given as $0$ and $1$.
-}
+where $y^i$ is the class label (-1 or 1) of the $i$-th basis vector.
 In other words, the input vector $\vx$ belongs to the class to which the {\it
 nearest} basis vector belongs. 
 
@@ -2344,17 +2341,12 @@ machine, or equivalently its weight vector, so as to minimize the distance
 between the reference machine's output and our machine's output. The reference
 machine's outputs are given as a part of the training set.
 
-\paragraph{Distance Functions}
+\paragraph{Distance Function: Log-likelihood Functional}
 
 Given two vectors, one natural way to define the distance between them is a
 Euclidean distance which is defined as
 \begin{align*}
     \|\vy^* - \vy\|_2 = \sqrt{\sum_{k=1}^q (y^*_k - y_k)^2}.
-\end{align*}
-Of course, this is not the only way, and a straightforward generalization is to
-consider $L_p$ norm of which Euclidean distance is a special case with $p=2$:
-\begin{align*}
-    \|\vy^* - \vy\|_p = \sqrt[p]{\sum_{k=1}^q (y^*_k - y_k)^p}.
 \end{align*}
 
 
