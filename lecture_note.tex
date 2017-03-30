@@ -1274,6 +1274,7 @@ expected cost of your learning algorithm given only a small number of training
 examples. 
 
 \subsection{Overfitting and Regularization}
+\label{sec:regularization}
 
 We now know how to measure the degree of overfitting by approximately computing
 the difference between the expected cost and the empirical cost. In this
@@ -2347,13 +2348,14 @@ machine's outputs are given as a part of the training set.
 Given two vectors, one natural way to define the distance between them is a
 Euclidean distance which is defined as
 \begin{align*}
-    \|\vy^* - \vy\|_2^2 = \sqrt{\sum_{k=1}^q (y^*_k - y_k)^2}.
+    \|\vy^* - \vy\|_2^2 = \sum_{k=1}^q (y^*_k - y_k)^2.
 \end{align*}
 Following our convention, we thus obtain the following distance function for
 {\it linear regression}:
 \begin{align}
     \label{eq:linreg_dist}
-    D(M^*(\vx), M, \vx) = \|M^*(\vx) - M(\vx)\|_2^2.
+    D(M^*(\vx), M, \vx) = \|M^*(\vx) - M(\vx)\|_2^2 = 
+    \sum_{k=1}^q (y^*_k - y_k)^2
 \end{align}
 
 At this point of this course, you already know what you need to do. First, you
@@ -2376,7 +2378,6 @@ instead of empirical cost function.
 Instead of going this whole pipeline once more in the setting of regression, we
 will consider a slightly difference framework in which these machine learning
 problems, including both classification and regression, could be embedded. 
-
 
 \subsection{Regularization and Prior Distributions}
 
@@ -2620,11 +2621,12 @@ or often Gaussian distribution, throughout this course. A normal distribution is
 defined over an unbounded real vector space $\RR^d$, and is fully specified by
 two parameters--mean vector $\mu \in \RR^d$ and covariance matrix $\Sigma \in
 \RR^{d\times d}$. Its probability density function is defined as
-\begin{align*}
+\begin{align}
+    \label{eq:gauss_pdf}
     f(\vx) = \frac{1}{Z} \exp\left( 
         -\frac{1}{2} (\vx - \mu)^\top \Sigma^{-1} (\vs - \mu)
     \right),
-\end{align*}
+\end{align}
 where $Z$ is the normalization constant that ensures the integral of the density
 function is $1$. That is,
 \begin{align*}
@@ -2654,13 +2656,14 @@ to\footnote{
     Of course, you may now have noticed that this simplification is left for you
     as a {\bf homework assignment}. 
 }
-\begin{align*}
+\begin{align}
+    \label{eq:gauss_pdf_diag}
     f(\vx) = \prod_{i=1}^d 
     \frac{1}{\sqrt{2\pi} \sigma_i}
     \exp\left(
         -\frac{1}{2} \frac{1}{\sigma_i^2}(x_i - \mu_i)^2
     \right).
-\end{align*}
+\end{align}
 
 \begin{figure}[t]
     \begin{minipage}{0.48\textwidth}
@@ -2741,7 +2744,11 @@ These two definitions can easily be mixed in. Consider three random variables
 $X$, $Y$ and $Z$. A joint distribution over all of them is $p(X, Y, Z)$. A
 conditional distribution over $X$ and $Y$ given $Z$ can be written as $p(X,
 Y|Z)$. $X$ and $Y$ are {\it conditionally independent} from each other given
-$Z$ {\it iff} $p(X,Y|Z) = p(X|Z)p(Y|Z)$. 
+$Z$ {\it iff} 
+\begin{align}
+    \label{eq:cond_ind}
+    p(X,Y|Z) = p(X|Z)p(Y|Z). 
+\end{align}
 
 From this definition of conditional distribution, we can compute the conditional
 distribution in the opposite direction:
@@ -2778,11 +2785,239 @@ self-evident in the following sections, when we start to introduce a so-called
 Bayesian approach to machine learning.
 
 
-
-
 \section{Bayesian Linear Regression and Gaussian Process Regression}
 
-\subsection{Bayesian Approach to Machine Learning}
+\subsection{Bayesian Linear Regression}
+
+Now that we have refreshed our memory on probability, let us frame what we have
+learned so far into this probabilistic terms. For this, we need to define two
+distributions; (1) likelihood or a conditional distribution, and (2) a prior
+distribution. 
+
+First, let us introduce a new symbol $\theta$ which we will use to denote any
+adjustable parameters of a machine. For instance, $\theta$ includes a weight
+vector in the case of linear classifiers and linear regression. In the case of
+adaptive basis function networks, or deep neural networks, $\theta$ includes a
+weight vector, or matrix, as well as all the basis vectors which may be adjusted
+to maximize the classification accuracy. All these seemingly diverse set of
+adjustable parameters can all be flattened and concatenated to form a single
+vector $\theta$. 
+
+Second, let us slightly modify the distance function of linear regression in
+Eq.~\eqref{eq:linreg_dist} so as to make it easier to be integrated into a
+probability framework. As our motivation speaks for itself, we want to turn the
+distance function to be a probability (density) function, similar to what we
+have done with logistic regression (see Eq.~\eqref{eq:logreg_dist}.) Unlike
+logistic regression, linear regression outputs a continuous value, and therefore
+we use a normal distribution in Eq.~\eqref{eq:gauss_pdf} instead of categorical
+distribution. For simplicity, we assume that the covariance $\Sigma$ is an
+identity matrix:
+\begin{align*}
+    \Sigma = 
+    \left[
+        \begin{array}{c c c c}
+            1 & 0 & \cdots & 0 \\
+            0 & 1 & \cdots & 0 \\
+            \vdots & 0 & \cdots & \vdots \\
+            \vdots & \vdots & \cdots & \vdots \\
+            0 & 0 & \cdots & 1 
+        \end{array}
+    \right] = \Sigma^{-1}.
+\end{align*}
+In this case, the probability density function of normal distribution simplifies
+to 
+\begin{align}
+    \label{eq:gauss_pdf_identity}
+    f(\vx) = \prod_{i=1}^d 
+    \frac{1}{\sqrt{2\pi}}
+    \exp\left(
+        -\frac{1}{2} (x_i - \mu_i)^2
+    \right).
+\end{align}
+
+By carefully inspecting this equation and linear regression distance function in
+Eq.~\eqref{eq:linreg_dist}, we notice that the latter appears as it is in the
+former. Furthermore, by replacing $x_i$ with the $i$-th component of a
+ground-truth output $y^*_i$ and $\mu$ with the output of our current machine
+$M$, we notice that minimizing the linear regression distance function is
+equivalent to maximizing the {\it log}-probability density of this Normal
+distribution. That is,
+\begin{align}
+    \label{eq:linreg_nll}
+    \argmin_{M \in H} D(M^*(\vx), M, \vx) =&
+    \argmin_{M \in H} -\log f(M^*(\vx); \mu=M(\vx)) \\
+    =&\argmin_{M \in H} \sum_{i=1}^q \frac{1}{2} (y^*_i - \mu_i)^2 + C,
+\end{align}
+where $C$ is a constant that does not depend on $M$, and the constant
+multiplicative factor $\frac{1}{2}$ does not change the optimization problem.
+
+In other words, we can rewrite the distance function of linear regression as a
+negative log-probability of a ground-truth output vector $y^*$ under a normal
+distribution whose mean is the output of the current machine $M$ and covariance
+is an identity matrix. So, we have somehow turned linear regression into a
+probabilistic model. Let us continue.
+
+
+\paragraph{Likelihood $p(D|\theta)$}
+
+If we consider this $\theta$ and an entire training set $D=D_{\tra}$\footnote{
+    I will use $D$ instead of $D_{\tra}$ throughout the remainder of this
+    section for brevity.
+} as random variables, a notion of how likely the training set, or the set of
+training examples, is given some $\theta$. This is precisely what conditional
+probability is (see Eq.~\eqref{eq:condprob},) and we call this specific
+conditional probability $p(D|\theta)$ a {\it likelihood}. How does this
+likelihood look like?
+
+In this course, we have implicitly assumed that each training input vector $x_n$
+(and consequently the corresponding reference output $y_n^*$) was independently
+drawn from a single data distribution (see Eq.~\eqref{eq:expected_loss0} from
+long time ago.) Then, based on the definition of conditional independence in
+Eq.~\eqref{eq:cond_ind}, we can decompose the likelihood into
+\begin{align*}
+    p(D|\theta) = \prod_{n=1}^N p((x_n, y^*n)|\theta).
+\end{align*}
+The logarithm of this likelihood, to which we refer as {\it log-likelihood}, is
+then 
+\begin{align*}
+    \log p(D|\theta) = \sum_{n=1}^N \underbrace{\log p((x_n,
+    y^*n)|\theta)}_{(a)}.
+\end{align*}
+Where have we seen (a) before? 
+
+Yes, we have seen it twice already this course. We saw one when we defined the
+distance functions of logistic regression and multi-class classification, and we
+just saw this for linear regression right above in Eq.~\eqref{eq:linreg_nll}.
+We have just had a glimpse of an interesting relationship between the likelihood
+(or its logarithm version, log-likelihood) and the empirical cost function. That
+is, if the distance function of a model could be described in terms of
+a probability function, we can define an equivalent log-likelihood
+functional.\footnote{
+    A {\it functional} is informally-speaking a mapping from a function to a
+    scalar. Both the distance function and log-likelihood are functional in that
+    the input to them is a function $M$. However, we can equivalently think of
+    them as functions by considering the parameters $\theta$ of $M$ as their
+    input. This view is enough for the content of this course, but does not hold
+    true in general.
+} 
+
+\paragraph{Prior $p(\theta)$}
+
+Before we observe a training set $D$, or data, what kind of prior knowledge do
+we have about the parameters of a machine? Or, similarly what kind of prior
+information do we want to impose on the parameters? The answer to the former
+question may be problem-specific, while that to the latter may be
+algorithm-specific. A prior distribution is our way to impose or incorporate
+such prior knowledge. 
+
+Unlike the likelihood, the prior distribution $p(\theta)$ is defined solely on
+the parameters $\theta$ irrespective of actual data $D$. One of the most widely
+used prior distributions is again a normal distribution often with an all-zero
+mean vector and a diagonal covariance matrix, as in
+Eq.~\eqref{eq:gauss_pdf_diag}.\footnote{
+    Now you see why I introduced a normal distribution only when we were
+    discussing about common distributions.
+} Intuitively, this choice of prior distribution states that each parameter is
+unlikely to deviate too much from $0$, and how far it may deviate depends on the
+variance $\sigma^2$. Mathematically, we express this prior distribution by
+\begin{align*}
+    p(\theta) = \prod_{i=1}^{|\theta|} \frac{1}{\sqrt{2\pi}} \exp \left(
+    -\frac{1}{2} \theta_i^2 \right),
+\end{align*}
+where $|\theta|$ is the dimensionality of the vector $\theta$. The logarithmic
+form is 
+\begin{align}
+    \label{eq:logprior_gauss}
+    \log p(\theta) = 
+    \sum_{i=1}^{|\theta|} 
+    -\frac{1}{2} \theta_i^2 - \log \sqrt{2\pi}.
+\end{align}
+What does this remind you of?
+
+Of course, this is not the only choice, and we can freely
+choose a prior distribution so as to impose certain structures. For instance, if
+we believe the first and second parameters are strongly correlated with each
+other, we may choose to abandon the diagonal covariance matrix and instead use a
+covariance matrix where the cross-correlation term between the first and second
+parameters is a large positive value. But, we will get to this later
+(hopefully!)
+
+\paragraph{Posterior $p(\theta | D)$}
+
+At the end of the day, we have two goals in machine learning. First, we want to
+figure out what the parameters of a model look like once trained. We tackled
+this problem earlier by minimizing the empirical cost function (with some
+regularization, as in Sec.~\ref{sec:regularization}). In a probabilistic
+framework, however, we are rather interested in a {\it posterior} distribution
+over the parameters {\it given} a training set: $p(\theta | D)$. 
+
+Unlike the likelihood and prior, we will not designate the form of this
+posterior distribution ourselves. Because we already have the likelihood and
+prior distribution, we can instead compute the posterior distribution from them
+using Bayes' rule in Eq.~\eqref{eq:bayes-rule}:
+\begin{align*}
+    p(\theta | D) = \underbrace{p(D|\theta)}_{\text{likelihood}}
+    \underbrace{p(\theta)}_{\text{prior}}
+    \left/
+    \underbrace{p(D)}_{\text{evidence}}
+    \right..
+\end{align*}
+Clearly, we need one more distribution $p(D)$, to which we refer as {\it
+evidence}. Or, do we?\footnote{
+    The following two questions are left for you as {\bf homework assignments}.
+    \begin{enumerate}
+        \item Why do we call this distribution, or the probability of data $D$,
+            evidence? 
+        \item Do we need to define this evidence distribution ourselves? If not,
+            what can we do about it?
+    \end{enumerate}
+}
+
+Similarly to the likelihood, it is common to consider the {\it log}-posterior:
+\begin{align*}
+    \log p(\theta | D) = \log p (D|\theta) + \log p(\theta) - \log p(D).
+\end{align*}
+Other than the log-evidence $\log p(D)$, let's try to plug in what we know in
+the case of linear regression to the right-hand side of this log-posterior:
+\begin{align*}
+    \log p(\mW | D_{\tra}) = 
+    \underbrace{
+        \sum_{n=1}^N \sum_{i=1}^q 
+        \frac{1}{2} (y^*_{n,i} - [\mW^\top \vx_n]_i )^2 
+        - \log \sqrt{2\pi}
+    }_{=\log p (D|\theta)}
+    +
+    \underbrace{
+        \sum_{i=1}^{d} 
+        \sum_{j=1}^{q}
+        -\frac{1}{2} w_{ij}^2 - \log \sqrt{2\pi}
+    }_{=\log p(\theta)}
+    - 
+    \log p(D).
+\end{align*}
+
+\todo{Connection to the regularization}
+
+\paragraph{Maximum-a-Posteriori (MAP) Estimation: Poor Man's Bayes}
+
+Given this form of the log-posterior distribution, what should we do? The first
+thing that comes to my mind is to find the parameter vector $\theta$, or
+correspondingly the weight matrix $\mW$, that maximizes this posterior
+probability. That is, we want to find a {\it mode} of the posterior
+distribution.
+
+\todo{!!}
+
+
+
+
+
+
+\paragraph{Predictive Distribution $p((x^\star, y^\star)|D)$}
+
+
+
+
 
 \begin{figure}[t]
     \centering
