@@ -3141,10 +3141,10 @@ of empirical cost function are given higher weights than those that do worse.
 The term $\omega(M)$ in Eq.~\eqref{eq:bayes0} thus corresponds to the posterior
 probability of $M$ (equiv. to $\theta$). 
 
-As we have done so far, let us consider the predictive distribution of linear
-regression:
-\todo{TODO: Should I give it as a homework problem or not? That is the
-question..}
+As an extra-credit {\bf homework assignment}, you are asked to derive a
+closed-form probability density function of the predictive distribution in the
+case of linear regression. Linear regression with this derived predictive
+distribution is at the heart of {\it Bayesian linear regression}.
 
 
 \begin{figure}[t]
@@ -3248,7 +3248,37 @@ from the posterior distribution.
 \chapter{Dimensionality Reduction}
 \label{chap:dimred}
 
-\section{Unsupervised Learning: Problem Setup}
+
+
+\section{Dimensionality Reduction: Problem Setup}
+\label{sec:dimred}
+
+Let us assume that we are given a set of input vectors without their
+corresponding labels. What can we do about these input vectors $D=\left\{
+    \vx_1, \ldots, \vx_N
+\right\}$? Perhaps, the first thing we should try is to look at all of these
+input vectors to see if we can find any interesting regularity behind them. If
+they are two-dimensional vectors, we can visualize them by plotting a
+two-dimensional scatter plot in which each vector is drawn as a single point.
+
+
+
+
+\section{Principal Component Anslysis}
+
+\subsection{Minimum Reconstruction Criterion}
+
+\subsection{Maximum Variance Criterion}
+
+
+\section{Other Dimensionality Reduction Techniques$^\star$}
+
+\subsection{Student-t Stochastic Neighbourhood Embedding$^\star$ (tSNE)}
+
+\subsection{Multi-Dimensional Scaling$^\star$ (MDS)}
+
+
+\section{Generative View of Unsupervised Learning}
 
 Unsupervised learning is a weird, but fascinating problem. Unlike supervised
 learning in which a machine was defined as a transformation of an input vector
@@ -3280,23 +3310,9 @@ by the model:
     \hat{\vx} = \argmax_{\vx} M(\vx).
 \end{align*}
 
-\todo{}
 
-
-
-
-\subsection{Naive Bayes Classifier}
 
 \todo{}
-
-\section{Dimensionality Reduction: Problem Setup}
-\label{sec:dimred}
-
-\section{Principal Component Anslysis}
-
-\subsection{Minimum Reconstruction Criterion}
-
-\subsection{Maximum Variance Criterion}
 
 \subsection{Probabilistic Principal Component Analysis}
 
@@ -3305,12 +3321,6 @@ by the model:
 \subsection{PCA with Missing Values$^\star$: Collaborative Filtering}
 
 \section{Gaussian Process Latent Variable Models$^\star$ (GP-LVM)}
-
-\section{Other Dimensionality Reduction Techniques$^\star$}
-
-\subsection{Student-t Stochastic Neighbourhood Embedding$^\star$ (tSNE)}
-
-\subsection{Multi-Dimensional Scaling$^\star$ (MDS)}
 
 
 \chapter{Clustering}
@@ -3321,6 +3331,8 @@ by the model:
 \subsection{Clustering vs. Dimensionality Reduction}
 
 \section{$k$-Means Clustering}
+
+\section{Clustering and Classification: Naive Bayes Classifier}
 
 \section{Mixture of Gaussians$^\star$}
 
