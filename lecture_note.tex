@@ -3492,9 +3492,11 @@ taking only the first $q$ eigenvectors. That is,
         \vv_1; \vv_2; \cdots; \vv_q
     \right].
 \end{align*}
-Because the eigenvectors) were sorted in the decreasing order of the
+Because the eigenvectors were sorted in the decreasing order of the
 eigenvalues which correspond to the variance of each component of the code
-vectors, this satisfies the second constraint. 
+vectors, this satisfies the second constraint. Of course, this breaks the
+equality in Eq.~\eqref{eq:eigendecomp}, but is still a good approximation, as we
+will see shortly.
 
 In summary, PCA is done in the following steps:
 \begin{enumerate}
@@ -3531,12 +3533,22 @@ is common to directly use SVD on the input matrix in practice.
 
 \paragraph{What are principal components?}
 
+The principals components are the column vectors of the weight matrix $\mW$.
+They are orthogonal to each other, and form a $q$-dimensional subspace in the
+original $d$-dimensional real space $\RR^d$. 
 
+\todo{!!}
+
+\paragraph{Proportion of Explained Variance}
+
+\todo{!!}
 
 
 
 
 \subsection{Non-negative Matrix Factorization: NMF}
+
+
 
 
 \subsection{Independent Component Analysis$^\star$}
