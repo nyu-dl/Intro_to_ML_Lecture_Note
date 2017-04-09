@@ -2385,8 +2385,6 @@ Instead of going this whole pipeline once more in the setting of regression, we
 will consider a slightly difference framework in which these machine learning
 problems, including both classification and regression, could be embedded. 
 
-\subsection{Regularization and Prior Distributions}
-
 \section{Recap: Probability and Distribution}
 
 Let us briefly go over a few concepts from probability here. They will become
@@ -3077,12 +3075,9 @@ it?
 
 Now we go one step further. In supervised machine learning, what is our ultimate
 goal? Was it to find the parameters that minimize the empirical cost function
-together with a regularization term? In some cases, yes.\footnote{
-    It is your {\bf homework assignment} to come up with one such case based on
-    our discussion in Sec.~\ref{sec:weight}.
-} 
-Our goal was however to build a machine that can predict the outcome of a
-future, unseen input vector as well as possible. 
+together with a regularization term? In some cases, yes.  Our goal was however
+to build a machine that can predict the outcome of a future, unseen input vector
+as well as possible. 
 
 Can we push this even further? Perhaps what we want is only to know the outcome
 of a new, unseen input vector. If we can do so, do we really care about
