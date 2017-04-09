@@ -3514,9 +3514,10 @@ there is a way to do so by resorting to singular value decomposition.
 
 Singular value decomposition (SVD) decomposes a given matrix $\mX$ into a
 product of three matrices:
-\begin{align*}
+\begin{align}
+    \label{eq:svd}
     \mX = \mW \mS \mV,
-\end{align*}
+\end{align}
 where $\mW \in \RR^{d \times d}$ and $\mV \in \RR^{d \times N}$ are orthogonal
 matrices, and $\mS \in \RR^{d \times d}$ is a diagonal matrix with
 non-decreasing diagonal entries. Let us use this decomposition to compute the
@@ -3540,23 +3541,108 @@ original $d$-dimensional real space $\RR^d$. The code vector $\vz$ of an input
 vector $\vx$ is then an orthogonal projection of $\vx$ onto this subspace. This
 projection $\vz$ obtained by Eq.~\eqref{eq:pca_infer} then corresponds to the
 {\it reconstruction} in the original space by
-\begin{align*}
+\begin{align}
+    \label{eq:pca_recon}
     \hat{\vx} = z_1 \vw_1 + z_2 \vw_2 + \cdots + z_q \vw_q = \mW \vz.
+\end{align}
+Note that
+\begin{align*}
+    z_i = \vw_i^\top \vx.
 \end{align*}
+
 With this reconstruction, we can define a {\it reconstruction error} by
 \begin{align*}
     \| \vx - \hat{\vx} \|^2_2.
 \end{align*}
-Surprisingly (or obviously), the subspace spanned by the principals components
-minimizes this reconstruction error.  Based on this,  PCA could be thought of as
-an algorithm that discovers a subspace that minimizes the reconstruction error.
-This view will later used to construct a nonlinear extension of PCA.
+
+Now the question is what kind of subspace the procedure above finds. From the
+first constraint, that the code vectors are decorrelated with each other, we
+know that the principal components are eigenvectors of the input covariance
+matrix $\mC$.\footnote{
+    Orthonormal vectors are orthogonal to each other and have a unit norm.
+} What does the second constraint tell us about our selection of the first $q$
+eigenvectors?
+
+First, we notice that we can represent any input vector as a weighted sum of the
+eigenvectors, similarly to Eq.~\eqref{eq:pca_recon}:
+\begin{align*}
+    \vx = z'_1 \vw_1 + z'_2 \vw_2 + \cdots + z'_d \vw_d,
+\end{align*}
+where 
+\begin{align*}
+    z'_i = \vw_i^\top \vx.
+\end{align*}
+The reconstruction error can then be written as\footnote{
+    Note that I am looking at a single input vector $\vx$, but this equation
+    trivially extends to, and is in fact necessary to have, multiple input
+    vectors $\vx_1, \ldots, \vx_N$. For brevity and simplicity, my derivation
+    here considers a single input vector, but it is left for you as a {\bf
+    homework assignment} to extend this derivation to use multiple input
+    vectors.
+}
+\begin{align*}
+    \| \vx - \hat{\vx} \|^2_2 =&
+    \left\| \sum_{i=1}^q (z'_i - z_i) \vw_i + \sum_{j=q+1}^d z'_j \vw_j \right\|^2_2 \\
+    =& 
+    \left\| \sum_{j=q+1}^d z'_j \vw_j \right\|^2_2 \\
+    =& 
+    \sum_{j=q+1}^d {z'}_j^2 \underbrace{\| \vw_j \|^2}_{=1} \\
+    =& 
+    \sum_{j=q+1}^d {z'}_j^2 \\
+    =&
+    \sum_{j=q+1}^d \vw_i^\top \underbrace{\vx \vx^\top}_{
+    \mathclap{\mC=\text{covariance}}} \vw_i \\
+    =&
+    \sum_{j=q+1}^d \vw_i^\top \mC \vw_i.
+\end{align*}
+Now this looks awfully similar to the eigendecomposition from
+Eq.~\eqref{eq:eigendecomp}, where we learned that\footnote{
+    It is your {\bf homework assignment} to show that the equations below are
+    true.
+}
+\begin{align*}
+    &\Sigma = \mW^\top \mC \mW \\
+    \iff&
+    \sigma_j^2 = \vw_j^\top \mC \vw_j,\text{ for all }j=1,\ldots,d.
+\end{align*}
+In other words, the reconstruction error equals to the sum of the eigenvalues of
+the discarded eigenvectors:
+\begin{align*}
+    \| \vx - \hat{\vx} \|^2_2 =
+    \sum_{j=q+1}^d \sigma_j^2.
+\end{align*}
+Thus, we minimize the reconstruction error by selecting the top-$q$ eigenvectors
+according to their corresponding eigenvalues as the principal components. If we
+want to add one more, we add another eigenvector whose eigenvalue is greater
+than equal to that of any other remaining eigenvector.
+
+This view of PCA as finding a subspace that minimizes the reconstruction error
+becomes handy when we extend it to nonlinear PCA later. A deep autoencoder,
+which is one realization of nonlinear PCA, directly and explicitly minimizes the
+reconstruction error.
 
 \paragraph{Proportion of Explained Variance}
 
+The variance of the sum of decorrelated random variables is simply the sum of
+the variances of all those random variables, i.e.,
+\begin{align*}
+    \var(\sum_{i=1}^q Z_i) = \sum_{i=1}^q \var(Z_i).
+\end{align*}
+By considering each component of the code vectors as a random variable, this
+implies that the (empirical) variance of the sum of these code components is
+simply the sum of the first $q$ eigenvalues: $\sum_{i=1}^q \sigma_i^2$. We can
+then compute how much variance has been {\it explained} by the code vectors by
+inspecting the ratio between the variance of the code components and the
+variance of the whole input:
+\begin{align*}
+    \text{PV}(q) = \frac{
+        \sum_{i=1}^q \sigma_i^2
+    }{
+        \sum_{j=1}^d \sigma_d^2
+    }.
+\end{align*}
+
 \todo{!!}
-
-
 
 
 \subsection{Non-negative Matrix Factorization: NMF}
@@ -3567,7 +3653,8 @@ This view will later used to construct a nonlinear extension of PCA.
 \subsection{Independent Component Analysis$^\star$}
 
 
-\section{Deep Autoencoders}
+\section{Deep Autoencoders: Nonlinear PCA}
+
 
 
 
