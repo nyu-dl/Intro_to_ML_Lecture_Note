@@ -3478,9 +3478,10 @@ that they are orthogonal to each other.\footnote{
     This is true only when the associated eigenvalues are positive. 
 } Since the inverse of any orthogonal matrix is its transpose, we can compute
 the code matrix by
-\begin{align*}
+\begin{align}
+    \label{eq:pca_infer}
     \mZ = \mW^\top \mX.
-\end{align*}
+\end{align}
 
 Along the derivation, we have made one assumption that $q=d$. This effectively
 means that we have not done any dimensionality {\it reduction}. How do we then
@@ -3533,11 +3534,23 @@ is common to directly use SVD on the input matrix in practice.
 
 \paragraph{What are principal components?}
 
-The principals components are the column vectors of the weight matrix $\mW$.
+The principal components are the column vectors of the weight matrix $\mW$.
 They are orthogonal to each other, and form a $q$-dimensional subspace in the
-original $d$-dimensional real space $\RR^d$. 
-
-\todo{!!}
+original $d$-dimensional real space $\RR^d$. The code vector $\vz$ of an input
+vector $\vx$ is then an orthogonal projection of $\vx$ onto this subspace. This
+projection $\vz$ obtained by Eq.~\eqref{eq:pca_infer} then corresponds to the
+{\it reconstruction} in the original space by
+\begin{align*}
+    \hat{\vx} = z_1 \vw_1 + z_2 \vw_2 + \cdots + z_q \vw_q = \mW \vz.
+\end{align*}
+With this reconstruction, we can define a {\it reconstruction error} by
+\begin{align*}
+    \| \vx - \hat{\vx} \|^2_2.
+\end{align*}
+Surprisingly (or obviously), the subspace spanned by the principals components
+minimizes this reconstruction error.  Based on this,  PCA could be thought of as
+an algorithm that discovers a subspace that minimizes the reconstruction error.
+This view will later used to construct a nonlinear extension of PCA.
 
 \paragraph{Proportion of Explained Variance}
 
