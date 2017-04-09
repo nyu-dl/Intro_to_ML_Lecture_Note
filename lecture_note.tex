@@ -97,6 +97,7 @@
 \newcommand{\vone}[0]{\vect{1}}
 
 \newcommand{\mW}[0]{\matr{W}}
+\newcommand{\mZ}[0]{\matr{Z}}
 \newcommand{\mE}[0]{\matr{E}}
 \newcommand{\mG}[0]{\matr{G}}
 \newcommand{\mX}[0]{\matr{X}}
@@ -2321,6 +2322,7 @@ re-read that section at this point.  In the context of regression, we will
 particularly focus on framing the whole problem as probabilistic modelling. 
 
 \section{Linear Regression}
+\label{sec:linear-regression}
 
 \subsection{Linear Regression}
 
@@ -3240,33 +3242,311 @@ from the posterior distribution.
 \subsection{Gaussian Process Regression$^\star$}
 
 
-\chapter{Dimensionality Reduction}
+\chapter{Dimensionality Reduction and Matrix Factorization}
 \label{chap:dimred}
-
 
 
 \section{Dimensionality Reduction: Problem Setup}
 \label{sec:dimred}
 
 Let us assume that we are given a set of input vectors without their
-corresponding labels. What can we do about these input vectors $D=\left\{
+corresponding labels. What can we do about these input vectors 
+\begin{align*}
+    D=\left\{
     \vx_1, \ldots, \vx_N
-\right\}$? Perhaps, the first thing we should try is to look at all of these
-input vectors to see if we can find any interesting regularity behind them. If
-they are two-dimensional vectors, we can visualize them by plotting a
-two-dimensional scatter plot in which each vector is drawn as a single point.
+\right\}?
+\end{align*}
+Perhaps, the first thing we should try is to look at all of these input vectors
+to see if we can find any interesting regularity behind them. If they are
+two-dimensional vectors, we can visualize them by plotting a two-dimensional
+scatter plot in which each vector is drawn as a single point. If they are
+three-dimensional vectors, we can still visualize them by plotting a
+three-dimensional scatter plot or by plotting a contour plot. This is however
+not as trivial as plotting two-dimensional points. If they are four-dimensional
+vectors, already we run out of any ``general'' way to visualize them.
+
+When we are presented with high-dimensional vectors, we try to reduce their
+dimensionality in order to (1) visualize them more easily, and (2) more
+efficiently process them.\footnote{
+    Why is it more efficient to process data points if they are
+    lower-dimensional vectors? This question is left to you as a {\bf homework
+    assignment}.
+} There is a family of machine learning techniques dedicated to this problem of
+reducing the dimensionality of input vectors. Applying one of these techniques
+is called {\it dimensionality reduction}.
+
+In dimensionality reduction, given a set of input vectors 
+\begin{align*}
+    D=\left\{
+    \vx_1, \vx_2, \ldots, \vx_N
+\right\}
+\end{align*}
+our goal is to find a set of corresponding lower-dimensional vectors
+\begin{align*}
+    \tilde{D} = \left\{
+        \vz_1, \vz_2, \ldots, \vz_N
+    \right\},
+\end{align*}
+where $\vx_i \in \RR^d$, $\vz_j \in \RR^q$, and $d \gg q$. 
+
+There are two major families of techniques in dimensionality reduction. First,
+there are parametric dimensionality reduction techniques. Similarly to
+supervised learning we have learned earlier, we obtain a machine $M$ that either
+maps from an input vector to its corresponding lower-dimensional vector 
+\[
+    M: \RR^d \to \RR^q,
+\]
+or maps
+from a lower-dimensional vector to its corresponding higher-dimensional
+vector\footnote{
+    Note that finding either of these two mappings is equivalent when such a
+    mapping is invertible. We will discuss this more in detail later when we
+    introduce a deep autoencoder. 
+}
+\[
+    M: \RR^q \to \RR^d.
+\]
+Again, as we learned with supervised learning, this type of machine may be
+categorized into either linear or nonlinear. In the case of linear, parametric
+dimensionality reduction, the problem can be formulated as {\it matrix
+factorization}. On the other hand, nonlinear, parametric dimensionality
+reduction is more general, and we will discuss one particular instantiation,
+called a {\it deep autoencoder} later in this chapter.
+
+The other family of dimensionality reduction techniques consists of
+non-parametric techniques. A non-parametric dimensionality reduction technique
+does not provide a separate machine that could be used on a new example, but
+only returns a set of lower-dimensional vector $\tilde{D}$. These techniques are
+often strictly used for {\it visualization} of high-dimensional data. 
+
+In this course, we will mainly focus on the parametric family of dimensionality
+reduction techniques, starting from matrix factorization and ending with deep
+autoencoders. If time permits, we will study some non-parametric dimensionality
+reduction techniques that are widely used in the scientific community.
+
+
+\section{Matrix Factorization: Problem Setup}
+
+Let us build a large matrix that contains all the input vectors by lining them
+next to each other. That is,
+\begin{align*}
+    \mX = \left[ \vx_1; \vx_2; \cdots \vx_N \right] \in \RR^{d \times N}.
+\end{align*}
+{\it Matrix factorization} is then a problem of (approximately) representing
+this data matrix $\mX$ as a product of two matrices:
+\begin{align}
+    \label{eq:matfac}
+    \mX \approx \mW \mZ,
+\end{align}
+where $\mY$ is a matrix that contains all the lower-dimensional vectors
+\begin{align*}
+    \mZ =\left[ \vz_1; \vz_2; \cdots; \vz_N \right],
+\end{align*}
+and $\mW \in \RR^{d \times q}$ is a weight matrix. $\mZ$ is often called a code
+matrix, and $\mW$ a dictionary matrix.  By setting $q$ to be smaller than $d$,
+i.e., $q \ll d$, this matrix factorization allows us to find a set of
+lower-dimensional vectors. In other words, matrix factorization allows us to
+reduce the dimensionality of input vectors.
+
+Matrix factorization is a widely-used, and perhaps oldest, dimensionality
+reduction technique. It is a {\it linear} dimensionality reduction technique, as
+evident from Eq.~\eqref{eq:matfac}. Why is this so? Because, the equation in
+Eq.~\eqref{eq:matfac} could be understood as a set of $N$ equations of which
+one is
+\begin{align}
+    \label{eq:matfac1}
+    \vx_i = \mW \vz_i.
+\end{align}
+Matrix factorization is precisely a way to build a {\it linear} machine that
+maps from a lower-dimensional vector to its original space $\RR^d$. 
+
+Eq.~\eqref{eq:matfac1} reminds us of linear regression in
+Sec.~\ref{sec:linear-regression}. The only difference is that both $\vz$ and
+$\vx$ were known in linear regression, while only one of them, $\vx$, is known
+in matrix factorization. This lack of input vectors, following the terminology
+from linear regression, implies that this problem is under-specified, meaning
+that there may be many solutions of $\mW$ and $\mZ$ that satisfy
+Eq.~\eqref{eq:matfac}. This is quite obvious, if we consider the simplest case
+of $d=q=1$, in which case the whole problem reduces to finding $w$ and $z$ that
+satisfies
+\begin{align*}
+    x = w z,
+\end{align*}
+where $x$ is known. For any solution $(w, z)$ that satisfies this equality,
+there are infinitely many other solutions $(w', z')$ such that
+\begin{align*}
+    w' = cw\text{ and }
+    z' = \frac{z}{c},
+\end{align*}
+where $c$ is an arbitrary real number. A similar thing happens with $d, q > 1$
+with any invertible matrix $\mC \in \RR^{q \times q}$, because
+\begin{align*}
+    \mX = (\mW \mC)(\mC^{-1} \mZ) = \mW (\underbrace{\mC \mC^{-1}}_{=\mI}) \mZ = \mW \mZ.
+\end{align*}
+
+What this implies is that there are many different ways to solve this matrix
+factorization. By imposing a set of clever constraints on the weight matrix
+$\mW$ and/or $\mZ$, we get a diverse set of linear dimensionality reduction
+algorithms. In the rest of this section, we investigate three such algorithms. 
+
+
+\subsection{Principal Component Anslysis: PCA}
+
+The first such algorithm is called principal component analysis (PCA). In PCA,
+there are two constraints. The first constraint is on $\mZ$, or a set of code
+vectors $\vz_1, \ldots, \vz_N$. It states that each component of these code
+vectors must be {\it decorrelated} from all the other components. This is
+equivalent to 
+\begin{align*}
+    \sum_{n=1}^N z_{n,j} z_{n,i} = 0,\text{ for all }i \neq j,
+\end{align*}
+assuming that $\vz_n$'s are centered. We can write it more compactly by
+\begin{align*}
+    \mZ \mZ^\top = \sum_{n=1}^N \vz_{n} \vz_n^\top = \diag(\sigma_1^2, \ldots, \sigma_q^2),
+\end{align*}
+where 
+\begin{align*}
+    \Sigma = \diag(\sigma_1^2, \ldots, \sigma_q^2) = 
+    \left[
+        \begin{array}{c c c c}
+            \sigma_1^2 & 0 & \cdots & 0 \\
+            0 & \sigma2^2 & \cdots & 0 \\
+            \vdots & 0 & \cdots & \vdots \\
+            \vdots & \vdots & \cdots & \vdots \\
+            0 & 0 & \cdots & \sigma_q^2 
+        \end{array}
+    \right].
+\end{align*}
+The second constraint is that these variances $\sigma_j^2$'s are non-decreasing.
+In other words, 
+\begin{align*}
+    \sigma_i^2 \geq \sigma_j^2,\text{ for all }i > j.
+\end{align*}
+
+With these constraints in our mind, let us consider the (scaled) covariance of
+the input vector matrix $\mX$ which is defined as
+\begin{align*}
+    \underbrace{\mX \mX^\top}_{\mathclap{\mC=\text{Covariance of }\mX}} =& 
+    (\mW \mZ) (\mW \mZ)^\top \\
+    =& \mW \underbrace{\mZ \mZ^\top}_{
+\mathclap{\Sigma=\text{Covariance of }\mZ}} \mW^\top \\
+=& \mW \Sigma \mW^\top
+\end{align*}
+Since any covariance matrix is by definition symmetric,\footnote{
+    A matrix $\mC$ is symmetric if and only if
+    \begin{align*}
+        \mC = \mC^\top.
+    \end{align*}
+}
+we immediately notice that this equation precisely describes a procedure called
+{\it eigendecomposition}:
+\begin{align}
+    \label{eq:eigendecomp}
+    \mC = \mW \Sigma \mW^\top,
+\end{align}
+assuming $q=d$. $\mW$ is then a matrix consisting of $d$ eigenvectors of
+$\mC$:\footnote{
+    We assume that $N \gg d$, and that the subspace in which all the input
+    vectors lie is at least $q$-dimensional.
+}
+\begin{align*}
+    \mW = \left[ \vv_1; \vv_2; \cdots; \vv_d \right],
+\end{align*}
+where
+\begin{align}
+    \label{eq:eigenvector}
+    \mC \vv_j = \sigma_j^2 \vv_j
+\end{align}
+which is the definition of the $j$-th eigenvector, and $\sigma_j^2$ is the
+corresponding $j$-th eigenvalue. These eigenvalues and the corresponding
+eigenvectors can be computed by first solving the characteristic polynomial of
+$\mC$ to find all eigenvalues and solving Eq.~\eqref{eq:eigenvector} for each of
+the eigenvalues.\footnote{
+    It is out of the scope of this course to teach how to find eigenvalues and
+    eigenvectors. I refer students to take, for instance, MATH-UA 140 LINEAR
+    ALGEBRA listed at the Department of Mathematics. 
+}
+We see that Eq.~\eqref{eq:eigendecomp} is nothing but a stack of
+Eq.~\eqref{eq:eigenvector} in the decreasing order of $\sigma_j^2$'s.  In other
+words, we can compute the weight matrix $\mW$ by eigendecomposition of the
+(scaled) covariance matrix $\mC$ of the input matrix $\mX$.
+
+This is a good start as this selection of the weight matrix $\mW$ ensures that
+the code vectors are decorrelated, satisfying the first constraint. But, how do
+we compute the code matrix $\mZ$? One important property of the eigenvectors is
+that they are orthogonal to each other.\footnote{
+    This is true only when the associated eigenvalues are positive. 
+} Since the inverse of any orthogonal matrix is its transpose, we can compute
+the code matrix by
+\begin{align*}
+    \mZ = \mW^\top \mX.
+\end{align*}
+
+Along the derivation, we have made one assumption that $q=d$. This effectively
+means that we have not done any dimensionality {\it reduction}. How do we then
+use this whole procedure to reduce the dimensionality, that is $q \ll d$? We can
+do it easily by simply taking only the first $q$ rows of the weight matrix, or
+taking only the first $q$ eigenvectors. That is,
+\begin{align*}
+    \mW = \left[
+        \vv_1; \vv_2; \cdots; \vv_q
+    \right].
+\end{align*}
+Because the eigenvectors) were sorted in the decreasing order of the
+eigenvalues which correspond to the variance of each component of the code
+vectors, this satisfies the second constraint. 
+
+In summary, PCA is done in the following steps:
+\begin{enumerate}
+    \item Centering: $\vx_n \leftarrow \vx_n - \frac{1}{N}\sum_{n=1}^N \vx_n$
+    \item Covariance: $\mC = \mX \mX^\top$
+    \item Eigendecomposition: $\mC = \mW \Sigma \mW^\top$
+    \item Top-$q$ extraction: $\mW \leftarrow \mW_{1:q}$
+    \item Code vectors: $\mZ = \mW^\top \mX$
+\end{enumerate}
+Despite the simplicity in description, this whole process is computational
+expensive, especially due to the computation of the covariance matrix $\mC$.  It
+is therefore desirable to skip computing the covariance matrix, and fortunately
+there is a way to do so by resorting to singular value decomposition.
+
+Singular value decomposition (SVD) decomposes a given matrix $\mX$ into a
+product of three matrices:
+\begin{align*}
+    \mX = \mW \mS \mV,
+\end{align*}
+where $\mW \in \RR^{d \times d}$ and $\mV \in \RR^{d \times N}$ are orthogonal
+matrices, and $\mS \in \RR^{d \times d}$ is a diagonal matrix with
+non-decreasing diagonal entries. Let us use this decomposition to compute the
+covariance matrix $\mC$:
+\begin{align*}
+    \mC =& \mX \mX^\top \\
+    =& \mW \mS \mV (\mW \mS \mV)^\top \\
+    =& \mW \mS \underbrace{\mV \mV^\top}_{=\mI} \underbrace{\mS^\top}_{=\mS} \mW^\top \\
+    =& \mW \mS \mS \mW^\top \\
+    =& \mW \Sigma \mW^\top.
+\end{align*}
+Surprised? Yes, the matrix $\mW$ could be precisely recovered by SVD on the
+input matrix $\mX$ without computing the covariance matrix. Because of this, it
+is common to directly use SVD on the input matrix in practice.
+
+\paragraph{What are principal components?}
 
 
 
 
-\section{Principal Component Anslysis}
-
-\subsection{Minimum Reconstruction Criterion}
-
-\subsection{Maximum Variance Criterion}
 
 
-\section{Other Dimensionality Reduction Techniques$^\star$}
+\subsection{Non-negative Matrix Factorization: NMF}
+
+
+\subsection{Independent Component Analysis$^\star$}
+
+
+\section{Deep Autoencoders}
+
+
+
+\section{Non-Parametric Dimensionality Reduction Techniques$^\star$}
 
 \subsection{Student-t Stochastic Neighbourhood Embedding$^\star$ (tSNE)}
 
