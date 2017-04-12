@@ -2740,10 +2740,11 @@ If $X$ is independent from $Y$, i.e.,
     p(X|Y) = p(X),
 \end{align*}
 then
-\begin{align*}
+\begin{align}
+    \label{eq:independence}
     p(X|Y) = p(X) = \frac{p(X, Y)}{p(Y)} 
     \iff p(X, Y) = p(X)p(Y).
-\end{align*}
+\end{align}
 In fact, the converse of this statement is also true. That is, if $p(X, Y) =
 p(X)p(Y)$, then $X$ and $Y$ are mutually independent.   
 
@@ -3390,7 +3391,7 @@ $\mW$ and/or $\mZ$, we get a diverse set of linear dimensionality reduction
 algorithms. In the rest of this section, we investigate three such algorithms. 
 
 
-\subsection{Principal Component Anslysis: PCA}
+\subsection{Principal Component Anslysis: Traditional Derivation}
 
 The first such algorithm is called principal component analysis (PCA). In PCA,
 there are two constraints. The first constraint is on $\mZ$, or a set of code
@@ -3533,6 +3534,30 @@ Surprised? Yes, the matrix $\mW$ could be precisely recovered by SVD on the
 input matrix $\mX$ without computing the covariance matrix. Because of this, it
 is common to directly use SVD on the input matrix in practice.
 
+\paragraph{Proportion of Variance Explained: PV}
+
+The variance of the sum of decorrelated random variables is simply the sum of
+the variances of all those random variables, i.e.,
+\begin{align*}
+    \var(\sum_{i=1}^q Z_i) = \sum_{i=1}^q \var(Z_i).
+\end{align*}
+By considering each component of the code vectors as a random variable, this
+implies that the (empirical) variance of the sum of these code components is
+simply the sum of the first $q$ eigenvalues: $\sum_{i=1}^q \sigma_i^2$. We can
+then compute how much variance has been {\it explained} by the code vectors by
+inspecting the ratio between the variance of the code components and the
+variance of the whole input:
+\begin{align*}
+    \text{PV}(q) = \frac{
+        \sum_{i=1}^q \sigma_i^2
+    }{
+        \sum_{j=1}^d \sigma_d^2
+    }.
+\end{align*}
+
+What does this proportion of variance explained (PV) correspond to? We will see
+it in the upcoming demonstration session.
+
 \paragraph{What are principal components?}
 
 The principal components are the column vectors of the weight matrix $\mW$.
@@ -3621,37 +3646,118 @@ becomes handy when we extend it to nonlinear PCA later. A deep autoencoder,
 which is one realization of nonlinear PCA, directly and explicitly minimizes the
 reconstruction error.
 
-\paragraph{Proportion of Variance Explained: PV}
 
-The variance of the sum of decorrelated random variables is simply the sum of
-the variances of all those random variables, i.e.,
+\subsection{PCA: Minimum Reconstruction Error with Orthogonality Constraint}
+
+We have derived PCA from the two constraints; (1) the elements of a code vector
+$\vz$ are decorrelated, and (2) the variances of the elements of a code vector
+are sorted in a decreasing order. We have seen that the first constraint led to
+the orthogonality of the weight matrix, or the dictionary matrix, $\mW$. The
+second constraint, on the other hand, led to the minimum reconstruction error
+criterion. This latter revelation tells us that the second constraint of PCA is
+perhaps not a criterion on its own, but rather a consequence of optimization
+which has been at the core of machine learning so far in this course (except for
+the Bayesian linear regression.) 
+
+Here, we will re-formulate PCA by starting with an optimization cost, which
+is similar to the empirical cost function we have used throughout our
+discussions on supervised learning. The optimization cost function is
+defined as the reconstruction error over a given training set $D_{\tra}$:
 \begin{align*}
-    \var(\sum_{i=1}^q Z_i) = \sum_{i=1}^q \var(Z_i).
+    \hat{R}(\mW, \mZ; D_{\tra}) =& \sum_{n=1}^N \| \vx_n - \hat{\vx}_n
+    \|^2_2 \\
+    =& \| \mX - \mW \mZ \|_F^2.
 \end{align*}
-By considering each component of the code vectors as a random variable, this
-implies that the (empirical) variance of the sum of these code components is
-simply the sum of the first $q$ eigenvalues: $\sum_{i=1}^q \sigma_i^2$. We can
-then compute how much variance has been {\it explained} by the code vectors by
-inspecting the ratio between the variance of the code components and the
-variance of the whole input:
+Looking closely at the equation at the bottom, we in fact see that this
+corresponds to finding the weight matrix $\mW$ and the code matrix $\mZ$ such
+that their product $\mW \mZ$ is close to the input matrix $\mX$, which was the
+main goal of matrix factorization from the very beginning as in
+Eq.~\eqref{eq:matfac}. 
+
+This minimization alone does not however result in PCA, as naive minimization
+would not find a solution that satisfies the first constraint. We therefore
+impose that the first constraint be satisfies during optimization. That is, 
 \begin{align*}
-    \text{PV}(q) = \frac{
-        \sum_{i=1}^q \sigma_i^2
-    }{
-        \sum_{j=1}^d \sigma_d^2
-    }.
+    \min_{\mW, \mZ} \hat{R}(\mW, \mZ)
+\end{align*}
+subject to the constraint that
+\begin{align*}
+    \mW\text{ is a orthogonal matrix}.
+\end{align*}
+Assuming that this constraint is always satisfied during optimization, we can
+now safely replace $\mZ$ with $\mW^\top \mX$, because $\mW^\top \mW = \mI$. This
+results in 
+\begin{align*}
+    \hat{R}(\mW, \mZ; D_{\tra}) 
+    = \| \mX - \mW \mW^\top \mZ \|_F^2
+\end{align*}
+subject to 
+subject to the constraint that
+\begin{align*}
+    \mW\text{ is a orthogonal matrix}.
 \end{align*}
 
-What does this proportion of variance explained (PV) correspond to? We will see
-it in the upcoming demonstration session.
+This alternative derivation of PCA gives us a more general framework on top of
+which various matrix factorization algorithms could be implemented. In this
+general framework, the goal is to minimize the reconstruction error $\| \mX -
+\mW \mZ\|_F^p$. This is natural, as our goal is to find the weight and code
+matrices whose product is approximately the input matrix. We then need another
+mechanism $g$ , or a function, that allows us to map from a given input vector
+$\vx$ to its corresponding code vector $\vz$, i.e. $\vz =g(\vx, \mW)$. That is,
+we should be able to infer what the code matrix $\mZ$ is given the input matrix
+$\mX$ and the weight matrix $\mW$.\footnote{
+    Note that $g$ may not be a function, but a process in which the
+    reconstruction cost function is minimized with respect to the code matrix
+    $\mZ$ (instead of $\mW$). This is a usual practice in sparse coding.  
+} 
+Then, we need a certain constraint on either the weight matrix $\mW$ and/or the
+code matrix $\mZ$. In summary, a matrix factorization algorithm, or framework,
+is defined based on the following items:
+\begin{enumerate}
+    \item Cost function (almost always reconstruction error)
+    \item Inference mechanism $g$: infer $\vz$ from $\vx$ given $\mW$
+    \item Constraints on $\mW$ and/or $\mZ$
+\end{enumerate}
+Furthermore, the appropriate choice of constraints relaxes the basic assumption
+we had earlier about the dimensionality of the code vector $q$ that it is often
+much smaller than $d$. 
 
-\todo{!!}
+To reiterate, in the case of PCA, the cost function is a reconstruction error
+defined in terms of Euclidean distance (or Frobenius norm). The inference
+mechanism is simply $\vz = g(\vx) = \mW^\top \vx$, and there is a single
+constraint that $\mW$ is orthogonal.
+
+Many different matrix factorization algorithms could be formulated under this
+framework. For instance, sparse coding \cite{olshausen1997sparse} is defined by
+\begin{enumerate}
+    \item Cost function: L2 reconstruction error
+    \item Inference mechanism: minimization with respect to $\mZ$
+    \item Constraint: $\| \vz \|_0=k$, for some $k>0$
+\end{enumerate}
+It is often the case with sparse coding that $q\gg d$. Independent component
+analysis (see, e.g., \cite{hyvarinen2004independent})is on the other hand
+defined by
+\begin{enumerate}
+    \item Cost function: L2 reconstruction error
+    \item Inference mechanism: minimization with respect to $\mZ$ or $g(\vx)=\mU
+        \vz$
+    \item Constraint: $z_i \bot z_j$, for all $i \neq j$
+\end{enumerate}
+$\mU$ is a matrix separate from $mW$ that recovers the code vector from an input
+vector. $\bot$ is used to denote the independence between two random variables
+(see Eq.~\eqref{eq:independence}.) Because of different choices of inference
+mechanism and constraints, these algorithms often learn different weight
+matrices and code matrices even when provided with the same input matrix $\mX$. 
+
+In the next subsection, we will consider another matrix factorization algorithm,
+called non-negative matrix factorization, that is capable of learning a
+so-called {\it part-based representation}. 
 
 
 \subsection{Non-negative Matrix Factorization: NMF}
 
-Let us consider another matrix factorization algorithm called non-negative
-matrix factorization~\cite{lee2001algorithms}. 
+Let us consider another matrix factorization scheme called non-negative matrix
+factorization~(NMF,~\cite{lee2001algorithms}). 
 
 
 
