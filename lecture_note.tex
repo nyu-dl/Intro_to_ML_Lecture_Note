@@ -3859,8 +3859,47 @@ Fig.~\ref{fig:nmf_doc}.
 \end{figure}
 
 The constrained optimization problem for NMF in Eq.~\eqref{eq:nmf} is not a
-trivial problem. 
-\todo{!!!}
+trivial problem, and many optimization algorithms have been proposed to solve
+NMF. Since most of them are way out of the scope of this course, I will briefly
+describe a straightforward extension of gradient-descent algorithm, called
+projected gradient-descent algorithm. Unlike the usual gradient descent
+algorithm, the projected gradient-descent algorithm consists of two steps. The
+first step is to update the parameters (in our case, $\mW$ and $\mZ$) following
+the negative gradient direction:
+\begin{align}
+    \label{eq:nmf_dw}
+    \tilde{\mW} =& \mW - \eta \nabla_{\mW} \hat{R} = \mW - \eta (\mX - \mW \mZ)
+    \mZ^\top, \\
+    \label{eq:nmf_dz}
+    \tilde{\mZ} =& \mZ - \eta \nabla_{\mZ} \hat{R} = \mZ - \eta \mW^\top (\mX -
+    \mW \mZ), 
+\end{align}
+which is precisely the gradient-descent algorithm. 
+
+The second step (note that we have not updated the actual matrices yet) involves
+{\it projecting} these candidate matrices back to a feasible region which
+consists of all points that satisfy the constraints. That is, 
+\begin{align*}
+    \mW = \argmin_{\mW \geq 0} \|\mW - \tilde{\mW}\|^2_F, \\
+    \mZ = \argmin_{\mZ \geq 0} \|\mZ - \tilde{\mZ}\|^2_F. \\
+\end{align*}
+In other words, we want to find, for instance, a weight matrix $\mW$ with all
+non-negative values that is close to the updated matrix $\tilde{\mW}$, and the
+same for the code matrix $\mZ$. Finding such a projection is generally
+difficult, but in the case of NMF, the projection is simply
+\begin{align*}
+    w_{ij} =& \max(0, \tilde{w}_{ij}), \\
+    z_{ij} =& \max(0, \tilde{z}_{ij}). \\
+\end{align*}
+That is, we simply cut off any negative values from both the weight matrix and
+code matrix.  This projected gradient algorithm is widely used for non-negative
+matrix factorization in addition to the original multiplicative update rules
+from \cite{lee2001algorithms}.
+
+We will see NMF in action during the next demonstration session.
+
+
+
 
 
 \subsection{Independent Component Analysis$^\star$}
@@ -3880,7 +3919,36 @@ where $f_{\theta}$ is a nonlinear function parametrized by a set $\theta$ of
 parameters. We can use, for instance, a {\it deep} feature extraction function
 (or deep neural network) from Sec.~\ref{sec:adfn}.
 
-\todo{!!!}
+As usual with the other matrix factorization methods above, we first define a
+cost function as a reconstruction error. A usual one is Euclidean distance as
+below:
+\begin{align*}
+    \hat{R}(\theta, \mZ) = \frac{1}{N} \sum_{n=1}^N \| \vx - f_{\theta}(\vz) \|^2_2.
+\end{align*}
+This is however not the only option. For instance, if $\vx$ is a binary vector,
+it would be a good idea to use the negative log-probability under Bernoulli
+distribution, as we did with logistic regression earlier (remember?)  
+
+Now we need an inference mechanism for computing $\vz$ given $\vx$. In deep
+autoencoders, this is done by having another deep feature extraction function
+$g_{\phi}$ that maps from an input vector $\vx$ to its corresponding code vector
+$\vz$. That is,
+\begin{align*}
+    \vz = g_{\phi}(\vx).
+\end{align*}
+The question is where this new set $\phi$ of parameters comes from. The answer
+turns out to be more straightforward. We can simply find both $\theta$ and
+$\phi$ to minimize the reconstruction error. In other words,
+\begin{align*}
+    \hat{R}(\theta, \phi) = \frac{1}{N} \sum_{n=1}^N \| \vx -
+    \underbrace{f_{\theta}}_{\text{decode}}(\underbrace{g_{\phi}}_{\text{encode}}(\vx)) \|^2_2.
+\end{align*}
+In this problem, we see that $g_{\phi}$ encodes an input vector $\vx$, and
+$f_{\theta}$ decodes the obtained code vector back into the input vector
+$\hat{\vx}$. We thus call this approach a deep {\it autoencoder}
+\cite{hinton2006reducing}. 
+
+\todo{Constraints!!!}
 
 
 \section{Non-Parametric Dimensionality Reduction Techniques$^\star$}
