@@ -1681,6 +1681,7 @@ discuss how to build a classifier for problems which are not linearly separable.
 \end{figure}
 
 \subsection{Feature Extraction}
+\label{sec:feat}
 
 We have so far assumed that an input vector $\vx$ is somehow given together with
 data. Is this assumption reasonable? Let us think of what kind of data we run
@@ -3715,8 +3716,8 @@ code matrix $\mZ$. In summary, a matrix factorization algorithm, or framework,
 is defined based on the following items:
 \begin{enumerate}
     \item Cost function (almost always reconstruction error)
-    \item Inference mechanism $g$: infer $\vz$ from $\vx$ given $\mW$
     \item Constraints on $\mW$ and/or $\mZ$
+    \item Inference mechanism $g$: infer $\vz$ from $\vx$ given $\mW$
 \end{enumerate}
 Furthermore, the appropriate choice of constraints relaxes the basic assumption
 we had earlier about the dimensionality of the code vector $q$ that it is often
@@ -3731,17 +3732,17 @@ Many different matrix factorization algorithms could be formulated under this
 framework. For instance, sparse coding \cite{olshausen1997sparse} is defined by
 \begin{enumerate}
     \item Cost function: L2 reconstruction error
-    \item Inference mechanism: minimization with respect to $\mZ$
     \item Constraint: $\| \vz \|_0=k$, for some $k>0$
+    \item Inference mechanism: minimization with respect to $\mZ$
 \end{enumerate}
 It is often the case with sparse coding that $q\gg d$. Independent component
 analysis (see, e.g., \cite{hyvarinen2004independent})is on the other hand
 defined by
 \begin{enumerate}
     \item Cost function: L2 reconstruction error
+    \item Constraint: $z_i \bot z_j$, for all $i \neq j$
     \item Inference mechanism: minimization with respect to $\mZ$ or $g(\vx)=\mU
         \vz$
-    \item Constraint: $z_i \bot z_j$, for all $i \neq j$
 \end{enumerate}
 $\mU$ is a matrix separate from $mW$ that recovers the code vector from an input
 vector. $\bot$ is used to denote the independence between two random variables
@@ -3757,16 +3758,129 @@ so-called {\it part-based representation}.
 \subsection{Non-negative Matrix Factorization: NMF}
 
 Let us consider another matrix factorization scheme called non-negative matrix
-factorization~(NMF,~\cite{lee2001algorithms}). 
+factorization~(NMF,~\cite{lee2001algorithms}). Let us go step-by-step here. What
+is our main objective? Exactly the objective function we have used for principal
+component analysis (PCA):
+\begin{align*}
+    \hat{R}(\mW, \mZ) = \| \mX - \mW \mZ \|_F^2.
+\end{align*}
+What kind of constraints do we want? The name itself suggests them. That is,
+both the weight matrix $\mW$ and the code matrix $\mZ$ are {\it non-negative}.
+Of course, this naturally assumes that the input matrix $\mX$ is also
+non-negative, because the sum, product or their combination, of non-negative
+numbers would never result in negative. What this implies is that we must ensure
+that the input matrix is non-negative by, for instance, subtracting the minimum
+value of $\mX$ from $\mX$. This is a preprocessing step that is similar to the
+centering step of PCA.
 
+In summary, the optimization problem of NMT is defined as
+\begin{align}
+    \label{eq:nmf}
+    \argmin_{\mW, \mZ} \| \mX - \mW \mZ \|_F^2
+\end{align}
+subject to
+\begin{align*}
+    &w_{ij} \geq 0,\text{ for all }i=1,\ldots,d\text{ and }j=1,\ldots,q \\
+    &z_{ij} \geq 0,\text{ for all }i=1,\ldots,q\text{ and }j=1,\ldots,N.
+\end{align*}
+Before learning how to solve this constrained optimization problem, let us
+discuss why NMF is an interesting case of matrix factorization. 
+
+As we discussed earlier, the weight matrix $\mW$ is often called a dictionary
+matrix. This dictionary matrix contains a set of $q$ atoms:
+\begin{align*}
+    \mW = \left[ \vw_1; \vw_2; \cdots; \vw_q \right].
+\end{align*}
+These atoms are then combined according to their coefficients, given by a code
+vector, to form one of the input vectors. That is,
+\begin{align*}
+    \hat{\vx} = z_1 \vw_1 + z_2 \vw_2 + \cdots + z_q \vw_q = \mW \vz.
+\end{align*}
+
+Now let's do some quick thought experiment. Input vectors are human faces. What
+would be those atoms, when we are constrained to only {\it add} them? In other
+words, those positive-valued atoms and their positive-valued coefficients
+prevent us from cancelling out the contributions of the atoms. For instance, we
+cannot have an atom that has three positive noses and another atom that has two
+negative noses so that summing them would leave us only one nose. In order to
+build a full face with NMF, we would need to have an atom for a nose, an atom
+for a pair of eyes, an atom for a mouth, an atom for a pair of ears and so on.
+In other words, each positive-valued atom needs to contain a set of parts of a
+face that do not overlap with each other, and each positive-valued coefficient
+indicates how much contribution the corresponding atom makes to the full face.
+
+\begin{figure}[t]
+    \centering
+    \begin{minipage}{0.59\columnwidth}
+        \centering
+        \includegraphics[width=\columnwidth]{figures/nmf.png}
+    \end{minipage}
+    \begin{minipage}{0.4\columnwidth}
+        \caption{
+            \label{fig:nmf}
+            A graphical illustration of how non-negative matrix factorization
+            models a face as a weighted sum of parts in a dictionary matrix
+            $\mW$. The figure was taken from \cite{lee2001algorithms}.
+        }
+    \end{minipage}
+\end{figure}
+
+This is precisely the motivation behind the NMT.
+Lee~and~Seung~\cite{lee2001algorithms} showed that if you solve NMF on a set
+$\mX$ of (normalized) faces, the dictionary matrix $\mW$ contains face parts
+(such as mouth, eyes, nose, and so on), and the code matrix $\mZ$ captures how
+some of those parts are selected and combined to form full faces. This process
+for one face is shown in Fig.~\ref{fig:nmf}.
+
+Let us do another thought experiment. How about modelling a document? As we did
+earlier in Sec.~\ref{sec:feat}, we assume each document is represented as a bag
+of words. What would be a good dictionary of atoms in this case? Perhaps each
+atom should represent a topic. If a document is about ice hockey, this document
+would be a result of adding multiple topics such as sports, hockey and ice.
+Again, each of these topics would have to be exclusive, since the non-negativity
+constraint prevents us from two atoms to {\it cancel out} each other. Again,
+this was one of the examples given in \cite{lee2001algorithms}, as shown in
+Fig.~\ref{fig:nmf_doc}.
+
+\begin{figure}[t]
+    \centering
+    \begin{minipage}{0.59\columnwidth}
+        \centering
+        \includegraphics[width=\columnwidth]{figures/nmf_doc.png}
+    \end{minipage}
+    \begin{minipage}{0.4\columnwidth}
+        \caption{
+            \label{fig:nmf_doc}
+            A graphical illustration of how non-negative matrix factorization
+            models a document as a weighted sum of topics from a dictionary
+            matrix $\mW$. The figure was taken from \cite{lee2001algorithms}.
+        }
+    \end{minipage}
+\end{figure}
+
+The constrained optimization problem for NMF in Eq.~\eqref{eq:nmf} is not a
+trivial problem. 
+\todo{!!!}
 
 
 \subsection{Independent Component Analysis$^\star$}
 
 
-\section{Deep Autoencoders: Nonlinear PCA}
+\section{Deep Autoencoders: Nonlinear Matrix Factorization}
 
+A major limitation of matrix factorization $\mX \approx \mW\mZ$ is that the
+relationship between a code vector $\vz$ and its corresponding input vector
+$\vx$ is {\it linear}. Given a fixed dimensionality $q$ of a code vector, what
+happens if there is no good linear map from it to the corresponding input
+vector? Perhaps what we need is to relax this linearity assumption. That is,
+\begin{align*}
+    \vx = f_{\theta}(\vz),
+\end{align*}
+where $f_{\theta}$ is a nonlinear function parametrized by a set $\theta$ of
+parameters. We can use, for instance, a {\it deep} feature extraction function
+(or deep neural network) from Sec.~\ref{sec:adfn}.
 
+\todo{!!!}
 
 
 \section{Non-Parametric Dimensionality Reduction Techniques$^\star$}
