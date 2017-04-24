@@ -3393,6 +3393,7 @@ algorithms. In the rest of this section, we investigate three such algorithms.
 
 
 \subsection{Principal Component Anslysis: Traditional Derivation}
+\label{sec:pca}
 
 The first such algorithm is called principal component analysis (PCA). In PCA,
 there are two constraints. The first constraint is on $\mZ$, or a set of code
@@ -3756,6 +3757,7 @@ so-called {\it part-based representation}.
 
 
 \subsection{Non-negative Matrix Factorization: NMF}
+\label{sec:nmf}
 
 Let us consider another matrix factorization scheme called non-negative matrix
 factorization~(NMF,~\cite{lee2001algorithms}). Let us go step-by-step here. What
@@ -4125,18 +4127,198 @@ assignment} to show that this is indeed a case.
 \chapter{Clustering}
 \label{sec:cluster}
 
-\section{Problem Setup: Clustering vs. Matrix Factorization}
-
-
-
-
-
-
 \section{$k$-Means Clustering}
 
-\section{Clustering and Classification: Naive Bayes Classifier}
+\paragraph{Clustering vs. Dimensionality Reduction}
 
-\section{Mixture of Gaussians$^\star$}
+From the 10,000 feet above the ground, the problem of dimensionality reduction
+was simply to find a set of code vectors $\left\{ \vz_1, \ldots, \vz_N \right\}$
+given a set of input vectors (or a dissimilarity matrix, in the case of
+multidimensional scaling,) while preserving the similarities of input vectors as
+well as possible in the code vector space. As we went down closer to the ground,
+we notice that there are many different types of dimensionality reduction
+algorithms, including principal component analysis (PCA, Sec.~\ref{sec:pca}) and
+non-negative matrix factorization (NMF, Sec.~\ref{sec:nmf}). These algorithms
+were generally distinguished from each other by different types of constraints
+that have been put either directly on the code vector or on the encoding or
+decoding functions. 
+
+Let us now consider an extreme constraint on a code vector that the code vector
+can only be an one-hot vector. An one-hot vector, as we learned earlier in
+Eq.~\eqref{eq:onehot}, is a vector whose elements but one are all zeros. That
+is, 
+\begin{align}
+    \label{eq:onehot}
+    \vz = 
+    \left[ 
+        \begin{array}{c}
+            0, \\
+            \vdots, \\
+            0, \\
+            1, \\
+            0, \\
+            \vdots, \\
+            0
+        \end{array}
+    \right] \in \left\{ 0, 1\right\}^q.
+\end{align}
+As we discussed earlier, an one-hot vector is equivalent to an integer index
+between $1$ and $q$, and this allows us to use this code vector as an indicator
+of which of the $q$ possible bins the corresponding input vector $\vx$ belongs
+to. In other words, by constraining the code vector to be one-hot, we
+effectively transformed the problem of dimensionality reduction into clustering,
+where a code vector denotes which of $q$ clusters the corresponding input vector
+belongs to.
+
+\paragraph{$k$-Means Clustering}
+
+Let us start using $k$ instead of $q$ to denote the dimensionality of a code
+vector in order to be more consistent of a traditional description of
+clustering. That is, our goal is to cluster a given set of data points $\left\{
+    \vx_1, \ldots, \vx_N
+\right\}$ into $k$ groups, which is equivalent to obtaining a set of code
+vectors $\left\{ \vz_1, \ldots, \vz_N \right\}$ with the constraint that each
+and every code vector is an one-hot vector. 
+
+As usual with the matrix factorization algorithms we have learned earlier, our
+goal is to minimize the reconstruction error:
+\begin{align*}
+    \hat{R}(\mZ, \mW; \mX) = \left\| \mX - \mW \mZ \right\|_F^2.
+\end{align*}
+Because we constrain each code vector to be an one-hot vector, the
+reconstruction error can be rewritten as
+\begin{align*}
+    \hat{R}(\mZ, \mW; \mX) = 
+    \sum_{k'=1}^k \underbrace{
+        \sum_{j: z_{j,k'} = 1} \| \vw_{k'} - \vx_j \|_2^2
+}_{
+        \text{within-cluster error}
+    },
+\end{align*}
+where $z_{j,k'}$ is the $k'$-th element of the $j$-th code vector $\vz_j$. In
+other words, the reconstruction error can be computed separately for each
+$k'$-th cluster, given a fixed set of code vectors $\mZ$.
+
+Let us assume that we indeed have a fixed set of code vectors $\mZ^{(0)}$, i.e.,
+$\left\{ \vz_1^{(0)}, \ldots, \vz_N^{(0)} \right\}$. This implies that we have
+already divided the input vector set into $k$ clusters, and we can minimize the
+reconstruction error by minimizing the within-cluster reconstruction error. For
+each $k'$-th cluster, we need to minimize
+\begin{align*}
+    \hat{R}_{k'}(\mZ^{(0)}, \mW; \mX) = 
+    \sum_{j: z_{j,k'}^{(0)} = 1} \| \vw_{k'} - \vx_j \|_2^2
+\end{align*}
+with respect to the associated weight vector $\vw_{k'}$. This within-cluster
+reconstruction error has a unique solution which is
+\begin{align}
+    \label{eq:km_max}
+    \vw_{k'} \leftarrow \frac{1}{\left|
+        \{j: z_{j,k'}^{(0)} = 1\}
+    \right|} \sum_{j: z_{j,k'}^{(0)} = 1} \vx_j.
+\end{align}
+In other words, the optimal associated weight vector $\vw_{k'}$ is the
+arithmetic mean of all the input vectors in, or a {\it centroid} of, the
+corresponding $k'$-th cluster. Of course, these weight vectors, or centroids,
+are only optimal with respect to the current set of code vectors $\mZ^{(0)}$.
+Let us use the superscript $(0)$ to denote that these weight vectors $\mW^{(0)}$
+are optimal with respect to $\mZ^{(0)}$.
+
+Given these centroid $\mW^{(0)}$, we now adjust the code vectors in order to
+minimize the reconstruction error. Unlike before when we looked at each cluster
+separately, we look at each input vector $\vx$ separately this time:
+\begin{align*}
+    \hat{R}_n(\mZ, \mW^{(0)}; \mX) =
+    \| \vx_n - \mW^{(0)} \vz_n \|_2^2.
+\end{align*}
+Minimizing this per-input reconstruction error is equivalent to first computing
+the distance between the input vector and each of the cluster centroids, and
+then selecting the cluster with the minimal distance. That is,
+\begin{align}
+    \label{eq:km_exp}
+    \vz_n \leftarrow 
+    \argmin_{k'} \hat{R}_n = \argmin_{k'} 
+    \left\{
+        \| \vx_n - \vw_{k'}\|_2^2
+    \right\}.
+\end{align}
+In other words, the optimal code vector $\vz_n$ for the input vector $\vx_n$
+corresponds to the assignment of the input vector to the cluster whose
+centroid is nearest.  This is true for every input vector, and the optimal code
+vector set, or the {\it cluster assignment}, $\mZ^{(1)}$ is the set of cluster
+assignment of each input vector, given the cluster centroids $\mW^{(0)}$. 
+
+\begin{figure}[t]
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\columnwidth]{./figures/kmeans_exp.png}
+
+        (a) Cluster Assignment
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\columnwidth]{./figures/kmeans_max.png}
+
+        (b) Centroid Estimation
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\columnwidth]{./figures/kmeans_local.png}
+
+        (c) Convergence
+    \end{minipage}
+    \caption{
+        \label{fig:kmeans1}
+        (a) The cluster assignment given cluster centroids.  (b) The estimation
+        of the cluster centroids given the cluster assignment.
+        (c) The final result after
+        iterating between the centroid estimation and the cluster assignment
+        until convergence. 
+    }
+\end{figure}
+
+Of course, now that we have found new cluster assignment $\mZ^{(1)}$, the
+current cluster centroids $\mW^{(0)}$ are not anymore optimal. We hence go back
+to the earlier step and recompute the optimal cluster centroids $\mW^{(1)}$.
+Then, the current cluster assignment $\mZ^{(1)}$ becomes sub-optimal, and we
+must recompute them by assigning each input vector to the nearest cluster
+$\mZ^{(2)}$. This iterative process continues until both the cluster centroids
+and the cluster assignment stop changing. Fortunately, this algorithm is
+guaranteed to terminate, although there is no guarantee that the converged
+solution is globally optimal.\footnote{
+    A solution is globally optimal, when there exists no pair $\mZ$ and $\mW$
+    that results in the reconstruction error smaller.
+}
+
+\begin{figure}[t]
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\columnwidth]{./figures/kmeans_local.png}
+
+        (a) Solution 1
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\columnwidth]{./figures/kmeans_local2.png}
+
+        (b) Solution 2
+    \end{minipage}
+    \caption{
+        \label{fig:kmeans_local}
+        Depending on the initialization of the cluster centroids, $k$-means
+        clustering may end up with a different solution.
+    }
+\end{figure}
+
+This algorithm is known as {\it $k$-means clustering}, and is widely used for
+clustering high-dimensional input vectors. 
+
+
+
+
+\paragraph{Mixture of Gaussians$^\star$}
 
 \section{Other Clustering Methods$^\star$}
 
