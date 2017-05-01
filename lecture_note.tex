@@ -4327,20 +4327,100 @@ clustering high-dimensional input vectors.
 \subsection{Spectral Clustering$^\star$}
 
 
-\chapter{Sequential Decision Making$^\star$}
+\chapter{Sequential Decision Making}
 
-\section{Time-Series Modelling$^\star$}
-\label{sec:timeseries}
+\section{Sequential Decision Making as a Series of Classification}
+
+The material covered so far in this course has largely assumed a static world,
+meaning that our machines were expected to work with a single input vector $\vx$
+regardless of what past nor future input vectors were. This setup covers a large
+portion of use cases of machine learning in practice. Consider, for instance,
+image caption generation, which is being rolled out as we speak in many
+commercial social net services. This caption generator would take as input a
+single image, and perhaps a bit of associated metadata, and generate an
+appropriate caption, regardless of which series of images it has worked on
+earlier and which series of images it will work on later.  
+
+Instead, let us now think of a more general setting in which a machine needs to
+make multiple decisions in order to arrive at a conclusion. There are many such
+cases. Think of, for example, driving. Every moment we make a decision on how to
+turn a steering wheel, whether to hit a brake or whether to hit a gas pedal. The
+effect, or success, of a series of all these decisions will only be apparent at
+the end of a trip, based on how quickly, safely and successfully the cat has
+arrived at an intended destination. Furthermore, your decision affects the
+surrounding environment. For instance, how you have decided to turn your
+steering wheel early on will affect where you end up in the future, and whether
+you have hit the brake immediately influences the speed at which the car drives
+in the next moment.
+
+This setting could be understood as running a series of classification and/or
+regression. Our machine maps an input vector $\vx$, that is an observation of
+the world, to its action $\vy$. Unlike the previous static-world machines, the
+machine in this {\it sequential decision making} setting may optionally expose
+an additional auxiliary data about itself. This auxiliary data, represented as a
+vector $\vh$ will be used as a part of the input in the next time, along the
+actual action taken by the machine in the previous step. In a more concise form, 
+\begin{align*}
+    \left[ \vy_t; \vh_t\right] = M(\left[ \vx_t ; \vy_{t-1} ;\vh_{t-1} \right]),
+\end{align*}
+where $t$ is the time index.  If we assume for now that $\vh_t=0$ for all $t$,
+meaning that the machine does not maintain its own internal state, the equation
+simplifies to 
+\begin{align*}
+    \vy_t = M(\left[ \vx_t ; \vy_{t-1} \right]).
+\end{align*}
+This equation reminds us of all the supervised learning methods, including
+classifiers and regression models, we have learned throughout this course; the
+machine tries to output a correct answer given an input vector. 
+
+\paragraph{Supervised Learning}
+
+Considering this, what should be our first approach? Obviously, it is supervised
+learning. We assume that there exists a reference machine $M^*$ that solves this
+kind of sequential decision making problem (nearly) perfectly. We let the
+reference machine run over and over, while collecting observations and the
+corresponding actions taken by the reference machine. That is, we build a
+training set:
+\begin{align*}
+    D_{\tra} = \left\{ 
+        (\vx_1^1, \vy_1^1), \ldots, (\vx_T^1, \vy_T^1), \ldots
+        (\vx_1^N, \vy_1^N), \ldots, (\vx_T^N, \vy_T^N)
+    \right\}.
+\end{align*}
+For each pair $(\vx, \vy) \in D_{\tra}$, we can define a distance function:
+\begin{align*}
+    D(\vy, M, \vx),
+\end{align*}
+as we have done for all the supervised learning methods so far. With this
+distance function, we can define and minimize an empirical cost function to fit
+our machine to solve a sequential decision making problem.
 
 
-\section{Sequential Decision Making as a Series of Classification
-Problems$^\star$}
+\todo{!!!}
 
-\subsection{Supervised Learning vs. Sequential Decision Making$^\star$}
+\paragraph{Reinforcement Learning: Policy Gradient}
 
-\subsection{Learning to Search$^\star$}
+
+
+
+
+\todo{!!!}
+
+
+
+
+\section{Supervised Learning vs. Sequential Decision Making$^\star$}
+
+\paragraph{Error Accumulation$^\star$}
 
 \todo{}
+
+\paragraph{Learning to Search$^\star$}
+
+\todo{}
+
+\section{Time-Series Modelling$^\star$}
+
 
 
 
