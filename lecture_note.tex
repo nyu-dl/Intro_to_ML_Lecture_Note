@@ -233,16 +233,16 @@
     end of the first round of the lectures either.. 
 }
 
-\chapter*{Notations}
-
-Throughout this lecture note, I will use the following notational conventions:
-\begin{itemize}
-    \item A bold-faced lower-case alphabet is used for a vector: $\vx$
-    \item A bold-faced upper-case alphabet is used for a matrix: $\mW$
-    \item A lower-case alphabet is often used for a scalar: $x$, $\eta$
-    \item A lower-case alphabet is also used for denoting a function
-    \item 
-\end{itemize}
+%\chapter*{Notations}
+%
+%Throughout this lecture note, I will use the following notational conventions:
+%\begin{itemize}
+%    \item A bold-faced lower-case alphabet is used for a vector: $\vx$
+%    \item A bold-faced upper-case alphabet is used for a matrix: $\mW$
+%    \item A lower-case alphabet is often used for a scalar: $x$, $\eta$
+%    \item A lower-case alphabet is also used for denoting a function
+%    \item 
+%\end{itemize}
 
 
 \chapter{Classification}
@@ -821,20 +821,6 @@ course's scope, and I recommend you the following courses:
 
 \subsection{Classification as Scoring}
 
-%Both the perceptron from Sec.~\ref{sec:perceptron} and logistic regression from
-%Sec.~\ref{sec:logreg} define a {\it hyperplane} based on which the decision is
-%made. One side of the hyperplane is classified as positive (1), and the other
-%side negative (0). This hyperplane is characterized as
-%\begin{align}
-%    \label{eq:lin_hyperplane}
-%    \vw^\top \tilde{\vx} = 0,
-%\end{align}
-%where $\tilde{\vx}=\left[ \vx; 1\right]$.  Because this hyperplane (or a line in
-%the case of 2-D space) corresponds to the boundary between two decisions, it is
-%often called a {\it decision boundary}. 
-%%In other words, the decision boundary of
-%%the perceptron or logistic regression is {\it linear}. 
-
 Let us use $f$ as a shorthand for denoting the dot product between the weight
 vector $\vw$ and an input vector $\vx$ augmented with an extra $1$, that is
 $f(\vx; \vw) = \vw^\top \tilde{\vx}$. Instead of $y \in \left\{ 0, 1\right\}$ as
@@ -1065,14 +1051,6 @@ training examples, and
 Often, $|D_{\text{miscla}}| \ll |D_{\tra}|$, and thus, a support vector machine
 is categorized into a family of sparse classifiers.
 
-%Support vector machines are perhaps the most widely used classifiers since its
-%introduction in early 90's. This is evident from more than 20k citations
-%\cite{cortes1995support} has gathered since then. 
-%
-%
-%
-%\todo{some historical account and why we won't be able to cover it more in
-%depth.}
 
 \section{Overfitting, Regularization and Complexity}
 
@@ -2298,13 +2276,19 @@ attend the course {\it Deep Learning} taught by Prof. Yann LeCun.
     \end{minipage}
 \end{figure}
 
+\section{Further Topics$^\star$}
 
+\paragraph{Kernel Support Vector Machines}
 
-\section{Kernel Support Vector Machines$^\star$}
+\todo{!!!}
 
-\section{Decision Tree$^\star$}
+\paragraph{Decision Trees}
 
-\section{Ensemble Methods$^\star$}
+\todo{!!!}
+
+\paragraph{Ensemble Methods}
+
+\todo{!!!}
 
 
 \chapter{Regression}
@@ -3239,9 +3223,9 @@ Both examples were done using a specific MCMC algorithm to generate many samples
 from the posterior distribution.
 
 
+\section{Gaussian process regression$^\star$}
 
-
-\subsection{Gaussian Process Regression$^\star$}
+\todo{!!!}
 
 
 \chapter{Dimensionality Reduction and Matrix Factorization}
@@ -3902,9 +3886,9 @@ We will see NMF in action during the next demonstration session.
 
 
 
-
-
-\subsection{Independent Component Analysis$^\star$}
+%\subsection{Independent Component Analysis$^\star$}
+%
+%\todo{!!!}
 
 
 \section{Deep Autoencoders: Nonlinear Matrix Factorization}
@@ -4076,52 +4060,25 @@ between the input vectors $\vx_i$ and $\vx_j$. It is your {\bf homework
 assignment} to show that this is indeed a case. 
 
 
-\subsection{Student-t Stochastic Neighbourhood Embedding$^\star$ (tSNE)}
+\section{Further Topics$^\star$}
+
+\paragraph{Probabilistic principal component analysis}
+
+\todo{!!!}
+
+\paragraph{Gaussian process latent variable models}
+
+\todo{!!!}
+
+\paragraph{Matrix factorization with missing values}
+
+\todo{!!!}
+
+\paragraph{Student-t stochastic neighbourhood embeddings (tSNE)}
+
+\todo{!!!}
 
 
-\section{Generative View of Unsupervised Learning$^\star$}
-
-%Unsupervised learning is a weird, but fascinating problem. Unlike supervised
-%learning in which a machine was defined as a transformation of an input vector
-%$\vx$, a machine $M$ in unsupervised learning {\it scores} an input vector
-%according to how likely that vector is. If an input vector $\vx$ is likely, the
-%output of the machine $M(\vx)$ would be higher, and otherwise lower. The use of
-%the term {\it score} should remind you of our earlier discussion on
-%classification, and it is only natural because there is a strong connection
-%between supervised learning and unsupervised learning. This connection is
-%apparent when we consider $\vx$ as a concatenation of an input vector $\vx$ and
-%its corresponding label $y$. Then, with a machine $M$ trained by unsupervised
-%learning, we can classify any given input vector by
-%\begin{align*}
-%    \hat{y} = \argmax_y M(\left[ \vx; y\right]).
-%\end{align*}
-%We can similarly perform regression in this framework.  
-%
-%This capability of scoring an input vector allows us to use it for {\it outlier
-%detection} as well. Given an input vector $\vx$, we will declare it as an
-%outlier if its score is lower than a certain, predefined threshold:
-%\begin{align*}
-%    \vx\text{ is an outlier if }M(\vx) < \tau.
-%\end{align*}
-%The threshold $\tau$ may be found by any of the validation techniques we
-%discussed in Sec.~\ref{sec:validation}.  Furthermore, we can even {\it generate}
-%a novel input vector by finding an input vector that maximizes the score given
-%by the model:
-%\begin{align*}
-%    \hat{\vx} = \argmax_{\vx} M(\vx).
-%\end{align*}
-%
-%
-%
-%\todo{}
-
-\subsection{Probabilistic Principal Component Analysis}
-
-\paragraph{Expectation-Maximization Algorithm}
-
-\subsection{PCA with Missing Values: Collaborative Filtering}
-
-\section{Gaussian Process Latent Variable Models$^\star$ (GP-LVM)}
 
 
 \chapter{Clustering}
@@ -4315,16 +4272,19 @@ solution is globally optimal.\footnote{
 This algorithm is known as {\it $k$-means clustering}, and is widely used for
 clustering high-dimensional input vectors. 
 
-
-
+\section{Further Topics$^\star$}
 
 \paragraph{Mixture of Gaussians$^\star$}
 
-\section{Other Clustering Methods$^\star$}
+\todo{!!!}
 
-\subsection{Hierarchical agglomerative clustering$^\star$}
+\paragraph{Spectral Clustering$^\star$}
 
-\subsection{Spectral Clustering$^\star$}
+\todo{!!!}
+
+\paragraph{Hierarchical agglomerative clustering$^\star$}
+
+\todo{!!!}
 
 
 \chapter{Sequential Decision Making}
@@ -4395,31 +4355,152 @@ as we have done for all the supervised learning methods so far. With this
 distance function, we can define and minimize an empirical cost function to fit
 our machine to solve a sequential decision making problem.
 
+This approach based on supervised learning has been found to be surprisingly
+effective. For instance, Bojarski~et~al.~\cite{bojarski2016end} showed that you
+can train such a supervised classifier to drive an actual car on a road. 
 
-\todo{!!!}
+Of course, this does not mean that there is no issue with this supervised
+learning approach. A major issue is that error made by the classifier
+accumulates quadratically with respect to the length of an episode, where an
+episode is defined as a single, full run of the classifier. In order to avoid
+this, a number of {\it imitation learning}, or {\it learning to search},
+algorithms have been proposed (see, e.g., \cite{ross2011reduction}).
+Unfortunately those algorithms are out of this course's scope.
+
 
 \paragraph{Reinforcement Learning: Policy Gradient}
 
+In an extreme case, there may not be an expert from which we collect training
+example pairs. Instead we may only receive weak supervision by a supervisor, or
+the environment in which sequential decision making takes place, in the form of
+a scalar reward at each time step. Such a reward will be arbitrary, but
+eventually at the end of each episode, the sum of such rewards will be a good
+indicator of whether the sequence of decisions made during the episode was good.
 
+We start with a random classifier $M^0$ which as before takes as input an
+observation of the surrounding environment $\vx$ and outputs a decision
+$\hat{\vy}$. Unlike supervised learning, we restrict ourselves to a
+probabilistic classifier, such as logistic regression, that outputs a
+conditional distribution $p(\vy | \vx)$ over all possible decisions, or actions,
+$\vy$ given an observation $\vx$. 
 
+We now collect training examples using this random classifier $M^0$ by letting
+it run multiple times, i.e., multiple episodes. At each time step $t$ of each
+$m$-th episode, $M^0$ receives an observation $\vx_t^m$ and computes $p(\vy |
+\vx_t^m)$ from which one action $\hat{\vy}_t^m$ is sampled. The classifier
+performs the sampled action, and the environment, or a (weak) supervisor,
+provides a reward $r_t^m$. From each episode, we then collect
+\begin{align*}
+    ((\vx_1^m, \hat{\vy}_1^m, r_1^m), \ldots, (\vx_T^m, \hat{\vy}_T^m, r_T^m))
+\end{align*}
+which we turn into
+\begin{align*}
+    ((\vx_1^m, \hat{\vy}_1^m, Q_1^m), \ldots, (\vx_T^m, \hat{\vy}_T^m, Q_T^m)).
+\end{align*}
+$Q_t^m$ is the accumulated future reward defined as
+\begin{align*}
+    Q_t^m = \sum_{t'=t}^T \gamma^{t'-t} r_{t'}^m,
+\end{align*}
+and is the indicator of whether the decision $\hat{\vy}_t^m$ given an
+observation $\vx_t^m$ was good or not. $\gamma \in ( 0, 1 ]$ is a discount
+factor, and in our case of a finite-length episode, can trivially set to $1$.
 
+Why is the accumulated future reward $Q$ more important than the immediate
+reward $r$? Because a decision is not a good one even with a high immediate
+reward, if it eventually leads to a situation in the future in which only low
+rewards could be collected. A decision is only good, if it leads to a situation
+in the future in which an episode accumulates as much reward as possible. 
+
+We run the random classifier $M^0$ multiple times to collect as many such tuples
+of input vector, sampled decision and the corresponding reward. What we get is
+then a training set:
+\begin{align*}
+    D_{\tra}^0 = \left\{ 
+        (\vx_1, \hat{\vy}_1, Q_1), 
+        \ldots
+        (\vx_N, \hat{\vy}_N, Q_N)
+    \right\}.
+\end{align*}
+Using this training set, we now train our next classifier $M^1$. How should we
+do this?
+
+One thing clear from the above dataset is that not every pair of observation and
+the corresponding decision was born equal. We want to make sure that the next
+classifier puts a higher probability on an associated decision $\vy$ given an
+observation $\vx$ {\it if and only if} the pair led to a high accumulated future
+reward, or $Q$. If the associated $Q$ was low, we want to make sure that the
+next classifier $M^1$ puts a low probability. We can achieve this behaviour by
+modifying the empirical cost function into
+\begin{align}
+    \label{eq:policy_gradient}
+    \hat{R}(M^1; D_{\tra}^0) = \frac{1}{N} \sum_{n=1}^N 
+    \underbrace{(Q_n - V_n)}_{\text{advantage}}
+    D(\vy_n, M^1, \vx_n),
+\end{align}
+where $D$ is a usual distance function defined per classifier. In the case of
+(multinomial) logistic regression, this distance function would be a
+cross-entropy loss from Eq.~\eqref{eq:multlog_dist}, and it would be a simple
+Euclidean distance in the case of linear regression. 
+
+What is $V_n$? $V_n$ is a value of the observation $\vx_n$, defined as
+\begin{align*}
+    V_n = V(\vx_n) = \E_{\vy \sim M^0(\vx_n)} \left[
+        Q(\vy, \vx_n) = \sum_{\vy} p(\vy|\vx_n, M^0) Q(\vy, \vx_n)
+    \right],
+\end{align*}
+where $Q(\vy, \vx_n)$ is the accumulated future reward should $\vy$ was selected
+given an observation $\vx_n$. In words, $V_n$ computes what we believe would be
+the future accumulated reward given an observation $\vx_n$ should we have let
+$M^0$ make a decision, on average. This is contrast to $Q_n$ which computes how
+much reward in the future has been accumulated by selecting $\vy_n$ given
+$\vx_n$.
+
+With this in our mind, the advantage term in Eq.~\eqref{eq:policy_gradient}
+measure whether and how much better or worse the specific choice of $\vy_n$
+given $\vx_n$ was, measured as $Q_n$, with respect to the expected performance
+$V_n$. If the choice led to something better than our expected performance, we
+encourage our next classifier to put more probability mass on the choice, and
+otherwise, we encourage it to put less probability mass. 
+
+Where does the $V$, often called a value function, come from? Clearly, it is not
+feasible to compute the value function exactly unless with a set of strict
+assumptions. It is thus a usual practice, at least recently, to train a yet
+another regression model to estimate the value of an observation $\vx$ by
+minimizing
+\begin{align*}
+    \frac{1}{N} \sum_{n=1}^N (V(\vx_n) - Q_n)^2.
+\end{align*}
+
+Once we train the next classifier $M^1$, we can go back to the trajectory
+collection stage. We run $M^1$ for multiple episodes to collect training example
+tuples of which each consists of an observation, sampled action and associated
+reward. We then minimize the empirical cost function in
+Eq.~\eqref{eq:policy_gradient} in order to obtain another classifier $M^2$. We
+continue iterating these steps until we obtain our final classifier
+$M^{\infty}$.
+
+Training a machine for sequential decision making with only weak supervision is
+called reinforcement learning, and the specific approach discussed here is
+called (advantaged-based) {\it policy gradient}. Reinforcement learning is
+perhaps the most general form of machine learning. Unfortunately, the course is
+now ending, and I will have to refer anyone who is interested in learning more
+about reinforcement learning to the following materials:
+\begin{enumerate}
+    \item Neuro-dynamic programming by Bertsekas and Tsitsiklis
+        \cite{bertsekas1996neuro}
+    \item Introduction to Reinforcement Learning by Pineau:
+        \url{http://videolectures.net/deeplearning2016_pineau_reinforcement_learning/}
+\end{enumerate}
+
+\section{Further Topics$^\star$}
+
+\paragraph{Learning to search}
 
 \todo{!!!}
 
+\paragraph{Time-series modelling}
 
-
-
-\section{Supervised Learning vs. Sequential Decision Making$^\star$}
-
-\paragraph{Error Accumulation$^\star$}
-
-\todo{}
-
-\paragraph{Learning to Search$^\star$}
-
-\todo{}
-
-\section{Time-Series Modelling$^\star$}
+\todo{!!!}
 
 
 
