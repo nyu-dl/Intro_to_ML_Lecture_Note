@@ -1,4 +1,7 @@
 \documentclass{report}
+\usepackage{geometry}
+\geometry{margin=1in}
+
 \usepackage{authblk}
 \usepackage{mathptmx}
 \usepackage{url,latexsym,amsmath,amsthm,xspace,rotating,multirow,multicol,xspace,amssymb,paralist}
@@ -187,7 +190,8 @@
 
 \begin{document}
 
-\title{Introduction to Machine Learning}
+\title{Brief Introduction to Machine Learning \\
+without Deep Learning}
 \author{Kyunghyun Cho}
 \affil{
     Courant Institute of Mathematical Sciences and \\
@@ -202,9 +206,9 @@
     This is a lecture note for the course CSCI-UA.0473-001 (Intro to Machine
     Learning) at the Department of Computer Science, Courant Institute of
     Mathematical Sciences at New York University. The content of the lecture
-    note was selected to fit a single 12-week-long course (3 hours a week) and
-    to mainly serve undergraduate students majoring in computer science. Many
-    existing materials in machine learning therefore had to be omitted. 
+    note was selected to fit a single 12-week-long course and to mainly serve
+    undergraduate students majoring in computer science. Many existing materials
+    in machine learning therefore had to be omitted. 
     
     For a more complete coverage of machine learning (with math!), the following
     text books are recommended in addition to this lecture note:
@@ -217,34 +221,52 @@
     \end{itemize}
 
     For practical exercises, Python scripts based on numpy and scipy are
-    available at
-    \url{https://github.com/nyu-dl/Intro_to_ML_Lecture_Note/tree/master/notebook}.
-    They are under heavy development and subject to frequent changes over the
-    course. I recommend you to check back frequently. Again, these are not
-    exhaustive, and for a more complete coverage on machine learning practice, I
-    recommend the following book:
+    available online.  They are under heavy development and subject to frequent
+    changes over the course (and over the years I will be spending at NYU). I
+    recommend you to check back frequently. Again, these are not exhaustive, and
+    for a more complete coverage on machine learning practice, I recommend the
+    following book:
     \begin{itemize}
         \item ``Introduction to Machine Learning with Python'' by Andreas
             M\"uller  and Sarah Guido
     \end{itemize}
 
-    Note that those sections marked with $\star$ are optional and will not be
-    covered during regular lectures. They will likely not be filled in by the
-    end of the first round of the lectures either.. 
+    This course intentionally omits any recent advances in deep learning. This
+    decision was made, because there is an excellent course ``Deep Learning''
+    taught at the NYU Center for Data Science by Yann LeCun himself. Also, every
+    undergrad, who thinks they are interested in and passionate about machine
+    learning, self-teaches themself deep learning, and I found it necessary for
+    me to focus on anything that does not look like deep learning to give them a
+    more balance view of machine learning. Of course, I have largely failed.
 }
 
 \tableofcontents
 
-%\chapter*{Notations}
-%
-%Throughout this lecture note, I will use the following notational conventions:
-%\begin{itemize}
-%    \item A bold-faced lower-case alphabet is used for a vector: $\vx$
-%    \item A bold-faced upper-case alphabet is used for a matrix: $\mW$
-%    \item A lower-case alphabet is often used for a scalar: $x$, $\eta$
-%    \item A lower-case alphabet is also used for denoting a function
-%    \item 
-%\end{itemize}
+\chapter*{Exercises}
+
+The following exercise materials, based on python, numpy, scipy, autograd and
+scikit-learn, have been prepared by Varun D N.\footnote{
+    \url{https://www.linkedin.com/in/varundn/}
+} Thanks, Varun! 
+They are available at
+\url{https://github.com/nyu-dl/Intro_to_ML_Lecture_Note/tree/master/exercises}:
+\begin{enumerate}
+    \item Perceptron: \verb|Perceptron.ipynb|
+    \item Logistic Regression: \verb|Logistic_Regression_1.ipynb|, \\
+    \verb|Logistic_Regression_2.ipynb|, \verb|MNIST_Classification.ipynb|
+    \item Introduction to Autograd: \verb|Autograd_Introduction.ipynb|
+    \item Support vector machines: \verb|SVM.ipynb|, \verb|SVM_vs_LogReg.ipynb|
+    \item Radial basis function networks: \verb|RBFN.ipynb|
+    \item $k$-Nearest neighbour classifier: \verb|KNN1.ipynb|
+    \item Principal component analysis: \verb|PCA_MNIST.ipynb|,
+    \verb|PCA_Newsgroup20.ipynb|
+    \item Non-negative matrix factorization: \verb|NMF.ipynb|,
+    \verb|NMF_Newsgroup20.ipynb|
+\item Bayesian linear regression (requires PyMC3): \verb|Bayesian_Linear_Regression_MCMC.ipynb|
+\end{enumerate}
+These are well-written, but come also with some bugs. I will fix them next year,
+if I happen to teach the course once more.
+
 
 
 \chapter{Classification}
@@ -1632,7 +1654,7 @@ the weight vector. For an example of inspecting the weight vector, or matrix in
 the case of multi-class classification, see
 \url{https://github.com/nyu-dl/Intro_to_ML_Lecture_Note/blob/master/notebook/Weight%20Analyzer.ipynb}.
 
-\alert{TODO: Add some explanation going through the example}
+%\alert{TODO: Add some explanation going through the example}
 
 
 \section{Nonlinear Classification}
@@ -2280,17 +2302,25 @@ attend the course {\it Deep Learning} taught by Prof. Yann LeCun.
 
 \section{Further Topics$^\star$}
 
-\paragraph{Kernel Support Vector Machines}
+The success of support vector machines does not necessarily come only from the
+use of maximum margin principle. Support vector machines are wildly popular when
+used together with a kernel technique, which extends a support vector machine to
+handle problems that are not linearly separable. Readers are recommended to read
+\cite{scholkopf2002learning} by Sch{\"o}lkopf and Smola for more in-depth
+discussion of this {\it kernel} support vector machine.
 
-\todo{!!!}
+One of the most successful classifiers in practice is a random forest
+classifier \cite{breiman2001random}. A random forest classifier consists of many randomly generated
+decision trees. Due to the lack of time, we cannot cover decision trees and how
+they are used to form a powerful random forest classifier. scikit-learn
+implements a random forest classifier, and I highly recommend you to try it out.
 
-\paragraph{Decision Trees}
+Related to the random forest classifier are ensemble methods. 
+This family of ensemble methods is focused on how to combine multiple
+classifiers in order to achieve better generalization performance. For more
+discussion, I suggest you to read Sec.~14.2--3 of \cite{bishop2006pattern}
+and/or Sec.~16.2.5 and Sec.~16.4.3 of \cite{murphy2012machine}. 
 
-\todo{!!!}
-
-\paragraph{Ensemble Methods}
-
-\todo{!!!}
 
 
 \chapter{Regression}
@@ -3225,9 +3255,25 @@ Both examples were done using a specific MCMC algorithm to generate many samples
 from the posterior distribution.
 
 
-\section{Gaussian process regression$^\star$}
+\subsection{Further Topic: Gaussian process regression$^\star$}
 
-\todo{!!!}
+In linear regression, when the prior distribution over the parameters is
+Gaussian and the likelihood is also Gaussian, the posterior distribution over
+the parameters as well as the predictive distribution are both Gaussian, due to
+the property of multivariate Gaussian distribution. It implies that we can fully
+characterize the prediction of a new input example given a training set by
+computing the mean and covariance of multivariate Gaussian distribution. The
+covariance matrix is often specified by a {\it covariance function}, and a
+suitable choice allows us to turn the linear regression into {\it nonlinear}
+regression. Unfortunately, Gaussian process regression is out of this course's
+scope, and I refer readers to a widely read textbook \cite{williams2006gaussian}
+by Williams and Rasmussen, and a great introduction tutorial\footnote{
+    \url{http://videolectures.net/gpip06_mackay_gpb/}
+}
+by David MacKay.
+
+
+
 
 
 \chapter{Dimensionality Reduction and Matrix Factorization}
@@ -3888,10 +3934,6 @@ We will see NMF in action during the next demonstration session.
 
 
 
-%\subsection{Independent Component Analysis$^\star$}
-%
-%\todo{!!!}
-
 
 \section{Deep Autoencoders: Nonlinear Matrix Factorization}
 
@@ -4064,17 +4106,20 @@ assignment} to show that this is indeed a case.
 
 \section{Further Topics$^\star$}
 
-\paragraph{Probabilistic principal component analysis}
+Yet another way to derive principal component analysis, or factor analysis in
+general, is to build a probabilistic latent variable model. This approach is
+called probabilistic principal component
+analysis~\cite{roweis1998algorithms,tipping1999probabilistic}, and is
+particularly interesting, because it naturally allows us to perform principal
+component analysis even when there are missing values in the input
+matrix~\cite{ilin2010practical,salakhutdinov2007probabilistic}. Similarly to
+Bayesian linear regression, we can consider both the weight and code matrices as
+random variables and marginalize both of them. This results in Gaussian process
+latent variable model and allows us to perform nonlinear matrix factorization
+\cite{lawrence2004gaussian}. 
 
-\todo{!!!}
 
-\paragraph{Gaussian process latent variable models}
 
-\todo{!!!}
-
-\paragraph{Matrix factorization with missing values}
-
-\todo{!!!}
 
 \paragraph{Student-t stochastic neighbourhood embeddings (tSNE)}
 
