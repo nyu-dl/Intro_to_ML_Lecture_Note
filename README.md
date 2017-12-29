@@ -4,6 +4,7 @@ from the University.
 
 I don't think anyone would, but if anyone wants to cite this lecture note, use
 
+```
 @techreport{cho2017ml, 
    title={Brief Introduction to Machine Learning without Deep Learning}, 
    author={Kyunghyun Cho}, 
@@ -12,4 +13,4 @@ I don't think anyone would, but if anyone wants to cite this lecture note, use
    type={\notype}, 
    note={Lecture Note for CSCI-UA.0473-001} 
 }
-
+```
