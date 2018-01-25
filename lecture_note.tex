@@ -329,8 +329,8 @@ off. In this case, we may define the per-example cost function as
     D(y, M, \vx) = \left\{
         \begin{array}{l l}
             0, & \text{if }  y=M(\vx) \\
-            -10, & \text{if }  y=0\text{ and }M(\vx)=1 \\
-            -100, & \text{if }  y=1\text{ and }M(\vx)=0 
+            10, & \text{if }  y=0\text{ and }M(\vx)=1 \\
+            100, & \text{if }  y=1\text{ and }M(\vx)=0 
         \end{array}
         \right..
 \end{align*}
@@ -478,7 +478,7 @@ machine that has a lower empirical cost, and also we want the weights to sum to
 \end{align*}
 where $J$ corresponds to the empirical cost, and 
 \begin{align*}
-    Z = \sum_{M \in H} \exp\left( -J(M, D_{\text{tra}} \right)
+    Z = \sum_{M \in H} \exp\left( -J(M, D_{\text{tra}}) \right)
 \end{align*}
 is a normalization constant. 
 
