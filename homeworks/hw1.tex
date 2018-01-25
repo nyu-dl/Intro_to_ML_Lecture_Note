@@ -204,34 +204,38 @@ You must typeset the answers to the theory questions using LaTeX or Microsoft
 Word and compile them into a single PDF file. For the programming assignment,
 complete the two Jupyter notebooks.  Create a
 ZIP file containing both the PDF file and the two completed Jupyter notebooks,
-and name it ``$\left<\text{Your-NetID}\right>$\_hw1.zip''. Email this file to
-\url{intro2ml@gmail.com} within two weeks since the announcement of the
-homework.
+and name it ``$\left<\text{Your-NetID}\right>$\_hw1.zip''. Submit the ZIP file 
+on NYU Classes. The due date is \textbf{9:00 am on 02/12/2017.}
 
+\paragraph{1.} When we use empirical cost to approximate the expected cost,
 
-\paragraph{1.} When defining a perceptron, we have augmented an input vector
-$\vx$ with an extra $1$: 
-\begin{align*}
-    M(\vx) = \sign(\vw^\top \tilde{\vx}),
-\end{align*}
-where $\tilde{\vx} = \left[ \vx; 1\right]$. Why is this necessary? Provide an
-example in which this extra $1$ is necessary.
+$$\mathbb{E}_{\vx \sim X} \left[ D(M^*(\vx), M, \vx) \right] \approx \frac{1}{N} \sum_{n=1}^N D(M^*(\vx^n), M, \vx^n)$$
+
+is it okay to weigh each per-example cost equally? Given that we established that not every data $\vx$ is equally likely, is taking the sum of all per-example costs and dividing by $N$ reasonable? Should we weigh each per-example cost differently, depending on how likely each $\vx$ is? Justify your answer.
 
 \vspace{5mm}
 
-\paragraph{2.} We used the following distance function for perceptron in the
+\paragraph{2.} A perceptron is defined as follows:
+\begin{align*}
+    M(\vx) = \sign(\vw^\top \vx + \vb),
+\end{align*}
+where $\vw \in \mathbb{R}^d, \vx \in \mathbb{R}^d$ and $\vb \in \mathbb{R}$. 
+Why is the bias $\vb$ necessary? Provide an example where it is necessary.
+
+\vspace{5mm}
+
+\paragraph{3.} We used the following distance function for perceptron in the
 lecture:
 \begin{align*}
     D(M^*(\vx), M, \vx) = -\left( M^*(\vx) - M(\vx)
-    \right) \left(\vw^\top
-    \tilde{\vx}\right).
+    \right) \left(\vw^\top \vx + \vb \right).
 \end{align*}
 This distance function has a problem of a trivial solution. What is the trivial
 solution? Propose a solution to this.
 
 \vspace{5mm}
 
-\paragraph{3.} The distance function of logistic regression was defined as 
+\paragraph{4.} The distance function of logistic regression was defined as 
 \begin{align*}
     D(y^*, \vw, \vx) = -(y^* \log M(\vx) + (1-y^*) \log (1- M(\vx))).
 \end{align*}
@@ -240,11 +244,12 @@ Derive its gradient with respect to the weight vector $\vw$ step-by-step.
 \vspace{5mm}
 
 
-
-\paragraph{4.} (Programming Assignment)
+\paragraph{5.} (Programming Assignment)
 Complete the implementation of perceptron and logistic regression using Python
 and scikit-learn. The completed notebooks must be submitted together with the
 answers to the questions above. 
+
+When submitting Jupyter notebooks, make sure to save printed outputs as well.
 \begin{itemize}
     \item[Perceptron]
         \url{https://github.com/nyu-dl/Intro_to_ML_Lecture_Note/blob/master/notebook/Perceptron1.ipynb}
@@ -252,18 +257,9 @@ answers to the questions above.
         \url{https://github.com/nyu-dl/Intro_to_ML_Lecture_Note/blob/master/notebook/Logistic%20Regression%201.ipynb}
 \end{itemize}
 
-
-
-
-
 %\bibliographystyle{abbrv}
 %\bibliography{../lecture_note}
 
 
 \end{document}
-
-
-
-
-
 
