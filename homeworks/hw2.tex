@@ -221,19 +221,16 @@ it?
 
 \vspace{5mm}
 
-\paragraph{3.} When the distances to the nearest positive and negative examples
-are defined as $d^+$ and $d^-$, the margin is 
-\begin{align*}
-    \gamma =& \frac{1}{2} (d^+ + d^-).
-\end{align*}
-Show that minimizing the norm of the weight vector of a support vector machine
-is equivalent to maximizing the margin. 
+\paragraph{3.} (Source: Koller) Recall that the formulation of SVM is
+$$
+\dfrac{1}{N} \sum_{i=1}^N \max (0, 1 - y_i \mathbf{w}^T \mathbf{x}_i) + \lambda
+\lVert \mathbf{w} \rVert^2
+$$
+Consider fitting an SVM with $\lambda>0$ to a dataset that is linearly separable.  Is the resulting decision boundary guaranteed to separate the classes?  Please explain your answer.
 
 \vspace{5mm}
 
-\paragraph{4.} \todo{PROGRAMMING ASSIGNMENT}
-
-
+\paragraph{4.} Programming Assignment: Please download 
 
 
 
