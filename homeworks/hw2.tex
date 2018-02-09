@@ -199,7 +199,7 @@
 \maketitle
 \pagenumbering{arabic}
 
-\paragraph{1. Equivalence of negative log probability and logistic loss} After replacing the label set from $\left\{ 0,1 \right\}$ to
+\paragraph{1. Equivalence of negative log probability and logistic loss (10 points)} After replacing the label set from $\left\{ 0,1 \right\}$ to
 $\left\{ -1,1 \right\}$, we introduced the log loss
 \begin{align*}
     D_{\log}(y, \vx; M) = \frac{1}{\log 2} \log(1+\exp(-s(y, \vx; M))),
@@ -210,7 +210,7 @@ regression.
 
 \vspace{5mm}
 
-\paragraph{2. Hinge loss gradients} Unlike the log loss, the hinge loss, defined below, is not
+\paragraph{2. Hinge loss gradients (10 points)} Unlike the log loss, the hinge loss, defined below, is not
 differentiable everywhere:
 \begin{align*}
     D_{\hinge}(y, \vx; M) = \max(0, 1 - s(y, \vx; M)).
@@ -221,16 +221,19 @@ it?
 
 \vspace{5mm}
 
-\paragraph{3. Model Selection} Consider that we are learning a logistic regression $M^1$ and a perceptron $M^2$, and we have three datasets: a training set $D_\text{train}$, a validation set $D_\text{val}$, and a test set $D_\text{test}$.
+\paragraph{3. Model Selection (20 points due to importance)} Consider that we are learning a logistic regression $M^{(1)}$ and a perceptron $M^{(2)}$, and we have three dataset partitions: a training set $D_\text{train}$, a validation set $D_\text{val}$, and a test set $D_\text{test}$.
 
-The two models are iteratively optimized on $D_\text{train}$ over $T$ steps, and now we have $T$ logistic regression parameter configurations $M^1_1, M^1_2, \dots, M^1_T$ and $T$ perceptron configurations $M^2_1, M^2_2, \dots, M^2_T$.
+The two models are iteratively optimized on $D_\text{train}$ over $T$ steps, and now we have $T$ logistic regression parameter configurations (i.e. weights and biases) $M^{(1)}_1, M^{(1)}_2, \dots, M^{(1)}_T$ and $T$ perceptron configurations $M^{(2)}_1, M^{(2)}_2, \dots, M^{(2)}_T$, all with different parameters.
 
-We now evaluate the expected cost for all the $2T$ models on training set, validation set, and test set.  So we have $6T$ quantities $\tilde{R}^i_{\text{train}, t}$, $\tilde{R}^i_{\text{val}, t}$, $\tilde{R}^i_{\text{test}, t}$ where $i=1,2$ and $t=1,\dots,T$.
+We now evaluate the expected cost for all the $2T$ models on training set, validation set, and test set.  So we have $6T$ quantities $\tilde{R}^{(i)}_{\text{train}, t}$, $\tilde{R}^{(i)}_{\text{val}, t}$, $\tilde{R}^{(i)}_{\text{test}, t}$ where $i=1,2$ and $t=1,\dots,T$.
 
-Which $i$ and $t$ should we pick as the best model?
+\begin{enumerate}
+	\item Which $i$ and $t$ should we pick as the best model? (10 points)
+	\item How should we report the generalization error? (10 points)
+\end{enumerate}
 \vspace{5mm}
 
-\paragraph{4. Image Recovery \& Numerical Stability} Programming Assignment: Please download 
+\paragraph{4. Image Recovery \& Numerical Stability (20 points)} Programming Assignment: Please download 
 
 
 
