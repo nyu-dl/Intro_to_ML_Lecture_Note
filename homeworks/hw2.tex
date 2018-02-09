@@ -38,6 +38,7 @@
 \usepackage{booktabs}
 \usepackage{color}
 \usepackage[normalem]{ulem}
+\usepackage{enumitem}
 
 \newcommand{\obs}{\text{obs}}
 \newcommand{\mis}{\text{mis}}
@@ -227,7 +228,7 @@ The two models are iteratively optimized on $D_\text{train}$ over $T$ steps, and
 
 We now evaluate the expected cost for all the $2T$ models on training set, validation set, and test set.  So we have $6T$ quantities $\tilde{R}^{(i)}_{\text{train}, t}$, $\tilde{R}^{(i)}_{\text{val}, t}$, $\tilde{R}^{(i)}_{\text{test}, t}$ where $i=1,2$ and $t=1,\dots,T$.
 
-\begin{enumerate}
+\begin{enumerate}[label=(\alph*)]
 	\item Which $i$ and $t$ should we pick as the best model? (10 points)
 	\item How should we report the generalization error? (10 points)
 \end{enumerate}
