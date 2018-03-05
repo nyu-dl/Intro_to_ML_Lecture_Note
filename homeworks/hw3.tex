@@ -197,42 +197,25 @@
 \maketitle
 \pagenumbering{arabic}
 
-\paragraph{1.} Suppose we are given a set of input-output pairs $D=\left\{
-    (\vx_1, y^*_1), \ldots, (\vx_N, y^*_N)
-\right\}$, and we want to find the best classifier among the following
-hypothesis sets:
-\begin{enumerate}
-    \item $H_{\text{perceptron}}$: Perceptron classifier
-    \item $H_{\text{logreg}}$: Logistic regression
-    \item $H_{\text{svm}, C}$: Support vector machine with a regularization
-        coefficient $C$
-\end{enumerate}
-where $C$ is one of $\left\{ c_0, \ldots, c_M \right\}$. The dataset D is split into 80\% training set and 20\% test set. Our goal is two folds;
-(1) choose the best classifier, and (2) report its generalization performance
-(or its estimate). Describe in words how these two goals are met using the principles of $K$-fold cross validation.
+\paragraph{1.} Cross-validation is a useful strategy for model selection, especially when the training data is small. However, it cannot be used for early-stopping (in other words, you cannot pick the best fold). Why is this the case?
 
-\vspace{30mm}
+\vspace{10mm}
 
-\paragraph{2.} The distance function of multi-class logistic regression was
+\paragraph{2.} In multiclass classification, given the definitions in the lecture notes, derive the following distance function.
 defined as
 \begin{align*}
     D(y^*, M, \vx) &= -\log p_{M^*(\vx)} \\
                    &= -a_{y^*} + \log \sum_{k=1}^K \exp(a_k),
 \end{align*}
-where 
-\begin{align*}
-    \va = \mW \tilde{\vx}.
-\end{align*}
-Derive a learning rule step-by-step for each column vector $\vw_c$ of the weight
-matrix $\mW$.
 
-\vspace{30mm}
+\vspace{10mm}
 
-\paragraph{3.} \todo{PROGRAMMING ASSIGNMENT}
+\paragraph{3.} Given the definition of the distance function above, derive a learning rule step-by-step for each column vector $\vw_c$ of the weight
+matrix $\mW$ (Equation 1.28 in the lecture notes).
 
+\vspace{10mm}
 
-
-
+\paragraph{4. Multiclass Classification on MNIST} Please download \url{https://github.com/nyu-dl/Intro_to_ML_Lecture_Note/blob/master/homeworks/hw3.ipynb} and follow its instructions.
 
 %\bibliographystyle{abbrv}
 %\bibliography{../lecture_note}
