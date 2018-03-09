@@ -197,7 +197,7 @@
 \maketitle
 \pagenumbering{arabic}
 
-\paragraph{1.} 
+\paragraph{1. RBFN for XOR problem (15 points)} 
 
 (a) For the 2-dimensional XOR problem, we select the following four basis
 vectors:
@@ -215,7 +215,7 @@ the following weight vector:
 
 \vspace{30mm}
 
-\paragraph{2.}
+\paragraph{2. Nearest-neighbour classifier by RBFN (15 points)}
 
 A nearest-neighbour classifier can be constructed as a radial basis
 function network by selecting all the input vectors in a training set as basis
@@ -224,7 +224,7 @@ categories), provide a description on how a weight matrix could be built.
 
 \vspace{30mm}
 
-\paragraph{3.} 
+\paragraph{3. Adaptive RBFN (15 points)} 
 
 Unlike a fixed basis function network, an adaptive basis function network adapts
 basis vectors so as to maximize the classification accuracy (i.e. to minimize
@@ -245,13 +245,20 @@ assuming that $M$ is a logistic regression classifier and that
     \right].
 \end{align*}
 
+\paragraph{4. Adaptive RBFN on toy data (15 points)}
+
+Suppose that we are fitting an Adaptive RBFN with the formulation in Problem 3 on a toy dataset whose positive and negative samples are generated from two Gaussian distributions with very different variances:
+
+\begin{center}
+	\centering
+	\includegraphics[width=0.6\textwidth]{data.png}
+\end{center}
+
+Would the Adaptive RBFN work?  If so, how would the parameters (i.e. bases, weights, and biases) look like?  If not, how can we improve it?  \emph{You don't have to answer with math equations; plain English is fine.}
 
 \vspace{30mm}
 
-\paragraph{4.} \todo{PROGRAMMING ASSIGNMENT}
-
-
-
+\paragraph{5. k-NN classifier with Scikit-learn and RBFN with Stochastic Gradient Descent (20 points each)}
 
 
 %\bibliographystyle{abbrv}
