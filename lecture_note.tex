@@ -1533,7 +1533,7 @@ the weight vector that corresponds to any other incorrect class $y \in \left\{1,
 \begin{align*}
     \frac{\partial D(y^*, M, \vx)}{\partial \vw_{y}} =&
     -\frac{\partial}{\partial \vw_{y}} \left(
-        \vw_{y}^\top \tilde{\vx} - \log \sum_{k=1}^K \exp(a_k)
+        \vw_{y^*}^\top \tilde{\vx} - \log \sum_{k=1}^K \exp(a_k)
     \right) \\
     =& -( 0 - p(C=y | \vx)) \tilde{\vx}.
 \end{align*}
