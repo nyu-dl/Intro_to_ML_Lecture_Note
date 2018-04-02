@@ -38,6 +38,7 @@
 \usepackage{booktabs}
 \usepackage{color}
 \usepackage[normalem]{ulem}
+\usepackage{enumitem}
 
 \newcommand{\obs}{\text{obs}}
 \newcommand{\mis}{\text{mis}}
@@ -242,14 +243,16 @@ Show that this is indeed true.
 
 \paragraph{2.}
 
-(a) Show that the following equation, called Bayes' rule, is true.
+\begin{enumerate}[label=(\alph*)]
+
+\item Show that the following equation, called Bayes' rule, is true.
 \begin{align*}
     p(Y|X) = \frac{p(X|Y)p(Y)}{p(X)}.
 \end{align*}
 
 \vspace{15mm}
 
-(b) We learned the definition of expectation:
+\item We learned the definition of expectation:
 \begin{align*}
     \E\left[ X \right] = \sum_{x \in \Omega} x p(x). 
 \end{align*}
@@ -261,7 +264,7 @@ Assuming that $X$ and $Y$ are discrete random variables, show that
 
 \vspace{15mm}
 
-(c) Further assume that $c \in \RR$ is a scalar and is not a random variable, show
+\item Further assume that $c \in \RR$ is a scalar and is not a random variable, show
 that
 \begin{align*}
     \E\left[ cX \right] = c\E\left[X\right].
@@ -269,7 +272,7 @@ that
 
 \vspace{15mm}
 
-(d) We learned the definition of variance:
+\item We learned the definition of variance:
 \begin{align*}
     \text{Var}(X) = \sum_{x \in \Omega} (x - \E\left[ X \right])^2 p(x).
 \end{align*}
@@ -279,12 +282,13 @@ Assuming $X$ being a discrete random variable, show that
     \text{Var}(X) = \E\left[ X^2 \right] - \left(\E\left[ X \right]\right)^2.
 \end{align*}
 
+\end{enumerate}
 
 \newpage
 
 \paragraph{3.} 
 
-(a) An optimal linear regression machine (without any regularization term), that
+An optimal linear regression machine (without any regularization term), that
 minimizes the empirical cost function given a training set 
 \begin{align*}
     D_{\tra} = \left\{ 
@@ -299,23 +303,32 @@ Assuming that the distance function is defined as
 \end{align*}
 derive the optimal weight matrix $\mW$. (Hint: Moore–Penrose pseudoinverse)
 
-
-\vspace{15mm}
-
-(b) (Extra Credit) Derive a  probability density function of the predictive distribution of
-Bayesian linear regression. Follow the assumptions made during the lecture (see
-the lecture note.) 
-
-
-
-
-
-
-
-
 %\bibliographystyle{abbrv}
 %\bibliography{../lecture_note}
 
+\newpage
+
+\paragraph{4.}
+
+Suppose that we have a data distribution $Y=f(\mathbf{X}) + \epsilon$, where $\mathbf{X}$ is a random vector, $\epsilon$ is an independent random variable with zero mean and fixed but unknown variance $\sigma^2$, and $f$ is an unknown deterministic function that maps a vector into a scalar.
+
+Now, we wish to approximate $f(\mathbf{x})$ with our own model $\hat{f}(\mathbf{x}; \Theta)$ with some learnable parameters $\Theta$.
+
+\begin{enumerate}[label=(\alph*)]
+	\item Show that considering all possible $\hat{f}$ and $\Theta$, the minimum of L2 loss $$\E_\mathbf{X}[(Y-\hat{f}(\mathbf{X}; \Theta))^2]$$ is achieved when for all $\mathbf{x}$, $$\hat{f}(\mathbf{x}; \Theta) = f(\mathbf{x})$$
+	
+	(Hint: find the minimum of L2 loss for a single example first.)
+	\item If we train the same model varying initializations and examples from the underlying data distribution, we may end up with different $\Theta$.  So we can also consider $\Theta$ as a random variable if we fix $\hat{f}$.
+	
+	Show that for a single unseen input vector $\mathbf{x}_0$ and a fixed $\hat{f}$, the expected squared error between the ground truth $f(\mathbf{x}_0)$ and the prediction $\hat{f}(\mathbf{x}_0; \Theta)$ can be decomposed into:
+	$$
+	\E[(f(\mathbf{x}_0) - \hat{f}(\mathbf{x}_0; \Theta))^2] = \left(
+	\E[f(\mathbf{x}_0) - \hat{f}(\mathbf{x}_0; \Theta)]
+	\right)^2 + \mathrm{Var}[\hat{f}(\mathbf{x}_0; \Theta)] + \sigma^2
+	$$
+	
+	(Side note: this is usually known as the \emph{bias-variance decomposition}, closely related to \emph{bias-variance tradeoff}, and other concepts such as underfitting and overfitting.)
+\end{enumerate}
 
 \end{document}
 
