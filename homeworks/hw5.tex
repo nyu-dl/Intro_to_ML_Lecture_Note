@@ -203,15 +203,15 @@
 The probability density function of normal distribution is defined as 
 \begin{align*}
     f(\vx) = \frac{1}{Z} \exp\left( 
-        -\frac{1}{2} (\vx - \mu)^\top \Sigma^{-1} (\vs - \mu)
+        -\frac{1}{2} (\vx - \mu)^\top \Sigma^{-1} (\vx - \mu)
     \right),
 \end{align*}
 where 
 \begin{align*}
     Z &= \int_{\vx \in \RR^d} \exp\left( 
-        -\frac{1}{2} (\vx - \mu)^\top \Sigma^{-1} (\vs - \mu)
+        -\frac{1}{2} (\vx - \mu)^\top \Sigma^{-1} (\vx - \mu)
     \right) \dd \vx \\
-    &= (2\pi)^{-d/2} |\Sigma|^{-1/2},
+    &= (2\pi)^{d/2} |\Sigma|^{1/2},
 \end{align*}
 where $|\Sigma|$ is the determinant of the covariance matrix.
 
