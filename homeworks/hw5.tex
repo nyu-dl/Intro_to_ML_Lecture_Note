@@ -320,9 +320,9 @@ Now, we wish to approximate $f(\mathbf{x})$ with our own model $\hat{f}(\mathbf{
 	(Hint: find the minimum of L2 loss for a single example first.)
 	\item If we train the same model varying initializations and examples from the underlying data distribution, we may end up with different $\Theta$.  So we can also consider $\Theta$ as a random variable if we fix $\hat{f}$.
 	
-	Show that for a single unseen input vector $\mathbf{x}_0$ and a fixed $\hat{f}$, the expected squared error between the ground truth $f(\mathbf{x}_0)$ and the prediction $\hat{f}(\mathbf{x}_0; \Theta)$ can be decomposed into:
+	Show that for a single unseen input vector $\mathbf{x}_0$ and a fixed $\hat{f}$, the expected squared error between the ground truth $y_0 = f(\mathbf{x}_0) + \epsilon$ and the prediction $\hat{f}(\mathbf{x}_0; \Theta)$ can be decomposed into:
 	$$
-	\E[(f(\mathbf{x}_0) - \hat{f}(\mathbf{x}_0; \Theta))^2] = \left(
+	\E[(y_0 - \hat{f}(\mathbf{x}_0; \Theta))^2] = \left(
 	\E[f(\mathbf{x}_0) - \hat{f}(\mathbf{x}_0; \Theta)]
 	\right)^2 + \mathrm{Var}[\hat{f}(\mathbf{x}_0; \Theta)] + \sigma^2
 	$$
@@ -331,7 +331,6 @@ Now, we wish to approximate $f(\mathbf{x})$ with our own model $\hat{f}(\mathbf{
 \end{enumerate}
 
 \end{document}
-
 
 
 
