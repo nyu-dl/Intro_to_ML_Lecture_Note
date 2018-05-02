@@ -3452,10 +3452,10 @@ where
         \end{array}
     \right].
 \end{align*}
-The second constraint is that these variances $\sigma_j^2$'s are non-decreasing.
+The second constraint is that these variances $\sigma_j^2$'s are non-increasing.
 In other words, 
 \begin{align*}
-    \sigma_i^2 \geq \sigma_j^2,\text{ for all }i > j.
+    \sigma_i^2 \geq \sigma_j^2,\text{ for all }i < j.
 \end{align*}
 
 With these constraints in our mind, let us consider the (scaled) covariance of
@@ -3480,7 +3480,7 @@ we immediately notice that this equation precisely describes a procedure called
     \mC = \mW \Sigma \mW^\top,
 \end{align}
 assuming $q=d$. $\mW$ is then a matrix consisting of $d$ eigenvectors of
-$\mC$:\footnote{
+$\mC$ on each column:\footnote{
     We assume that $N \gg d$, and that the subspace in which all the input
     vectors lie is at least $q$-dimensional.
 }
@@ -3521,7 +3521,7 @@ the code matrix by
 Along the derivation, we have made one assumption that $q=d$. This effectively
 means that we have not done any dimensionality {\it reduction}. How do we then
 use this whole procedure to reduce the dimensionality, that is $q \ll d$? We can
-do it easily by simply taking only the first $q$ rows of the weight matrix, or
+do it easily by simply taking only the first $q$ columns of the weight matrix, or
 taking only the first $q$ eigenvectors. That is,
 \begin{align*}
     \mW = \left[
@@ -3539,7 +3539,7 @@ In summary, PCA is done in the following steps:
     \item Centering: $\vx_n \leftarrow \vx_n - \frac{1}{N}\sum_{n=1}^N \vx_n$
     \item Covariance: $\mC = \mX \mX^\top$
     \item Eigendecomposition: $\mC = \mW \Sigma \mW^\top$
-    \item Top-$q$ extraction: $\mW \leftarrow \mW_{1:q}$
+    \item Top-$q$-column extraction: $\mW \leftarrow \mW_{:,1:q}$
     \item Code vectors: $\mZ = \mW^\top \mX$
 \end{enumerate}
 Despite the simplicity in description, this whole process is computational
