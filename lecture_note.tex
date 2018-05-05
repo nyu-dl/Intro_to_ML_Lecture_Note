@@ -2952,7 +2952,7 @@ variance $\sigma^2$.\footnote{
 Mathematically, we express this prior distribution by
 \begin{align*}
     p(\theta) = \prod_{i=1}^{|\theta|} \frac{1}{\sqrt{2\pi} \sigma} \exp \left(
-    -\frac{\theta_i^2}{\sigma^2} \right),
+    -\frac{\theta_i^2}{2 \sigma^2} \right),
 \end{align*}
 where $|\theta|$ is the dimensionality of the vector $\theta$. The logarithmic
 form is 
@@ -3722,8 +3722,8 @@ Assuming that this constraint is always satisfied during optimization, we can
 now safely replace $\mZ$ with $\mW^\top \mX$, because $\mW^\top \mW = \mI$. This
 results in 
 \begin{align*}
-    \hat{R}(\mW, \mZ; D_{\tra}) 
-    = \| \mX - \mW \mW^\top \mZ \|_F^2
+    \hat{R}(\mW, \mX; D_{\tra}) 
+    = \| \mX - \mW \mW^\top \mX \|_F^2
 \end{align*}
 subject to 
 subject to the constraint that
