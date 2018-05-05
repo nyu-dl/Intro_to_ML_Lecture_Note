@@ -2648,14 +2648,14 @@ two parameters--mean vector $\mu \in \RR^d$ and covariance matrix $\Sigma \in
 \begin{align}
     \label{eq:gauss_pdf}
     f(\vx) = \frac{1}{Z} \exp\left( 
-        -\frac{1}{2} (\vx - \mu)^\top \Sigma^{-1} (\vs - \mu)
+        -\frac{1}{2} (\vx - \mu)^\top \Sigma^{-1} (\vx - \mu)
     \right),
 \end{align}
 where $Z$ is the normalization constant that ensures the integral of the density
 function is $1$. That is,
 \begin{align*}
     Z &= \int_{\vx \in \RR^d} \exp\left( 
-        -\frac{1}{2} (\vx - \mu)^\top \Sigma^{-1} (\vs - \mu)
+        -\frac{1}{2} (\vx - \mu)^\top \Sigma^{-1} (\vx - \mu)
     \right) \dd \vx \\
     &= (2\pi)^{d/2} |\Sigma|^{1/2},
 \end{align*}
@@ -3716,7 +3716,7 @@ impose that the first constraint be satisfies during optimization. That is,
 \end{align*}
 subject to the constraint that
 \begin{align*}
-    \mW\text{ is a orthogonal matrix}.
+    \text{The column vectors of }\mW \text{ are orthonormal vectors}.
 \end{align*}
 Assuming that this constraint is always satisfied during optimization, we can
 now safely replace $\mZ$ with $\mW^\top \mX$, because $\mW^\top \mW = \mI$. This
@@ -3728,7 +3728,7 @@ results in
 subject to 
 subject to the constraint that
 \begin{align*}
-    \mW\text{ is a orthogonal matrix}.
+    \text{The column vectors of }\mW \text{ are orthonormal vectors}.
 \end{align*}
 
 This alternative derivation of PCA gives us a more general framework on top of
