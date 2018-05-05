@@ -2360,7 +2360,7 @@ Unlike classification, the output $\vy_n^* \in \RR^q$ is a $q$-dimensional real
 vector. 
 
 As should be obvious at this point, the goal of linear regression is to find a
-machine, or equivalently its weight vector, so as to minimize the distance
+machine, or equivalently its weight matrix, so as to minimize the distance
 between the reference machine's output and our machine's output. The reference
 machine's outputs are given as a part of the training set.
 
@@ -3433,7 +3433,7 @@ vectors $\vz_1, \ldots, \vz_N$. It states that each component of these code
 vectors must be {\it decorrelated} from all the other components. This is
 equivalent to 
 \begin{align*}
-    \sum_{n=1}^N z_{n,j} z_{n,i} = 0,\text{ for all }i \neq j,
+    \sum_{n=1}^N z_{j,n} z_{i,n} = 0,\text{ for all }i \neq j,
 \end{align*}
 assuming that $\vz_n$'s are centered. We can write it more compactly by
 \begin{align*}
