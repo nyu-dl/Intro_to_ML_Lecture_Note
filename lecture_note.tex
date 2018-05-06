@@ -576,9 +576,9 @@ What should we do in order to decrease this distance, if it is non-zero? We want
 to make the weight vector $\vw$ to be aligned more positively with $M^*(\vx)$,
 if the term (a) is 1, which can be done by moving $\vw$ toward $\tilde{\vx}$. In
 other words, the distance $D$ shrinks if we add a bit of $\tilde{\vx}$ to $\vw$,
-i.e., $\vw \leftarrow \vw + \eta \tilde{\vw}$. If the term (a) is -1, we should
+i.e., $\vw \leftarrow \vw + \eta \tilde{\vx}$. If the term (a) is -1, we should
 instead push $\vw$ so that it will {\it negatively} align with $\tilde{\vx}$,
-i.e., $\vw \leftarrow \vw - \eta \tilde{\vw}$. These two cases can be unified by
+i.e., $\vw \leftarrow \vw - \eta \tilde{\vx}$. These two cases can be unified by
 \begin{align}
     \label{eq:perceptron_rule0}
     \vw \leftarrow \vw + \eta \left( M^*(\vx) - M(\vx)\right) \tilde{\vx},
