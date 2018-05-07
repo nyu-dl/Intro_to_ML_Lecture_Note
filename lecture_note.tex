@@ -3372,7 +3372,7 @@ this data matrix $\mX$ as a product of two matrices:
     \label{eq:matfac}
     \mX \approx \mW \mZ,
 \end{align}
-where $\mY$ is a matrix that contains all the lower-dimensional vectors
+where $\mZ$ is a matrix that contains all the lower-dimensional vectors
 \begin{align*}
     \mZ =\left[ \vz_1; \vz_2; \cdots; \vz_N \right],
 \end{align*}
@@ -3555,7 +3555,7 @@ product of three matrices:
 \end{align}
 where $\mW \in \RR^{d \times d}$ and $\mV \in \RR^{d \times N}$ are orthogonal
 matrices, and $\mS \in \RR^{d \times d}$ is a diagonal matrix with
-non-decreasing diagonal entries. Let us use this decomposition to compute the
+decreasing diagonal entries. Let us use this decomposition to compute the
 covariance matrix $\mC$:
 \begin{align*}
     \mC =& \mX \mX^\top \\
