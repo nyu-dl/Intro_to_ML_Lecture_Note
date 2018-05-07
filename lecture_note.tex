@@ -887,7 +887,7 @@ other words, our empirical cost function for classification is now
 \begin{align}
     \label{eq:0-1_loss}
     J(M, D_{\text{tra}}) = \frac{1}{|D_{\text{tra}}|} \sum_{(y, \vx) \in D_{\text{tra}}} 
-    \underbrace{\overline{\sign}(-s(y, \vx; M))}_{
+    \underbrace{\sign(-s(y, \vx; M))}_{
         D_{\text{0-1}} = \text{0-1 Loss}
     }.
 \end{align}
