@@ -2405,6 +2405,7 @@ will consider a slightly difference framework in which these machine learning
 problems, including both classification and regression, could be embedded. 
 
 \section{Recap: Probability and Distribution}
+\label{sec:recap-prob-dist}
 
 Let us briefly go over a few concepts from probability here. They will become
 useful in the later discussion where a new framework is introduced. 
@@ -2682,7 +2683,8 @@ to\footnote{
 }
 \begin{align}
     \label{eq:gauss_pdf_diag}
-    f(\vx) = \prod_{i=1}^d 
+    f(\vx) = 
+    \prod_{i=1}^d 
     \frac{1}{\sqrt{2\pi} \sigma_i}
     \exp\left(
         -\frac{1}{2} \frac{1}{\sigma_i^2}(x_i - \mu_i)^2
@@ -4344,7 +4346,9 @@ clustering high-dimensional input vectors.
 
 \section{Mixture of Gaussians and Hidden Markov Models}
 
-\subsection{Mixture of Gaussians: Probabilistic Treatment of $k$-Means Clustering}
+\subsection{Mixture of Gaussians}
+
+\paragraph{Probabilistic Treatment of $k$-Means Clustering}
 
 Let's recall some of the concepts from
 Sec.~\ref{sec:bayesian-linear-regression}. There was a prior distribution which
@@ -4352,15 +4356,258 @@ was a distribution over a random variable that we did not observe. There was a
 likelihood distribution which was a distribution over a random variable that we
 did observe given a random variable that we did not observe. From these two, we
 were able to define a posterior distribution over a random variable that we did
-not observe given a random variable that we did observe.
+not observe given a random variable that we did observe. Let us apply these
+concepts to $k$-means clustering.
+
+In $k$-mean clustering, we observe data points which are $\left\{ \vx_1, \vx_2,
+\ldots, \vx_N\right\}$ but do not observe to which cluster each of these input
+vectors belongs $\left\{ \vz_1, \ldots, \vz_N \right\}$. In other words, we have
+an observed random variable $\vx$ that corresponds to the input vector and an
+unobserved/latent random variable $\vz$ that corresponds to the assignment of
+the input vector.
+
+First, we define a prior distribution over the assignment by noticing that
+assignment $\vz$ is a categorical random variable (recall from
+Sec.~\ref{sec:recap-prob-dist},) as it can take one of $q$ values. This prior
+distribution is characterized by $q$ probabilities that sum to $1$:
+\begin{align}
+\label{eq:mog-prior}
+    p(\vz = k) = \pi_k \geq 0,
+\end{align}
+where $\sum_{k=1}^q \pi_k = 1$.
+
+Second, we define a likelihood distribution over the observed data point $\vx$
+given its assignment $\vz$. We assume this distribution to be multi-variate
+Gaussian:
+\begin{align}
+\label{eq:mog-likelihood}
+    p(\vx | \vz=k) = \mathcal{N}(\vx | \mu_{k}, \Sigma_k).
+\end{align}
+For simplicity, we assume a diagonal covariance, i.e.,
+\begin{align*}
+    \Sigma_k = \left[
+        \begin{array}{c c c c}
+            \sigma_{k,1}^2 & 0 & \cdots & 0 \\
+            0 & \sigma_{k,2}^2 & \cdots & 0 \\
+            \vdots & 0 & \cdots & 0 \\
+            \vdots & \vdots & \cdots & \vdots \\
+            0 & 0 & \cdots & \sigma_{k,d}^2 
+        \end{array}
+    \right].
+\end{align*}
+
+With these two distributions, we can now write the joint probability as
+\begin{align}
+\label{eq:mog-joint}
+    p(\vx, \vz=k)
+    =&
+    \pi_k 
+    \prod_{i=1}^d 
+    \frac{1}{\sqrt{2\pi} \sigma_{k,i}}
+    \exp
+    \left(
+    -\frac{(x_i - \mu_{k,i})^2}{2\sigma_{k,i}^2}
+    \right)
+    \\
+    =&
+    \sum_{k'=1}^q
+    \mathbf{1}(k'=k)
+    \pi_{k'} 
+    \prod_{i=1}^d 
+    \frac{1}{\sqrt{2\pi} \sigma_{k',i}}
+    \exp
+    \left(
+    -\frac{(x_i - \mu_{k',i})^2}{2\sigma_{k',i}^2}
+    \right),
+    \nonumber
+\end{align}
+where $\mathbf{1}$ is an indicator function. 
+
+Let us assume two conditions: (1) $\pi_k \in \left\{ 0, 1\right\}$, and (2) $\sigma_{k,d}^2=1$. These two assumptions lead to
+\begin{align*}
+    \log p(\vx, \vz=k)
+    =&
+    -\sum_{i=1}^d 
+    \frac{(x_i - \mu_{k,i})^2}{2}
+    - \log \sqrt{2\pi}
+    \\
+    =&
+    -\sum_{k'=1}^q
+    \mathbf{1}(k'=k)
+    \sum_{i=1}^d 
+    \frac{(x_i - \mu_{k',i})^2}{2}
+    - q \log \sqrt{2\pi}
+    \\
+    =& 
+    -\frac{1}{2} \| 
+    \vx - \mW \vz 
+    \|^2 + C,
+\end{align*}
+where $C$ is a constant, $\vz$ is a one-hot vector indicating $k$, and 
+\begin{align*}
+    \mW = \left[ 
+    \vmu_{1}; \vmu_{2}; \ldots, \vmu_{q}
+    \right].
+\end{align*}
+If we consider a set of datapoints $\left\{ \vx_1, \ldots, \vx_N \right\}$ rather than a single point $\vx$, this is generalized to
+\begin{align*}
+    \log p(D_{\tra}) = \sum_{n=1}^N \log p(\vx_n, \vz_n)
+    = -\frac{1}{2} \sum_{n=1}^N \| \vx_n - \mW \vz_n \|^2 + C
+    = -\frac{1}{2} \| \mX - \mW \mZ \|^2_F + C',
+\end{align*}
+which is precisely the loss function we used to derive $k$-mean clustering. This implies that $k$-means clustering is a special case of the mixture of Gaussians and equivalently that the mixture of Gaussian generalizes $k$-means clustering.
+
+\paragraph{Expectation-Maximization}
+
+There are two ways to train the mixture of Gaussians, which are gradient descent and expectation-maximization. Here, we focus on the latter, as you should already know how to use gradient descent.\footnote{
+    Perhaps not surprisingly, this is left for you as a {\bf homework assignment}.
+}
+
+The goal of training in the mixture of Gaussians is to maximize the marginal probability of all the data points with respect to the parameters, $\mu_k$'s and $\Sigma_k$'s. Let us write this marginal log-probability for a single data point $\vx$:\footnote{
+    The marginal log-probability of the entire set of data points is simply the sum of this per-example marginal log-probability.
+}
+\begin{align*}
+    \log p(\vx) 
+    =& \log p(\vx, \vz) - \log p(\vz | \vx) 
+    \\
+    =& \log p(\vx, \vz) - \log Q(\vz) - \log p(\vz | \vx) + \log Q(\vz) 
+    \\
+    =& \log \frac{p(\vx, \vz)}{Q(\vz)} - \log \frac{p(\vz | \vx)}{Q(\vz)}
+    \\
+    =& \sum_{\vz} Q(\vz) \left[\log \frac{p(\vx, \vz)}{Q(\vz)} - \log \frac{p(\vz | \vx)}{Q(\vz)}\right]
+    \\
+    =& \sum_{\vz} Q(\vz) \log \frac{p(\vx, \vz)}{Q(\vz)} + \KL(Q\| P)
+    \\
+    =& \sum_{\vz} Q(\vz) \log p(\vx, \vz) 
+    + \mathcal{H}(Q)
+    + \KL(Q \| P),
+\end{align*}
+where $\mathcal{H}$ is an entropy. $Q$ is a categorical distribution over $\vz$ parameterized with its own parameters, $\nu_1, \ldots, \nu_q$, such that $\sum_{k=1}^q \nu_k = 1$. In other words, we have just introduced an additional set of parameters for each data point, $\nu_n=\left[ \nu_1^n ,\ldots, \nu_q^n\right]$, in addition to $\mu_k$'s, $\Sigma_k$'s and $\pi_k$'s.
+
+We maximize the marginal log-probability of the dataset by maximizing the sum of the marginal log-probability of each data point. We do so by alternating between estimating the parameters of the $Q$ distributions\footnote{
+We have $N$ such distributions.
+} 
+and the original parameters. First, we notice that the KL divergence between $Q$ and $P$ is always non-negative and is exactly zero when $Q$ and $P$ (which is $p(\vz|\vx)$) are identical. What this implies is that we can simply set the parameters of $Q$, which is categorical, to match the posterior distribution $p(\vz | \vx)$ which is also categorical. Because of this property, we can come up with an analytical rule that is guaranteed to improve $\log p(\vx)$ by setting
+\begin{align*}
+    \nu_k = p(\vz=k | \vx) \propto \exp\left(
+    \log \pi_k 
+    -
+    \sum_{i=1}^d 
+    \left(
+    \frac{(x_i - \mu_{k,i})^2}{2\sigma_{k,i}^2}
+    -\log \sqrt{2\pi} \sigma_{k,i}
+    \right)\right).
+\end{align*}
+In other words, we compute how likely the data point $\vx$ and its assignment to each cluster $k$ is under the joint distribution $p(\vx, \vz)$, and the posterior probability of the data point belonging to the $k$-th cluster is proportional to this probability. In practice, this boils down to applying softmax to $\left[
+\log p(\vx, \vz=1), \ldots, \log p(\vz, \vz=q) \right]$.
+
+Once $Q$ is fixed, i.e., $\nu_k$'s have been estimated for all the data points, we now re-estimate all the other parameters to improve the marginal log-probability of the entire dataset, i.e., $\sum_{n=1}^N \log p(\vx_n)$. As the entropy is constant with respect to these parameters, this effectively correspond to maximizing
+\begin{align*}
+    \mathcal{L(\vx)} = \sum_{\vz} Q(\vz) \log p(\vx, \vz)
+    =
+    \sum_{k=1}^q \nu_k \log p(\vx, \vz)
+    = 
+    \sum_{k=1}^q \nu_k \left(\log \pi_k - \sum_{i=1}^d \left(\frac{(x_i - \mu_{k,i})^2}{2\sigma_k^2} - \log \sqrt{2\pi} \sigma_k \right)\right)
+\end{align*}
+
+Let's estimate $\mu_k$ first by computing the derivative the quantity above with respect to $\mu_{k,i}$, which leads to
+\begin{align*}
+    &\sum_{n=1}^N \frac{\partial \mathcal{L}(\vx_n)}{\partial \mu_{k,i}}
+    = \sum_{n=1}^N \nu_k^n \frac{1}{\sigma_k^2}(x_i^n - \mu_{k,i}) = 0 
+    \\
+    \iff&
+    \sum_{n=1}^N \nu_k^n (x_{i}^n - \mu_{k,i})) = 0
+    \\
+    \iff&
+    \sum_{n=1}^N \nu_k^n x_i^n = \mu_{k,i} \sum_{n=1}^N \nu_k^n
+    \\
+    \iff&
+    \mu_{k,i} = \sum_{n=1}^N \frac{\nu_k^n}{\sum_{n'=1}^N \nu_k^{n'}} x_i^n
+\end{align*}
+You can simiarly derive the update rule of $\sigma_{k,i}^2$, which is left for you as a {\bf homework assignment}.
+
+Estimating $\pi_k$ is less trivial, as we must ensure that $\sum_{k=1}^q \pi_k = 1$. We use the method of Lagrangian multipliers and construct the following optimization problem:
+\begin{align*}
+    \min_{\lambda} \max_{\pi_1, \ldots, \pi_q} \sum_{n=1}^N \sum_{k=1}^q \nu_k^n \log \pi_k - \lambda \left(1 - \sum_{k=1}^q \pi_k\right).
+\end{align*}
+It is quite natural to understand how this formulation imposes the constraint. If the constraint is not met, i.e., $1-\sum_{k} \pi_k \neq 0$, we can arbitrary lower the objective function without considering how to set $\pi_k$'s by setting the Lagrangian multiplier $\lambda$ to be either positive or negative infinity. If the constraint is met, the multiplier has no influence on the original optimization problem. We first solve the problem for $\pi_k$:
+\begin{align}
+\label{eq:coeff-with-lambda}
+    \frac{\partial}{\partial \pi_k} \sum_{n=1}^N \sum_{k=1}^q \nu_k^n \log \pi_k - \lambda \left(1 - \sum_{k=1}^q \pi_k\right)
+    = 
+    \frac{1}{\pi_k} \sum_{n=1}^N \nu_k^n - \lambda = 0 
+    \iff
+    \pi_k = \frac{1}{\lambda} \sum_{n=1}^N \nu_k^n.
+\end{align}
+This is plugged back into the original optimization problem:
+\begin{align*}
+    \min_{\lambda} \sum_{n=1}^N \sum_{k=1}^q \nu_k^n \log \left(\frac{1}{\lambda} \sum_{n=1}^N \nu_k^n\right) - \lambda \left(1 - \sum_{k=1}^q \frac{1}{\lambda} \sum_{n=1}^N \nu_k^n \right),
+\end{align*}
+and we solve for the Lagrangian multiplier $\lambda$:
+\begin{align*}
+    \frac{\partial}{\partial \lambda} \sum_{n=1}^N \sum_{k=1}^q \nu_k^n \log \left(\frac{1}{\lambda} \sum_{n=1}^N \nu_k^n\right) - \lambda \left(1 - \sum_{k=1}^q \frac{1}{\lambda} \sum_{n=1}^N \nu_k^n \right) = -\sum_{n=1}^N \underbrace{\sum_{k=1}^q \nu_k^n}_{=1} \frac{1}{\lambda} - 1 = 0 \iff \lambda = N.
+\end{align*}
+By plugging this back into Eq.~\eqref{eq:coeff-with-lambda}, we finally obtain the analytical solution for the coefficients $\pi_k$'s:
+\begin{align*}
+    \pi_k = \frac{1}{N} \sum_{n=1}^N \nu_k^n.
+\end{align*}
+
+These two stages (expectation and maximization stages) are then alternated until the parameters (both those of $Q$ and the original ones) converge.
+
+With a small number of modifications and assumptions on the parameters, we can arrive at the learning rule of $k$-means clustering from the expectation-maximization algorithm for the mixture of Gaussians. Because of this, the learning rule of $k$-means clustering is often referred to as {\it hard} expectation-maximization. It is left for you to figure out what these modifications and assumptions are as a {\bf homework assignment}.
+
+%\begin{align*}
+%    \log p(\vx, \vz=k)
+%    =
+%    \log \pi_k 
+%    -
+%    \sum_{i=1}^d 
+%    \left(
+%    \frac{(x_i - \mu_{k,i})^2}{2\sigma_{k,i}^2}
+%    -\log \sqrt{2\pi} \sigma_{k,i}
+%    \right).
+%\end{align*}
 
 
 
+% \todo{!!!}
+
+
+\subsection{Mixture of Gaussians to Hidden Markov Models}
+
+Considering the stark similarity between $k$-means clustering and the mixture of Gaussians, it is a valid question to ask why we had to go an extra mile to introduce the mixture of Gaussians. One answer is that this approach of probabilistic modelling allows us to naturally extend the existing model to different problems. As an example, we consider the problem of clustering frames of a video clip in this section.
+
+Let's set up a problem first. We are given a video clip $X$ which is a sequence of video frames, $X=(\vx_1, \ldots, \vx_N)$. Each frame is represented as a vector. Our goal is to assign each frame to one of $q$ clusters, just like $k$-means clustering, however while taking into account the context in which each frame appears. That is, we cannot simply run either $k$-means clustering or train the mixture of Gaussians, because those do not take into account neighbouring frames. 
+
+We start from the mixture of Gaussians. The prior distribution over an assignment $\vz_n$ of each frame is categorical. Unlike the mixture of Gaussians, this categorical distribution is not independent of assignment of other frames, but is dependent on the assignment of the immediately previous frame. That is,
+\begin{align*}
+    p(\vz_n=k | \vz_{n-1}=j) = \Pi_{k,j} \geq 0,
+\end{align*}
+where $\sum_{k=1}^q \Pi_{k,j} = 1$ for all $j=1, \ldots, q$ and this matrix $\Pi$ is called a transition matrix. This dependence on the immediately previous frame gives arise to the name hidden ``Markov'' model. The likelihood distribution stays same as the mixture of Gaussians. That is,
+\begin{align*}
+    p(\vx_n | \vz_n=k) = \mathcal{N}(\vx_n | \mu_{k}, \Sigma_k).
+\end{align*}
+In addition, we need one more categorical distribution for the initial assignment:
+\begin{align*}
+    p(\vz_0=k) = \pi_k \geq 0,
+\end{align*}
+where $\sum_{k=1}^q \pi_k = 1$. 
+
+The joint distribution is then
+\begin{align*}
+    p(\vx_1, \ldots, \vx_N, \vz_0, \vz_1, \ldots, \vz_N)
+    = 
+    p(\vz_0) \prod_{n=1}^N p(\vz_n | \vz_{n-1}) p(\vx_n | \vz_n).
+\end{align*}
+
+\paragraph{Learning}
 
 \todo{!!!}
 
 
-\subsection{Mixture of Gaussians to Hidden Markov Models}
+
+
+\paragraph{Maximum-a-Posterior Decoding}
 
 
 \todo{!!!}
