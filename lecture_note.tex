@@ -2812,6 +2812,7 @@ Bayesian approach to machine learning.
 
 
 \section{Bayesian Linear Regression}
+\label{sec:bayesian-linear-regression}
 
 \subsection{Bayesian Linear Regression}
 
@@ -2901,15 +2902,20 @@ drawn from a single data distribution (see Eq.~\eqref{eq:expected_loss0} from
 long time ago.) Then, based on the definition of conditional independence in
 Eq.~\eqref{eq:cond_ind}, we can decompose the likelihood into
 \begin{align*}
-    p(D|\theta) = \prod_{n=1}^N p((x_n, y^*n)|\theta).
+    p(D|\theta) = \prod_{n=1}^N p((x_n, y^*_n)|\theta) 
+    = \prod_{n=1}^N p(y^*_n|x_n, \theta) p(x_n | \theta)
+    = \prod_{n=1}^N p(y^*_n|x_n, \theta) p(x_n).
 \end{align*}
 The logarithm of this likelihood, to which we refer as {\it log-likelihood}, is
 then 
 \begin{align*}
-    \log p(D|\theta) = \sum_{n=1}^N \underbrace{\log p((x_n,
-    y^*n)|\theta)}_{(a)}.
+    \log p(D|\theta) = C+ \sum_{n=1}^N \underbrace{\log p(y^*_n | x_n, \theta)}_{(a)},
 \end{align*}
-Where have we seen (a) before? 
+where 
+\[
+    C = \sum_{n=1}^N \log p(x_n)
+\]
+is a constant with respect to $\theta$.  Where have we seen (a) before? 
 
 Yes, we have seen it twice already this course. We saw one when we defined the
 distance functions of logistic regression and multi-class classification, and we
@@ -3012,7 +3018,9 @@ the case of linear regression to the right-hand side of this log-posterior:
 \begin{align*}
     \log p(\mW | D_{\tra}) = 
     \underbrace{
-        \sum_{n=1}^N \sum_{i=1}^q 
+        \sum_{n=1}^N 
+        \log p(\vx_n) + 
+        \sum_{i=1}^q 
         \frac{1}{2} (y^*_{n,i} - [\mW^\top \vx_n]_i )^2 
         - \log \sqrt{2\pi}
     }_{=\log p (D|\theta)}
@@ -3023,7 +3031,7 @@ the case of linear regression to the right-hand side of this log-posterior:
         -\frac{ w_{ij}^2}{2\sigma^2} - \log \sqrt{2\pi}\sigma
     }_{=\log p(\theta)}
     - 
-    \log p(D).
+    \log p(D_{\tra}).
 \end{align*}
 
 \paragraph{Maximum-a-Posteriori (MAP) Estimation: Poor Man's Bayes}
@@ -3040,6 +3048,21 @@ distribution:
 In the case of linear regression, this equation is equivalent to
 \begin{align*}
     \argmax_{\theta} \log p(\mW | D_{\tra}) =& 
+    \argmax_{\theta} 
+        \sum_{n=1}^N 
+        \log p(\vx_n)
+        +
+        \sum_{i=1}^q 
+        -\frac{1}{2} (y^*_{n,i} - [\mW^\top \vx_n]_i )^2 
+        - \log \sqrt{2\pi}
+    +
+        \sum_{i=1}^{d} 
+        \sum_{j=1}^{q}
+        -\frac{w_{ij}^2}{2\sigma^2} - \log \sqrt{2\pi}\sigma
+    - 
+    \log p(D) \\
+    \\
+    =&
     \argmax_{\theta} 
         \sum_{n=1}^N \sum_{i=1}^q 
         -\frac{1}{2} (y^*_{n,i} - [\mW^\top \vx_n]_i )^2 
@@ -4319,19 +4342,36 @@ solution is globally optimal.\footnote{
 This algorithm is known as {\it $k$-means clustering}, and is widely used for
 clustering high-dimensional input vectors. 
 
-\section{Further Topics$^\star$}
+\section{Mixture of Gaussians and Hidden Markov Models}
 
-\paragraph{Mixture of Gaussians$^\star$}
+\subsection{Mixture of Gaussians: Probabilistic Treatment of $k$-Means Clustering}
+
+Let's recall some of the concepts from
+Sec.~\ref{sec:bayesian-linear-regression}. There was a prior distribution which
+was a distribution over a random variable that we did not observe. There was a
+likelihood distribution which was a distribution over a random variable that we
+did observe given a random variable that we did not observe. From these two, we
+were able to define a posterior distribution over a random variable that we did
+not observe given a random variable that we did observe.
+
+
+
 
 \todo{!!!}
 
-\paragraph{Spectral Clustering$^\star$}
+
+\subsection{Mixture of Gaussians to Hidden Markov Models}
+
 
 \todo{!!!}
 
-\paragraph{Hierarchical agglomerative clustering$^\star$}
-
-\todo{!!!}
+%\paragraph{Spectral Clustering$^\star$}
+%
+%\todo{!!!}
+%
+%\paragraph{Hierarchical agglomerative clustering$^\star$}
+%
+%\todo{!!!}
 
 
 \chapter{Sequential Decision Making}
@@ -4539,15 +4579,15 @@ about reinforcement learning to the following materials:
         \url{http://videolectures.net/deeplearning2016_pineau_reinforcement_learning/}
 \end{enumerate}
 
-\section{Further Topics$^\star$}
-
-\paragraph{Learning to search}
-
-\todo{!!!}
-
-\paragraph{Time-series modelling}
-
-\todo{!!!}
+%\section{Further Topics$^\star$}
+%
+%\paragraph{Learning to search}
+%
+%\todo{!!!}
+%
+%\paragraph{Time-series modelling}
+%
+%\todo{!!!}
 
 
 
