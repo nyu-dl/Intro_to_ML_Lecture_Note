@@ -4600,9 +4600,21 @@ The joint distribution is then
     p(\vz_0) \prod_{n=1}^N p(\vz_n | \vz_{n-1}) p(\vx_n | \vz_n).
 \end{align*}
 
-\paragraph{Learning}
+\paragraph{Learning: Expectation-Maximization}
 
-\todo{!!!}
+Let us write the marginal log-probability over the observation sequence $X=(\vx_1, \ldots, \vx_N)$:
+\begin{align*}
+    \log p(\vx_1, \ldots, \vx_N) 
+    =&
+    \log p(\vz_0) + \sum_{n=1}^N \log p(\vx_n | \vz_n) + \log p(\vz_n | \vz_{n-1})
+    - \log p(\vz_0, \vz_1, \ldots, \vz_N | \vx_1, \ldots, \vx_N)
+    \\
+    \sum_{\vz_0} Q(\vz_0) \log p(\vz_0) 
+    + \sum_{n=1}^N \log p(\vx_n | \vz_n) + \log p(\vz_n | \vz_{n-1})
+    - \log p(\vz_0, \vz_1, \ldots, \vz_N | \vx_1, \ldots, \vx_N)
+\end{align*}
+
+\todo{TBD}
 
 
 
@@ -4610,7 +4622,7 @@ The joint distribution is then
 \paragraph{Maximum-a-Posterior Decoding}
 
 
-\todo{!!!}
+\todo{TBD}
 
 %\paragraph{Spectral Clustering$^\star$}
 %
