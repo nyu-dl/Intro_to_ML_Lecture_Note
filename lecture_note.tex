@@ -251,7 +251,7 @@ scikit-learn, have been prepared by Varun D N.\footnote{
 They are available at
 \url{https://github.com/nyu-dl/Intro_to_ML_Lecture_Note/tree/master/exercises}:
 \begin{enumerate}
-    \item Perceptron: \verb|Perceptron.ipynb|
+    % \item Perceptron: \verb|Perceptron.ipynb|
     \item Logistic Regression: \verb|Logistic_Regression_1.ipynb|, \\
     \verb|Logistic_Regression_2.ipynb|, \verb|MNIST_Classification.ipynb|
     \item Introduction to Autograd: \verb|Autograd_Introduction.ipynb|
@@ -298,16 +298,16 @@ hypothesis set is not constructed well, there may not be a machine that
 satisfies the criterion above. 
 
 We can state the same thing in a slightly different way. First, let us assume a
-function $D$ that takes as input the output of $M^*$, a machine $M$ and an input
+function $\Delta$ that takes as input the output of $M^*$, a machine $M$ and an input
 vector $\vx$, and returns how much they differ from each other, i.e.,
 \begin{align*}
-    D: \mathbb{R}^{d'} \times H \times \mathbb{R}^{d} \to \mathbb{R}_+,
+    \Delta: \mathbb{R}^{d'} \times H \times \mathbb{R}^{d} \to \mathbb{R}_+,
 \end{align*}
 where $\mathbb{R}_+$ is a set of non-negative real numbers. As usual in our
-everyday life, the smaller the output of $D$ the more similar the outputs of $M$
+everyday life, the smaller the output of $\Delta$ the more similar the outputs of $M$
 and $M^*$. An example of such a function would be
 \begin{align*}
-    D(y, M, \vx) = \left\{
+    \Delta(y, M, \vx) = \left\{
         \begin{array}{l l}
             0, & \text{if }  y = M(\vx) \\
             1, & \text{otherwise}
@@ -326,7 +326,7 @@ thief in front of your store ($M^*(\vx)=1$), you will lose \$100 if the alarm
 fails to detect the thief ($M(\vx)=0$) but will not lose any if the alarm went
 off. In this case, we may define the per-example cost function as
 \begin{align*}
-    D(y, M, \vx) = \left\{
+    \Delta(y, M, \vx) = \left\{
         \begin{array}{l l}
             0, & \text{if }  y=M(\vx) \\
             10, & \text{if }  y=0\text{ and }M(\vx)=1 \\
@@ -336,13 +336,13 @@ off. In this case, we may define the per-example cost function as
 \end{align*}
 Note that this distance is asymmetric.
 
-Given a distance function $D$, we can now state the supervised learning
+Given a distance function $\Delta$, we can now state the supervised learning
 problem as finding a machine $M$, with in a given hypothesis set $H$, that
 minimizes its distance from the reference machine $M^*$ for any given input.
 That is,
 \begin{align}
     \label{eq:classification1}
-    \argmin_{M \in H} \int_{\mathbb{R}^d} D(M^*(\vx), M, \vx) \text{d}\vx.
+    \argmin_{M \in H} \int_{\mathbb{R}^d} \Delta(M^*(\vx), M, \vx) \text{d}\vx.
 \end{align}
 
 You may have noticed that these two conditions in
@@ -371,14 +371,14 @@ not matter at all.
 And, here comes probability. We will denote by $p_X(\vx)$ the probability
 (density) assigned to the input $\vx$ under the distribution $X$, and assume
 that this probability reflects how likely the input $\vx$ is. We want to
-emphasize the impact of the distance $D$ on likely inputs (high $p_X(\vx)$)
+emphasize the impact of the distance $\Delta$ on likely inputs (high $p_X(\vx)$)
 while ignoring the impact on unlikely inputs (low $p_X(\vx)$). In other words,
 we weight each per-example cost with the probability of the corresponding
 example. Then the problem of supervised learning becomes 
 \begin{align}
     \label{eq:expected_loss0}
-    \argmin_{M\in H} \int_{\mathbb{R}^d} p_X(\vx) D(M^*(\vx), M, \vx) \text{d}\vx 
-    = \argmin_{M \in H} \mathbb{E}_{\vx \sim X} \left[ D(M^*(\vx),  M, \vx)
+    \argmin_{M\in H} \int_{\mathbb{R}^d} p_X(\vx) \Delta(M^*(\vx), M, \vx) \text{d}\vx 
+    = \argmin_{M \in H} \mathbb{E}_{\vx \sim X} \left[ \Delta(M^*(\vx),  M, \vx)
     \right].
 \end{align}
 
@@ -392,7 +392,7 @@ complicated in that we want to find a machine that minimizes both the cost in
 Eq.~\eqref{eq:expected_loss0} and its operational cost. So, at the end, we get
 \begin{align}
     \label{eq:expected_loss1}
-    \argmin_{M \in H} \underbrace{\mathbb{E}_{\vx \sim X} \left[ D(M^*(\vx), M, \vx) \right]
+    \argmin_{M \in H} \underbrace{\mathbb{E}_{\vx \sim X} \left[ \Delta(M^*(\vx), M, \vx) \right]
         + \lambda C(M)
     }_{
         \mathclap{R = \text{Expected Cost}}
@@ -411,7 +411,7 @@ $M$ over the input distribution and the low operational cost.
 It is unfortunately impossible to solve the minimization problem in
 Eq.~\eqref{eq:expected_loss1} in reality. There are so many reasons behind this,
 but the most important reason is the input distribution $p_X$ or lack thereof.
-We can decide on a distance function $D$ ourselves based on our goal. We can
+We can decide on a distance function $\Delta$ ourselves based on our goal. We can
 decide ourselves a hypothesis set $H$ ourselves based on our requirements and
 constraints. All good, but $p_X$ is not controllable in general, as it reflects
 how the world is, and the world does not care about our own requirements nor
@@ -434,12 +434,12 @@ assume that we have observed $N$ such samples: $\left\{ \vx^1, \ldots, \vx^N
 \right\}$. Then we can approximate the expected cost by
 \begin{align}
     \label{eq:empirical_loss}
-    \underbrace{\mathbb{E}_{\vx \sim X} \left[ D(M^*(\vx), M, \vx) \right] +
+    \underbrace{\mathbb{E}_{\vx \sim X} \left[ \Delta(M^*(\vx), M, \vx) \right] +
     \lambda C(M)}_{
         \mathclap{\text{Expected Cost}}
     } =
     \underbrace{
-        \frac{1}{N} \sum_{n=1}^N D(M^*(\vx^n), M, \vx^n)
+        \frac{1}{N} \sum_{n=1}^N \Delta(M^*(\vx^n), M, \vx^n)
         + \lambda C(M)
     }_{\mathclap{\tilde{R} = \text{Empirical Cost}}} + \epsilon,
 \end{align}
@@ -502,151 +502,146 @@ a posteriori} (MAP), in this course. However, in a few of the lectures, we will
 also consider the latter approach in the framework of {\it Bayesian} modelling.
 
 
-\section{Perceptron}
-\label{sec:perceptron}
+% \section{Perceptron}
+% \label{sec:perceptron}
 
-Let us examine how this concept of supervised learning is used in practice by
-considering a binary classification task. Binary classification is a task in
-which an input vector $\vx \in \mathbb{R}^d$ is classified into one of two
-classes, negative (0) and positive (1). In other words, a machine $M$ takes as
-input a $d$-dimensional vector and outputs one of two values. 
+% Let us examine how this concept of supervised learning is used in practice by
+% considering a binary classification task. Binary classification is a task in
+% which an input vector $\vx \in \mathbb{R}^d$ is classified into one of two
+% classes, negative (0) and positive (1). In other words, a machine $M$ takes as
+% input a $d$-dimensional vector and outputs one of two values. 
 
-\paragraph{Hypothesis Set}
+% \paragraph{Hypothesis Set}
 
-In perceptron, a hypothesis set is defined as
-\begin{align*}
-    H = \left\{ 
-    M | M(\vx) = \sign(\vw^\top \tilde{\vx}), \vw \in \mathbb{R}^{d+1}
-    \right\},
-\end{align*}
-where $\tilde{\vx} = \left[ \vx; 1\right]$ denotes concatenating $1$ at the end
-of the input vector $\vx$,\footnote{
-    Why do we augment the original input vector $\vx$ with an extra $1$? What is
-    an example in which this extra $1$ is necessary?  This is left to you as a
-    {\bf homework assignment}.
-}
-and 
-\begin{align}
-    \label{eq:sign}
-    \sign(x) = \left\{ \begin{array}{l l}
-            0,&\text{ if } x \leq 0, \\
-            1,&\text{ otherwise}
-        \end{array}
-        \right..
-\end{align}
-In this section, we simply assume that each and every machine in this hypothesis
-set has a constant operational cost $c$, i.e., $C(M)=c$ for all $M\in H$. 
+% In perceptron, a hypothesis set is defined as
+% \begin{align*}
+%     H = \left\{ 
+%     M | M(\vx) = \sign(\vw^\top \tilde{\vx}), \vw \in \mathbb{R}^{d+1}
+%     \right\},
+% \end{align*}
+% where $\tilde{\vx} = \left[ \vx; 1\right]$ denotes concatenating $1$ at the end
+% of the input vector $\vx$,\footnote{
+%     Why do we augment the original input vector $\vx$ with an extra $1$? What is
+%     an example in which this extra $1$ is necessary?  This is left to you as a
+%     {\bf homework assignment}.
+% }
+% and 
+% \begin{align}
+%     \label{eq:sign}
+%     \sign(x) = \left\{ \begin{array}{l l}
+%             0,&\text{ if } x \leq 0, \\
+%             1,&\text{ otherwise}
+%         \end{array}
+%         \right..
+% \end{align}
+% In this section, we simply assume that each and every machine in this hypothesis
+% set has a constant operational cost $c$, i.e., $C(M)=c$ for all $M\in H$. 
 
-\paragraph{Distance}
+% \paragraph{Distance}
 
-Given an input $\vx$, we now define a distance between $M^*$ and $M$. In
-particular, we will use the following distance function:\footnote{
-    There is a problem with this distance function. What is it?  This is left to
-    you as a {\bf homework assignment}.
-}
-\begin{align}
-    \label{eq:perceptron_dist}
-    D(M^*(\vx), M, \vx) = -\underbrace{\left( M^*(\vx) - M(\vx)
-    \right)}_{\text{(a)}} \underbrace{\left(\vw^\top
-    \tilde{\vx}\right)}_{\text{(b)}}.
-\end{align}
-The term (a) states that the distance between the predictions of the reference
-and our machines is $0$ as long as their predictions coincide. When it is not,
-the term (a) will be 1 if $M^*(\vx) = 1$ and -1 if $M^*(\vx) = 0$.
+% Given an input $\vx$, we now define a distance between $M^*$ and $M$. In
+% particular, we will use the following distance function:\footnote{
+%     There is a problem with this distance function. What is it?  This is left to
+%     you as a {\bf homework assignment}.
+% }
+% \begin{align}
+%     \label{eq:perceptron_dist}
+%     \Delta(M^*(\vx), M, \vx) = -\underbrace{\left( M^*(\vx) - M(\vx)
+%     \right)}_{\text{(a)}} \underbrace{\left(\vw^\top
+%     \tilde{\vx}\right)}_{\text{(b)}}.
+% \end{align}
+% The term (a) states that the distance between the predictions of the reference
+% and our machines is $0$ as long as their predictions coincide. When it is not,
+% the term (a) will be 1 if $M^*(\vx) = 1$ and -1 if $M^*(\vx) = 0$.
 
-When it is not, the term (a) will be 1, which is when the term (b) comes into
-play. The dot product in (b) computes how well the weight vector $\vw$ and the
-input vector $\vx$ aligns with each other.\footnote{
-    $\vw^\top \tilde{\vx} = \sum_{i=1}^{d+1} w_i x_i$.
-} When they are positively aligned (pointing in the same direction), this term
-will be positive, making the output of the machine $1$. When they are negative
-aligned (pointing in opposite directions), it will be negative with the output
-of the machine $M$ $0$.
+% When it is not, the term (a) will be 1, which is when the term (b) comes into
+% play. The dot product in (b) computes how well the weight vector $\vw$ and the
+% input vector $\vx$ aligns with each other.\footnote{
+%     $\vw^\top \tilde{\vx} = \sum_{i=1}^{d+1} w_i x_i$.
+% } When they are positively aligned (pointing in the same direction), this term
+% will be positive, making the output of the machine $1$. When they are negative
+% aligned (pointing in opposite directions), it will be negative with the output
+% of the machine $M$ $0$.
 
-Considering both (a) and (b), we see that the smallest value $D$ can take is $0$
-,when the prediction is correct,\footnote{
-    There is one more case. What is it?
-} and otherwise, positive. When the term (a) is 1, $\vw^\top \tilde{\vx}$ is
-negative, because $M(\vx)$ was 0, and the overall distance becomes positive
-(note the negative sign at the front.) When the term (a) is -1, $\vw^\top
-\tilde{\vx}$ is positive, because $M(\vx)$ was 1, in which case the distance is
-again positive. 
+% Considering both (a) and (b), we see that the smallest value $\Delta$ can take is $0$
+% ,when the prediction is correct,\footnote{
+%     There is one more case. What is it?
+% } and otherwise, positive. When the term (a) is 1, $\vw^\top \tilde{\vx}$ is
+% negative, because $M(\vx)$ was 0, and the overall distance becomes positive
+% (note the negative sign at the front.) When the term (a) is -1, $\vw^\top
+% \tilde{\vx}$ is positive, because $M(\vx)$ was 1, in which case the distance is
+% again positive. 
 
-What should we do in order to decrease this distance, if it is non-zero? We want
-to make the weight vector $\vw$ to be aligned more positively with $M^*(\vx)$,
-if the term (a) is 1, which can be done by moving $\vw$ toward $\tilde{\vx}$. In
-other words, the distance $D$ shrinks if we add a bit of $\tilde{\vx}$ to $\vw$,
-i.e., $\vw \leftarrow \vw + \eta \tilde{\vx}$. If the term (a) is -1, we should
-instead push $\vw$ so that it will {\it negatively} align with $\tilde{\vx}$,
-i.e., $\vw \leftarrow \vw - \eta \tilde{\vx}$. These two cases can be unified by
-\begin{align}
-    \label{eq:perceptron_rule0}
-    \vw \leftarrow \vw + \eta \left( M^*(\vx) - M(\vx)\right) \tilde{\vx},
-\end{align}
-where $\eta$ is often called a {\it step size} or {\it learning rate}.  We can
-repeat this update until the term (a) in Eq.~\eqref{eq:perceptron_dist} becomes
-0. 
+% What should we do in order to decrease this distance, if it is non-zero? We want
+% to make the weight vector $\vw$ to be aligned more positively with $M^*(\vx)$,
+% if the term (a) is 1, which can be done by moving $\vw$ toward $\tilde{\vx}$. In
+% other words, the distance $\Delta$ shrinks if we add a bit of $\tilde{\vx}$ to $\vw$,
+% i.e., $\vw \leftarrow \vw + \eta \tilde{\vx}$. If the term (a) is -1, we should
+% instead push $\vw$ so that it will {\it negatively} align with $\tilde{\vx}$,
+% i.e., $\vw \leftarrow \vw - \eta \tilde{\vx}$. These two cases can be unified by
+% \begin{align}
+%     \label{eq:perceptron_rule0}
+%     \vw \leftarrow \vw + \eta \left( M^*(\vx) - M(\vx)\right) \tilde{\vx},
+% \end{align}
+% where $\eta$ is often called a {\it step size} or {\it learning rate}.  We can
+% repeat this update until the term (a) in Eq.~\eqref{eq:perceptron_dist} becomes
+% 0. 
 
-\paragraph{Learning}
+% \paragraph{Learning}
 
-As discussed earlier, we assume that we make only a finite number of queries to
-the reference machine $M^*$ using a set of inputs drawn from the unknown input
-distribution $p(\vx)$. This results in our training dataset:
-\begin{align*}
-    D_{\text{tra}} = \left\{ (\vx_1, y_1), \ldots, (\vx_N, y_N) \right\},
-\end{align*}
-where we begin to use a short hand $y_n=M^*(\vx_n)$.
+% As discussed earlier, we assume that we make only a finite number of queries to
+% the reference machine $M^*$ using a set of inputs drawn from the unknown input
+% distribution $p(\vx)$. This results in our training dataset:
+% \begin{align*}
+%     D_{\text{tra}} = \left\{ (\vx_1, y_1), \ldots, (\vx_N, y_N) \right\},
+% \end{align*}
+% where we begin to use a short hand $y_n=M^*(\vx_n)$.
 
-With this dataset, our goal now is to find $M \in H$ that has the least
-empirical cost in Eq.~\eqref{eq:empirical_loss} with the distance function
-defined in Eq.~\eqref{eq:perceptron_dist}. Combining these two, we get
-\begin{align}
-    \label{eq:perceptron_cost}
-    J(\vw, D_{\text{tra}}) = -\frac{1}{N} \sum_{n=1}^N 
-    \left( y_n - M(\vx_n) \right) 
-    \left(\vw^\top \tilde{\vx_n}\right).
-\end{align}
+% With this dataset, our goal now is to find $M \in H$ that has the least
+% empirical cost in Eq.~\eqref{eq:empirical_loss} with the distance function
+% defined in Eq.~\eqref{eq:perceptron_dist}. Combining these two, we get
+% \begin{align}
+%     \label{eq:perceptron_cost}
+%     J(\vw, D_{\text{tra}}) = -\frac{1}{N} \sum_{n=1}^N 
+%     \left( y_n - M(\vx_n) \right) 
+%     \left(\vw^\top \tilde{\vx_n}\right).
+% \end{align}
 
-We will again resort to an iterative method for minimizing this empirical cost
-function, as we have done with a single input vector above. What we will do is
-to collect all those input vectors on which $M$ (or equivalently $\vw$) has made
-mistakes. This is equivalent to considering only those input vectors where
-$y_n-M(\vx_n) \neq 0$. Then, we collect all the {\it update directions},
-computed using Eq.~\eqref{eq:perceptron_rule0}, and move the weight vector
-$\vw$ toward its average. That is,
-\begin{align}
-    \label{eq:perceptron_rule1}
-    \vw \leftarrow \vw + \eta \frac{1}{N} \sum_{n=1}^N \left( y_n - M(\vx_n)\right) \tilde{\vx}.
-\end{align}
-We apply this rule repeatedly until the empirical cost in
-Eq.~\eqref{eq:perceptron_cost} does not improve (i.e., decrease). 
+% We will again resort to an iterative method for minimizing this empirical cost
+% function, as we have done with a single input vector above. What we will do is
+% to collect all those input vectors on which $M$ (or equivalently $\vw$) has made
+% mistakes. This is equivalent to considering only those input vectors where
+% $y_n-M(\vx_n) \neq 0$. Then, we collect all the {\it update directions},
+% computed using Eq.~\eqref{eq:perceptron_rule0}, and move the weight vector
+% $\vw$ toward its average. That is,
+% \begin{align}
+%     \label{eq:perceptron_rule1}
+%     \vw \leftarrow \vw + \eta \frac{1}{N} \sum_{n=1}^N \left( y_n - M(\vx_n)\right) \tilde{\vx}.
+% \end{align}
+% We apply this rule repeatedly until the empirical cost in
+% Eq.~\eqref{eq:perceptron_cost} does not improve (i.e., decrease). 
 
-This learning rule is known as a {\it perceptron learning rule}, which was
-proposed by Rosenblatt in 1950's \cite{Rosenblatt1962}, and has a nice property
-that it will find a correct $M$ in the sense that the empirical cost is at its
-minimum (0), {\it if} such $M$ is in $H$. In other words, if our hypothesis set
-$H$ is good and includes a reference machine $M^*$, this perceptron learning
-rule will eventually find an equally good machine $M$. It is important to note
-that there may be many such $M$, and the perceptron learning rule will find one
-of them. 
+% This learning rule is known as a {\it perceptron learning rule}, which was
+% proposed by Rosenblatt in 1950's \cite{Rosenblatt1962}, and has a nice property
+% that it will find a correct $M$ in the sense that the empirical cost is at its
+% minimum (0), {\it if} such $M$ is in $H$. In other words, if our hypothesis set
+% $H$ is good and includes a reference machine $M^*$, this perceptron learning
+% rule will eventually find an equally good machine $M$. It is important to note
+% that there may be many such $M$, and the perceptron learning rule will find one
+% of them. 
 
 
 \section{Logistic Regression}
 \label{sec:logreg}
 
-The perceptron is not entirely satisfactory for a number of reasons. One
-of them is that it does not provide a well-calibrated measure of the degree to
-which a given input is either negative or positive. That is, we want to know not
-whether it is negative or positive but rather how likely it is negative. It is
-then natural to build a machine that will output the probability $p(C|\vx)$,
+One way to build a machine that tackles binary classification is to build it to output the probability $p(C|\vx)$,
 where $C \in \left\{ -1, 1\right\}$.
 
 \paragraph{Hypothesis Set} 
 
-To do so, let us first modify the definition of a machine $M$. $M$ now takes as
+To do so, let us first define a machine $M$. $M$  takes as
 input a vector $\vx \in \mathbb{R}^d$ and returns a probability $p(C|\vx) \in
-\left[ 0, 1\right]$ rather than $\left\{ 0, 1\right\}$. We only need to change
-just one thing from the perceptron, that is
+\left[ 0, 1\right]$ rather than $\left\{ 0, 1\right\}$:
 \begin{align}
     \label{eq:logreg}
     M(\vx) = \sigmoid(\vw^\top \tilde{\vx}),
@@ -655,8 +650,8 @@ where $\sigmoid$ is a sigmoid function defined as
 \begin{align*}
     \sigmoid(a) = \frac{1}{1 + \exp(-a)}
 \end{align*}
-and is bounded by $0$ from below and by $1$ from above. Suddenly this machine
-does not return the prediction, but the probability of the prediction being
+and is bounded by $0$ from below and by $1$ from above. 
+This machine in other words does not return the prediction, but the probability of the prediction being
 positive (1). That is,
 \begin{align*}
     p(C=1|\vx) = M(\vx).
@@ -684,7 +679,7 @@ is larger, and vice versa. Therefore, we define the distance as the negative
 log-probability of the $M$'s output being correct:
 \begin{align}
     \label{eq:logreg_dist}
-    D(M^*(\vx), M, \vx) =& -\log p(C=M^*(\vx) | \vx) \\
+    \Delta(M^*(\vx), M, \vx) =& -\log p(C=M^*(\vx) | \vx) \\
     =& -(M^*(\vx) \log M(\vx) + (1-M^*(\vx)) \log (1- M(\vx))),
     \nonumber
 \end{align}
@@ -703,10 +698,7 @@ where $p(C=1|\vx) = M(\vx)$. The latter equality comes from the definition of
     \end{align*}
 }
 
-With this definition of our distance, how do we adjust $\vw$ of $M$ to lower it?
-In the case of perceptron, we were able to manually come up with an {\it
-algorithm} by looking at the perceptron distance in
-Eq.~\eqref{eq:perceptron_dist}. It is however not too trivial with this logistic
+With this definition of our distance, how do we adjust $\vw$ of $M$ to lower it? Perhaps we can creatively think of a rule to update $\vw$ to minimize this distance function. It however turned out to be not too trivial with this logistic
 regression distance.\footnote{
     It may be trivial to some who have great mathematical intuition.
 }
@@ -721,7 +713,7 @@ the weight vector $\vw$ is\footnote{
 }
 \begin{align}
     \label{eq:grad_logreg_dist}
-    \nabla_{\vw} D(M^*(\vx), M, \vx) = -(M^*(\vx) - M(\vx)) \tilde{\vx}.
+    \nabla_{\vw} \Delta(M^*(\vx), M, \vx) = -(M^*(\vx) - M(\vx)) \tilde{\vx}.
 \end{align}
 When we move the weight vector ever so slightly in the opposite direction, the
 logistic regression distance in Eq.~\eqref{eq:logreg_dist} will decrease. That
@@ -735,67 +727,67 @@ size} or {\it learning rate}.
 
 \paragraph{Coincidence?}
 
-Is it surprising to realize that this rule for logistic regression is identical
-to the perceptron rule in Eq.~\eqref{eq:perceptron_rule0}? Let us see what this
-logistic regression rule, or equivalent to perceptron learning rule, does by
-focusing on the update term (the second term in the learning rule). The first
-multiplicative factor $(M^*(\vx) - M(\vx))$ can be written as
-\begin{align}
-    \label{eq:grad_logreg_term1}
-    M^*(\vx) - M(\vx) = \underbrace{\overline{\sign}(M^*(\vx) - M(\vx))}_{\text{(a)}}
-    \underbrace{\left| M^*(\vx) - M(\vx) \right|}_{\text{(b)}},
-\end{align}
-where 
-\begin{align*}
-    \overline{\sign}(x) = \left\{ \begin{array}{l l}
-            -1,&\text{ if } x \leq 0, \\
-            1,&\text{ otherwise}
-        \end{array}
-        \right.
-\end{align*}
-is a symmetric sign function (compare it to the asymmetric sign function in
-Eq.~\eqref{eq:sign}.)
+% Is it surprising to realize that this rule for logistic regression is identical
+% to the perceptron rule in Eq.~\eqref{eq:perceptron_rule0}? Let us see what this
+% logistic regression rule, or equivalent to perceptron learning rule, does by
+% focusing on the update term (the second term in the learning rule). The first
+% multiplicative factor $(M^*(\vx) - M(\vx))$ can be written as
+% \begin{align}
+%     \label{eq:grad_logreg_term1}
+%     M^*(\vx) - M(\vx) = \underbrace{\overline{\sign}(M^*(\vx) - M(\vx))}_{\text{(a)}}
+%     \underbrace{\left| M^*(\vx) - M(\vx) \right|}_{\text{(b)}},
+% \end{align}
+% where 
+% \begin{align*}
+%     \overline{\sign}(x) = \left\{ \begin{array}{l l}
+%             -1,&\text{ if } x \leq 0, \\
+%             1,&\text{ otherwise}
+%         \end{array}
+%         \right.
+% \end{align*}
+% is a symmetric sign function (compare it to the asymmetric sign function in
+% Eq.~\eqref{eq:sign}.)
 
-The term (a) effectively tell us {\it in which way} the machine is wrong about
-the input $\vx$. Is $M$ saying it is likely to be $0$ when the reference machine
-says $1$, or is $M$ saying it is likely to be $1$ when the reference machine
-says $0$? In the former case, we want the weight vector $\vw$ to align more with
-$\vx$, and thus the positive sign. In the latter case, we want the opposite, and
-hence the negative sign.  The second term (b) tells us {\it how much} the
-machine is wrong about the input $\vx$. This term ignores in which direction the
-machine is wrong, since it is computed by the term (a), but entirely focuses on
-how {\it far} the model's prediction is from that of the reference machine. If
-the prediction is close to that of the reference machine, we only want the
-weight vector to move ever so slowly.
+% The term (a) effectively tell us {\it in which way} the machine is wrong about
+% the input $\vx$. Is $M$ saying it is likely to be $0$ when the reference machine
+% says $1$, or is $M$ saying it is likely to be $1$ when the reference machine
+% says $0$? In the former case, we want the weight vector $\vw$ to align more with
+% $\vx$, and thus the positive sign. In the latter case, we want the opposite, and
+% hence the negative sign.  The second term (b) tells us {\it how much} the
+% machine is wrong about the input $\vx$. This term ignores in which direction the
+% machine is wrong, since it is computed by the term (a), but entirely focuses on
+% how {\it far} the model's prediction is from that of the reference machine. If
+% the prediction is close to that of the reference machine, we only want the
+% weight vector to move ever so slowly.
 
-The second term in both the logistic regression and perceptron rules is the
-input vector, augmented with an extra $1$. This term is there, because the
-prediction by a machine $M$ is made based on how well the weight vector and the
-input vector align with each other, which is computed as a dot product between
-these two vectors. 
+% The second term in both the logistic regression and perceptron rules is the
+% input vector, augmented with an extra $1$. This term is there, because the
+% prediction by a machine $M$ is made based on how well the weight vector and the
+% input vector align with each other, which is computed as a dot product between
+% these two vectors. 
 
-In other words, it is not a coincidence, but only natural that they are
-equivalent, as both of them effectively solve the same problem of binary
-classification. In the case of perceptron, we have reached its learning rule
-based on our observation of the process, while in the case of logistic
-regression, we relied on a more mechanical process of using gradient to find the
-steepest ascent direction. The latter approach is often more desirable, as it
-allows us to apply the same procedure (update the machine following the steepest
-descent direction,) however with a constraint that the empirical cost be
-differentiable (almost everywhere\footnote{
-    We will see why the cost function does not have to be differentiable
-    everywhere later in the course.
-}) with respect to the machine's parameters. We will thus largely stick to this
-kind of gradient-based optimization to minimize any distance function from here
-on.
+% In other words, it is not a coincidence, but only natural that they are
+% equivalent, as both of them effectively solve the same problem of binary
+% classification. In the case of perceptron, we have reached its learning rule
+% based on our observation of the process, while in the case of logistic
+% regression, we relied on a more mechanical process of using gradient to find the
+% steepest ascent direction. The latter approach is often more desirable, as it
+% allows us to apply the same procedure (update the machine following the steepest
+% descent direction,) however with a constraint that the empirical cost be
+% differentiable (almost everywhere\footnote{
+%     We will see why the cost function does not have to be differentiable
+%     everywhere later in the course.
+% }) with respect to the machine's parameters. We will thus largely stick to this
+% kind of gradient-based optimization to minimize any distance function from here
+% on.
 
-The only major difference between the learning rules for the logistic regression
-and perceptron is whether the term (b) in Eq.~\eqref{eq:grad_logreg_term1} is
-discrete (in the case of perceptron) or continuous (in the case of logistic
-regression.) More specifically, the term (b) in the perceptron learning rule is
-either $0$ or $1$. In the case of logistic regression, on the other hand, the
-term (b) corresponds to what degree the logistic regression's output is close to
-the true output.
+% The only major difference between the learning rules for the logistic regression
+% and perceptron is whether the term (b) in Eq.~\eqref{eq:grad_logreg_term1} is
+% discrete (in the case of perceptron) or continuous (in the case of logistic
+% regression.) More specifically, the term (b) in the perceptron learning rule is
+% either $0$ or $1$. In the case of logistic regression, on the other hand, the
+% term (b) corresponds to what degree the logistic regression's output is close to
+% the true output.
 
 \paragraph{Learning}
 
@@ -865,8 +857,7 @@ itself):
     s(y, \vx; M) = y \vw^\top \tilde{\vx}.
 \end{align}
 
-Given any machine that performs binary classification, such as perceptron and
-logistic regression, this score function tells us whether a given input vector
+Given any machine that performs binary classification, this score function tells us whether a given input vector
 $\vx$ is correctly classified. If the score is larger than 0, it was correctly
 classified. Otherwise, the score would be smaller than 0. In other words, the
 score function defines a {\it decision boundary} of the machine $M$, which is
@@ -1149,7 +1140,7 @@ as in Eq.~\eqref{eq:empirical_loss}, that is\footnote{
     validation cost. We will get to why this is so shortly.
 }
 \begin{align*}
-    \tilde{R}_{\val} = \frac{1}{N'} \sum_{(y, \vx) \in D_{\val}} D(y, M, \vx)
+    \tilde{R}_{\val} = \frac{1}{N'} \sum_{(y, \vx) \in D_{\val}} \Delta(y, M, \vx)
     + \lambda C(M).
 \end{align*}
 
@@ -1178,20 +1169,16 @@ cost among the $L$ trained models:
 
 \paragraph{Example 1: Model Selection}
 
-Let's take a simple example of having three hypothesis sets. One hypothesis set
-$H_{\text{perceptron}}$ contains all possible perceptrons, the next set
-$H_{\text{logreg}}$ has all possible logistic regressions, and the last set
-$H_{\text{svm}}$ has all possible support vector machines. We will find one
-perceptron, one logistic regression and one support vector machine from these
+Let's take a simple example of having two hypothesis sets. One hypothesis set
+$H_{\text{logreg}}$ has all possible logistic regressions, and the other set
+$H_{\text{svm}}$ has all possible support vector machines. We will find one logistic regression and one support vector machine from these
 hypothesis sets by using the learning rules we learned earlier.  We select one
 of these two {\it models} based not on the empirical cost function but on the
 validation cost function. 
 
 \paragraph{Example 2: Early Stopping}
 
-Can this be useful even if we have a single hypothesis set? Indeed. So far, two
-families of classifiers we have considered, which are perceptrons and logistic
-regression, learning happened iteratively. That is, we slowly evolve the
+Can this be useful even if we have a single hypothesis set? Indeed. So far, for both classifiers we have considered learning happened iteratively. That is, we slowly evolve the
 parameters, or more specifically the weight vector. Let us denote the weight
 vector after the $l$-th update by $\vw^l$, and assume that we have applied the
 learning rule $L$-many times. Suddenly I have $L$ different classifiers, just
@@ -1287,8 +1274,8 @@ the ``Example 1: Model Selection'' from above.
 
 When we select a model, the first question that needs to be answered is what are
 our hypothesis sets. An obvious approach is to choose each hypothesis set to
-include all possible configurations of one model family, such as perceptron,
-logistic regression or support vector machine. Instead, we can also decide on a
+include all possible configurations of one model family, such as 
+logistic regression and support vector machine. Instead, we can also decide on a
 model family, and sub-divide the gigantic hypothesis sets into several subsets.
 The latter is one we will discuss further here.
 
@@ -1498,13 +1485,13 @@ regression. That is, it is the negative log-probability of the correct category
 returned by the reference machine $M^*$:
 \begin{align}
     \label{eq:multlog_dist}
-    D(M^*(\vx), M, \vx) = -\log p(C=M^*(\vx) | \vx) = -\log p_{M^*(\vx)}.
+    \Delta(M^*(\vx), M, \vx) = -\log p(C=M^*(\vx) | \vx) = -\log p_{M^*(\vx)}.
 \end{align}
 I used $p_{M^*(\vx)}$ to denote the $M^*(\vx)$-th probability value stored in
 $\vp$, which is by our definition of the machine the probability of the correct
 category predicted by our machine.  Let's expand it a bit further:
 \begin{align*}
-    D(y^*, M, \vx) &= -\log p_{M^*(\vx)} \\
+    \Delta(y^*, M, \vx) &= -\log p_{M^*(\vx)} \\
                    &= -a_{y^*} + \log \sum_{k=1}^K \exp(a_k).
 \end{align*}
 
@@ -1521,7 +1508,7 @@ for each row of the weight matrix separately. First, we consider the $y^*$-th
 row vector, that corresponds to the correct class outputted by the reference
 machine: 
 \begin{align*}
-    \frac{\partial D(y^*, M, \vx)}{\partial \vw_{y^*}} =&
+    \frac{\partial \Delta(y^*, M, \vx)}{\partial \vw_{y^*}} =&
     -\frac{\partial}{\partial \vw_{y^*}} \left(
         \vw_{y^*}^\top \tilde{\vx} - \log \sum_{k=1}^K \exp(a_k)
     \right) \\
@@ -1531,7 +1518,7 @@ Similarly, we can compute the gradient of the distance function with respect to
 the weight vector that corresponds to any other incorrect class $y \in \left\{1,
 \ldots, K \right\} \backslash \left\{ y^* \right\}$:
 \begin{align*}
-    \frac{\partial D(y^*, M, \vx)}{\partial \vw_{y}} =&
+    \frac{\partial \Delta(y^*, M, \vx)}{\partial \vw_{y}} =&
     -\frac{\partial}{\partial \vw_{y}} \left(
         \vw_{y^*}^\top \tilde{\vx} - \log \sum_{k=1}^K \exp(a_k)
     \right) \\
@@ -1540,7 +1527,7 @@ the weight vector that corresponds to any other incorrect class $y \in \left\{1,
 
 We can combine them together into a single vector equation:
 \begin{align*}
-\nabla_{\mW} D(y^*, M, \vx) =
+\nabla_{\mW} \Delta(y^*, M, \vx) =
     -
     \left( 
         \vy^* - \vp
@@ -1571,8 +1558,7 @@ is an {\it one-hot vector} corresponding to a desired output, and $\vp$ is the
 actual output from the multinomial logistic regression from
 Eq.~\eqref{eq:multlog_out}.
 
-This equation above reminds us of the learning rule of logistic regression (and
-naturally that of perceptron.) See for instance Eq.~\eqref{eq:grad_logreg_dist}
+This equation above reminds us of the learning rule of logistic regression. See for instance Eq.~\eqref{eq:grad_logreg_dist}
 as a comparison. Both rules (logistic regression and multinomial logistic
 regression) have a multiplicative term in the front, and that multiplicative
 term is a difference between the predicted output (or the predicted conditional
@@ -1676,7 +1662,7 @@ discuss how to build a classifier for problems which are not linearly separable.
         \caption{
             \label{fig:perceptron_xor}
             If the problem is not linearly separable as in the case shown, a
-            linear classifier, such as perceptron, fails miserably. This is a
+            linear classifier, such as logistic regression, fails miserably. This is a
             famous example of a exclusive-or (XOR) problem (with noise.)
         }
     \end{minipage}
@@ -2099,7 +2085,7 @@ correct class. That is,
 \end{align*}
 Once this transformation is done, we can find the $K+1$-dimensional weight
 vector, or $(K+1)\times |\mathcal{C}|$-dimensional matrix, using any of the
-techniques we have learned earlier, including perceptron, logistic regression,
+techniques we have learned earlier, including logistic regression,
 support vector machines and multinomial logistic regression. 
 
 In other words, we have now learned how to use the linear classifiers we have
@@ -2130,7 +2116,7 @@ Let us go back to logistic regression and consider its distance function from
 Eq.~\eqref{eq:logreg_dist}:
 \begin{align}
     \label{eq:logreg_dist}
-    D(M^*(\vx), M, \vx) =& -\log p(C=M^*(\vx) | \vx) \\
+    \Delta(M^*(\vx), M, \vx) =& -\log p(C=M^*(\vx) | \vx) \\
     =& -(M^*(\vx) \log M(\vx) + (1-M^*(\vx)) \log (1- M(\vx))),
     \nonumber
 \end{align}
@@ -2149,7 +2135,7 @@ logistic regression by computing its gradient with respect to the weight vector
 
 With $K$ basis vectors, we can rewrite this distance function as
 \begin{align*}
-    D(M^*(\phi(\vx)), M, \phi(\vx)) 
+    \Delta(M^*(\phi(\vx)), M, \phi(\vx)) 
     = -(M^*(\phi(\vx)) \log M(\phi(\vx)) + (1-M^*(\phi(\vx))) \log (1-
     M(\phi(\vx)))),
 \end{align*}
@@ -2167,14 +2153,14 @@ from Eq.~\eqref{eq:W_rbf}. In this rewritten form, we notice that we can compute
 the gradient of the distance with respect not only to the weight vector ($\vw$
 and $b$), but also to each and every basis vector. That is, we can compute
 \begin{align*}
-    \nabla_{\vr^k} D(M^*(\phi(\vx)), M, \phi(\vx)).
+    \nabla_{\vr^k} \Delta(M^*(\phi(\vx)), M, \phi(\vx)).
 \end{align*}
 
 Let's compute this gradient:
 \begin{align*}
-    \nabla_{\vr^k} D(y^*, M, \phi(\vx)) =&
+    \nabla_{\vr^k} \Delta(y^*, M, \phi(\vx)) =&
     \underbrace{-(y^* - \sigma(\vw^\top \phi(\vx) + b))}_{
-        \frac{\partial D}{\partial a}
+        \frac{\partial \Delta}{\partial a}
     }
     \underbrace{w_k}_{\frac{\partial a}{\partial \phi_k(\vx)}}
     \underbrace{(2 \phi_k(\vx)) (\vx - \vr^k)}_{
@@ -2189,7 +2175,7 @@ where $a = \vw^\top \phi(\vx) + b$.\footnote{
 With this gradient, we now know how to adjust the $k$-th basis vector $\vr^k$ to
 reduce the distance given a training example $(\vx, y^*)$:
 \begin{align*}
-    \vr^k \leftarrow \vr^k - \eta \nabla_{\vr^k} D(y^*, M, \phi(\vx)).
+    \vr^k \leftarrow \vr^k - \eta \nabla_{\vr^k} \Delta(y^*, M, \phi(\vx)).
 \end{align*}
 This is just like how we have learned to update the weight vector to minimize
 the distance earlier for the linear classifiers.  Unlike those learning rules,
@@ -2375,7 +2361,7 @@ Following our convention, we thus obtain the following distance function for
 {\it linear regression}:
 \begin{align}
     \label{eq:linreg_dist}
-    D(M^*(\vx), M, \vx) = \frac{1}{2} \|M^*(\vx) - M(\vx)\|_2^2 = 
+    \Delta(M^*(\vx), M, \vx) = \frac{1}{2} \|M^*(\vx) - M(\vx)\|_2^2 = 
     \frac{1}{2} \sum_{k=1}^q (y^*_k - y_k)^2,
 \end{align}
 where the multiplicative factor $\frac{1}{2}$ was added to simplify the
@@ -2873,7 +2859,7 @@ equivalent to maximizing the {\it log}-probability density of this Normal
 distribution. That is,
 \begin{align}
     \label{eq:linreg_nll}
-    \argmin_{M \in H} D(M^*(\vx), M, \vx) =&
+    \argmin_{M \in H} \Delta(M^*(\vx), M, \vx) =&
     \argmin_{M \in H} -\log f(M^*(\vx); \mu=M(\vx)) \\
     =&\argmin_{M \in H} \sum_{i=1}^q \frac{1}{2} (y^*_i - \mu_i)^2 + C,
 \end{align}
@@ -4488,7 +4474,8 @@ We maximize the marginal log-probability of the dataset by maximizing the sum of
 We have $N$ such distributions.
 } 
 and the original parameters. First, we notice that the KL divergence between $Q$ and $P$ is always non-negative and is exactly zero when $Q$ and $P$ (which is $p(\vz|\vx)$) are identical. What this implies is that we can simply set the parameters of $Q$, which is categorical, to match the posterior distribution $p(\vz | \vx)$ which is also categorical. Because of this property, we can come up with an analytical rule that is guaranteed to improve $\log p(\vx)$ by setting
-\begin{align*}
+\begin{align}
+    \label{eq:em-expectation}
     \nu_k = p(\vz=k | \vx) \propto \exp\left(
     \log \pi_k 
     -
@@ -4497,7 +4484,7 @@ and the original parameters. First, we notice that the KL divergence between $Q$
     \frac{(x_i - \mu_{k,i})^2}{2\sigma_{k,i}^2}
     -\log \sqrt{2\pi} \sigma_{k,i}
     \right)\right).
-\end{align*}
+\end{align}
 In other words, we compute how likely the data point $\vx$ and its assignment to each cluster $k$ is under the joint distribution $p(\vx, \vz)$, and the posterior probability of the data point belonging to the $k$-th cluster is proportional to this probability. In practice, this boils down to applying softmax to $\left[
 \log p(\vx, \vz=1), \ldots, \log p(\vz, \vz=q) \right]$.
 
@@ -4511,19 +4498,23 @@ Once $Q$ is fixed, i.e., $\nu_k$'s have been estimated for all the data points, 
 \end{align*}
 
 Let's estimate $\mu_k$ first by computing the derivative the quantity above with respect to $\mu_{k,i}$, which leads to
-\begin{align*}
+\begin{align}
+    \label{eq:em-maximization}
     &\sum_{n=1}^N \frac{\partial \mathcal{L}(\vx_n)}{\partial \mu_{k,i}}
     = \sum_{n=1}^N \nu_k^n \frac{1}{\sigma_k^2}(x_i^n - \mu_{k,i}) = 0 
     \\
     \iff&
     \sum_{n=1}^N \nu_k^n (x_{i}^n - \mu_{k,i})) = 0
+    \nonumber
     \\
     \iff&
     \sum_{n=1}^N \nu_k^n x_i^n = \mu_{k,i} \sum_{n=1}^N \nu_k^n
+    \nonumber
     \\
     \iff&
     \mu_{k,i} = \sum_{n=1}^N \frac{\nu_k^n}{\sum_{n'=1}^N \nu_k^{n'}} x_i^n
-\end{align*}
+    \nonumber
+\end{align}
 You can simiarly derive the update rule of $\sigma_{k,i}^2$, which is left for you as a {\bf homework assignment}.
 
 Estimating $\pi_k$ is less trivial, as we must ensure that $\sum_{k=1}^q \pi_k = 1$. We use the method of Lagrangian multipliers and construct the following optimization problem:
@@ -4572,6 +4563,30 @@ With a small number of modifications and assumptions on the parameters, we can a
 
 % \todo{!!!}
 
+\paragraph{Expectation-Maximization: Fisher's Identity}
+
+At this point, you must be pretty confused by this expectation-maximization algorithm. Are we abandoning our faithful gradient descent algorithm? 
+
+Let us instead look at the gradient of the marginal log-probability of a data point:
+\begin{align*}
+    \nabla \log p(\vx) 
+    =& \frac{\nabla p(\vx)}{p(\vx)} 
+    \\
+    =& \frac{1}{p(\vx)} \nabla \sum_{\vz} p(\vx, \vz)
+    \\
+    =& \frac{1}{p(\vx)} \sum_{\vz} \nabla p(\vx, \vz)
+    \\
+    =& \frac{1}{p(\vx)} \sum_{\vz} p(\vx, \vz) \nabla \log p(\vx, \vz)
+    \\
+    =& \sum_{\vz} \frac{p(\vx,\vz)}{p(\vx)} \nabla \log p(\vx, \vz)
+    \\
+    =& \sum_{\vz} p(\vz|\vx) \nabla \log p(\vx, \vz),
+\end{align*}
+which is called Fisher's identity. What this implies is that the gradient of the marginal log-probability is equivalent to the expected gradient of the joint log-probability over the posterior distribution. If you think once more about expectation-maximization, this is precisely what we did. We first compute the posterior distribution in Eq.~\eqref{eq:em-expectation}, and use it to compute the expected gradient in Eq.~\eqref{eq:em-maximization}. In other words, the expectation-maximization algorithm above is really nothing but gradient descent on the marginal log-probability.
+
+
+
+
 
 \subsection{Mixture of Gaussians to Hidden Markov Models}
 
@@ -4601,6 +4616,8 @@ The joint distribution is then
 \end{align*}
 
 \paragraph{Learning: Expectation-Maximization}
+
+Fisher's inequality
 
 Let us write the marginal log-probability over the observation sequence $X=(\vx_1, \ldots, \vx_N)$:
 \begin{align*}
@@ -4695,7 +4712,7 @@ training set:
 \end{align*}
 For each pair $(\vx, \vy) \in D_{\tra}$, we can define a distance function:
 \begin{align*}
-    D(\vy, M, \vx),
+    \Delta(\vy, M, \vx),
 \end{align*}
 as we have done for all the supervised learning methods so far. With this
 distance function, we can define and minimize an empirical cost function to fit
@@ -4781,9 +4798,9 @@ modifying the empirical cost function into
     \label{eq:policy_gradient}
     \hat{R}(M^1; D_{\tra}^0) = \frac{1}{N} \sum_{n=1}^N 
     \underbrace{(Q_n - V_n)}_{\text{advantage}}
-    D(\vy_n, M^1, \vx_n),
+    \Delta(\vy_n, M^1, \vx_n),
 \end{align}
-where $D$ is a usual distance function defined per classifier. In the case of
+where $\Delta$ is a usual distance function defined per classifier. In the case of
 (multinomial) logistic regression, this distance function would be a
 cross-entropy loss from Eq.~\eqref{eq:multlog_dist}, and it would be a simple
 Euclidean distance in the case of linear regression. 
