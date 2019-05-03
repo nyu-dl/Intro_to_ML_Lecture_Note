@@ -4482,7 +4482,7 @@ and the original parameters. First, we notice that the KL divergence between $Q$
     \sum_{i=1}^d 
     \left(
     \frac{(x_i - \mu_{k,i})^2}{2\sigma_{k,i}^2}
-    -\log \sqrt{2\pi} \sigma_{k,i}
+    +\log \sqrt{2\pi} \sigma_{k,i}
     \right)\right).
 \end{align}
 In other words, we compute how likely the data point $\vx$ and its assignment to each cluster $k$ is under the joint distribution $p(\vx, \vz)$, and the posterior probability of the data point belonging to the $k$-th cluster is proportional to this probability. In practice, this boils down to applying softmax to $\left[
@@ -4494,7 +4494,7 @@ Once $Q$ is fixed, i.e., $\nu_k$'s have been estimated for all the data points, 
     =
     \sum_{k=1}^q \nu_k \log p(\vx, \vz)
     = 
-    \sum_{k=1}^q \nu_k \left(\log \pi_k - \sum_{i=1}^d \left(\frac{(x_i - \mu_{k,i})^2}{2\sigma_k^2} - \log \sqrt{2\pi} \sigma_k \right)\right)
+    \sum_{k=1}^q \nu_k \left(\log \pi_k - \sum_{i=1}^d \left(\frac{(x_i - \mu_{k,i})^2}{2\sigma_{k,i}^2} + \log \sqrt{2\pi} \sigma_{k,i} \right)\right)
 \end{align*}
 
 Let's estimate $\mu_k$ first by computing the derivative the quantity above with respect to $\mu_{k,i}$, which leads to
