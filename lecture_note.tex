@@ -1213,7 +1213,7 @@ instance, by ensuring that the label proportion (the number of positive examples
 to that of the negative examples) stays same. For each hypothesis set $H$, we
 train $K$ classifiers, where $D_{\tra} \\ D_{\tra}^k$ is used to train the
 $k$-th classifier and $D_{\tra}^k$ to compute its validation cost. We then get
-$K$ validation costs of which the average is our estimate of the empirical cost
+$K$ validation costs of which the average is our estimate of the expected cost
 of the current hypothesis set. We essentially reuse each example $K-1$ times for
 training and $K-1$ times for validation, thereby increasing both the efficiency
 of our use of training examples as well as the stability of our estimate.  When
@@ -2122,7 +2122,7 @@ Eq.~\eqref{eq:logreg_dist}:
 \end{align}
 where 
 \begin{align*}
-    M(\vx) = \sigma(\vw^\top \vw + b)
+    M(\vx) = \sigma(\vw^\top \vx + b)
 \end{align*}
 and $\sigma$ is a sigmoid function.\footnote{
     I have split the weight vector into two components; (a) the weight vector
@@ -3009,7 +3009,7 @@ the case of linear regression to the right-hand side of this log-posterior:
         \sum_{n=1}^N 
         \log p(\vx_n) + 
         \sum_{i=1}^q 
-        \frac{1}{2} (y^*_{n,i} - [\mW^\top \vx_n]_i )^2 
+        -\frac{1}{2} (y^*_{n,i} - [\mW^\top \vx_n]_i )^2 
         - \log \sqrt{2\pi}
     }_{=\log p (D|\theta)}
     +
