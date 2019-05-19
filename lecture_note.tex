@@ -4536,7 +4536,7 @@ This is plugged back into the original optimization problem:
 \end{align*}
 and we solve for the Lagrangian multiplier $\lambda$:
 \begin{align*}
-    \frac{\partial}{\partial \lambda} \sum_{n=1}^N \sum_{k=1}^q \nu_k^n \log \left(\frac{1}{\lambda} \sum_{n=1}^N \nu_k^n\right) - \lambda \left(1 - \sum_{k=1}^q \frac{1}{\lambda} \sum_{n=1}^N \nu_k^n \right) = -\sum_{n=1}^N \underbrace{\sum_{k=1}^q \nu_k^n}_{=1} \frac{1}{\lambda} - 1 = 0 \iff \lambda = N.
+    \frac{\partial}{\partial \lambda} \sum_{n=1}^N \sum_{k=1}^q \nu_k^n \log \left(\frac{1}{\lambda} \sum_{n=1}^N \nu_k^n\right) - \lambda \left(1 - \sum_{k=1}^q \frac{1}{\lambda} \sum_{n=1}^N \nu_k^n \right) = \sum_{n=1}^N \underbrace{\sum_{k=1}^q \nu_k^n}_{=1} \frac{1}{\lambda} - 1 = 0 \iff \lambda = N.
 \end{align*}
 By plugging this back into Eq.~\eqref{eq:coeff-with-lambda}, we finally obtain the analytical solution for the coefficients $\pi_k$'s:
 \begin{align*}
